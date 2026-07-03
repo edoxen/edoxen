@@ -40,6 +40,7 @@ module Edoxen
 
     def check
       require "yaml"
+      require "date"
 
       Dir.glob(File.join(@dir, "**", "*.{yaml,yml}")).each do |file|
         data = safe_load_yaml(file)
@@ -72,7 +73,7 @@ module Edoxen
 
     def safe_load_yaml(file)
       YAML.safe_load_file(file, permitted_classes: [Date, Time])
-    rescue Psych::SyntaxError, Psych::DisallowedClass, ArgumentError
+    rescue Psych::Exception, ArgumentError
       nil
     end
 

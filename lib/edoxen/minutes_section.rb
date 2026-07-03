@@ -12,16 +12,5 @@ module Edoxen
     attribute :page_start, :integer
     attribute :page_end, :integer
     attribute :references, Reference, collection: true
-
-    def in_language(code, fallback: false)
-      match = localizations&.find { |loc| loc.language_code == code.to_s }
-      return match if match
-
-      fallback ? localizations&.first : nil
-    end
-
-    def primary_localization
-      in_language("eng", fallback: true)
-    end
   end
 end

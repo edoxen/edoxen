@@ -18,36 +18,35 @@ module Edoxen
   # There are intentionally NO `require_relative` calls in this gem —
   # autoload keeps load-order semantics clean and lets us tolerate the
   # extensive cross-references between model classes
-  # (Resolution <-> Localization, ResolutionMetadata <-> Localization, etc.).
+  # (Decision <-> Localization, DecisionMetadata <-> Localization, etc.).
   autoload :VERSION, "edoxen/version"
   autoload :Error, "edoxen/error"
   autoload :ValidationError, "edoxen/error"
   autoload :Enums, "edoxen/enums"
   autoload :ReferenceData, "edoxen/reference_data"
 
-  # Information-model classes (one per file, one concept per class).
-  # Names mirror ../edoxen-model/models/*.lutaml.
+  # --- Decision-side (renamed from Resolution in v2.0) -----------------
   autoload :StructuredIdentifier, "edoxen/structured_identifier"
   autoload :MeetingIdentifier, "edoxen/meeting_identifier"
-  autoload :ResolutionDate, "edoxen/resolution_date"
+  autoload :DecisionDate, "edoxen/decision_date"
   autoload :Action, "edoxen/action"
   autoload :Approval, "edoxen/approval"
   autoload :Consideration, "edoxen/consideration"
   autoload :SourceUrl, "edoxen/source_url"
   autoload :Localization, "edoxen/localization"
   autoload :Url, "edoxen/url"
-  autoload :ResolutionRelation, "edoxen/resolution_relation"
-  autoload :Resolution, "edoxen/resolution"
-  autoload :ResolutionMetadata, "edoxen/resolution_metadata"
-  autoload :ResolutionCollection, "edoxen/resolution_collection"
+  autoload :DecisionRelation, "edoxen/decision_relation"
+  autoload :Decision, "edoxen/decision"
+  autoload :DecisionMetadata, "edoxen/decision_metadata"
+  autoload :DecisionCollection, "edoxen/decision_collection"
 
-  # Meeting / Agenda side. Mirrors edoxen-model/models/meeting*.lutaml.
+  # --- Meeting/Agenda side (existing) ----------------------------------
   autoload :DateRange, "edoxen/date_range"
-  autoload :Location, "edoxen/location"
+  autoload :Location, "edoxen/location"  # deprecated, kept for traceability
   autoload :Person, "edoxen/person"
   autoload :HostRef, "edoxen/host_ref"
-  autoload :ScheduleItemLocalization, "edoxen/schedule_item_localization"
-  autoload :ScheduleItem, "edoxen/schedule_item"
+  autoload :ScheduleItemLocalization, "edoxen/schedule_item_localization"  # deprecated
+  autoload :ScheduleItem, "edoxen/schedule_item"  # deprecated, use MeetingComponent
   autoload :Deadline, "edoxen/deadline"
   autoload :Reference, "edoxen/reference"
   autoload :AgendaItem, "edoxen/agenda_item"
@@ -61,6 +60,26 @@ module Edoxen
   autoload :Meeting, "edoxen/meeting"
   autoload :MeetingCollectionMetadata, "edoxen/meeting_collection_metadata"
   autoload :MeetingCollection, "edoxen/meeting_collection"
+
+  # --- v2.0 broadened-scope entities -----------------------------------
+  autoload :ExtensionAttribute, "edoxen/extension_attribute"
+  autoload :MeetingExtension, "edoxen/meeting_extension"
+  autoload :Venue, "edoxen/venue"
+  autoload :PhysicalVenue, "edoxen/physical_venue"
+  autoload :VirtualVenue, "edoxen/virtual_venue"
+  autoload :Motion, "edoxen/motion"
+  autoload :VotingCounts, "edoxen/voting_counts"
+  autoload :Voting, "edoxen/voting"
+  autoload :TopicDocument, "edoxen/topic_document"
+  autoload :TopicAsset, "edoxen/topic_asset"
+  autoload :Topic, "edoxen/topic"
+  autoload :RecurrenceByDay, "edoxen/recurrence_by_day"
+  autoload :Recurrence, "edoxen/recurrence"
+  autoload :MeetingSeries, "edoxen/meeting_series"
+  autoload :ComponentLocalization, "edoxen/component_localization"
+  autoload :MeetingComponent, "edoxen/meeting_component"
+  autoload :Officer, "edoxen/officer"
+  autoload :VenueValidator, "edoxen/venue_validator"
 
   # Services.
   autoload :SchemaValidator, "edoxen/schema_validator"

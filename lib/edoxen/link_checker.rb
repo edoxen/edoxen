@@ -45,7 +45,9 @@ module Edoxen
         data = safe_load_yaml(file)
         next unless data.is_a?(Hash)
 
-        if meeting_shape?(data)
+        if data["meetings"].is_a?(Array)
+          index_meeting_collection(data, file)
+        elsif meeting_shape?(data)
           urn = data["urn"]
           @meetings_by_urn[urn] = file if urn
         elsif collection_shape?(data)
@@ -69,8 +71,8 @@ module Edoxen
     private
 
     def safe_load_yaml(file)
-      YAML.safe_load_file(file)
-    rescue Psych::SyntaxError, ArgumentError
+      YAML.safe_load_file(file, permitted_classes: [Date, Time])
+    rescue Psych::SyntaxError, Psych::DisallowedClass, ArgumentError
       nil
     end
 
@@ -80,6 +82,19 @@ module Edoxen
 
     def collection_shape?(data)
       data["decisions"].is_a?(Array) || data["resolutions"].is_a?(Array) || data["metadata"].is_a?(Hash)
+    end
+
+    # A MeetingCollection wraps its meetings under a top-level `meetings:`
+    # array (its own top level carries no identifier/type). Index each
+    # nested meeting's urn so a link into a collection resolves the same
+    # as a link to a standalone Meeting file.
+    def index_meeting_collection(data, file)
+      data["meetings"].each do |meeting|
+        next unless meeting.is_a?(Hash)
+
+        urn = meeting["urn"]
+        @meetings_by_urn[urn] = file if urn
+      end
     end
   end
 end

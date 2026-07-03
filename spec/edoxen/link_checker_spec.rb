@@ -137,4 +137,25 @@ RSpec.describe Edoxen::LinkChecker do
       expect(errs.first.urn).to eq("urn:oiml:ciml:meeting:ciml-99")
     end
   end
+
+  it "does not resolve a meeting_urn against a malformed meetings entry lacking meeting shape" do
+    Dir.mktmpdir do |dir|
+      write(dir, "meetings.yaml", <<~YAML)
+        ---
+        metadata:
+          title: CIML meetings
+        meetings:
+        - urn: urn:oiml:ciml:meeting:ciml-77
+      YAML
+      write(dir, "resolutions.yaml", <<~YAML)
+        ---
+        metadata:
+          meeting_urn: urn:oiml:ciml:meeting:ciml-77
+        resolutions: []
+      YAML
+      errs = described_class.check(dir)
+      expect(errs.size).to eq(1)
+      expect(errs.first.urn).to eq("urn:oiml:ciml:meeting:ciml-77")
+    end
+  end
 end

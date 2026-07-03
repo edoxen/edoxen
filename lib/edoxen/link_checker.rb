@@ -86,11 +86,12 @@ module Edoxen
 
     # A MeetingCollection wraps its meetings under a top-level `meetings:`
     # array (its own top level carries no identifier/type). Index each
-    # nested meeting's urn so a link into a collection resolves the same
-    # as a link to a standalone Meeting file.
+    # nested meeting that satisfies `meeting_shape?` — the same bar applied
+    # to standalone meeting files — so a malformed entry carrying only a
+    # `urn` cannot make a dangling link appear to resolve.
     def index_meeting_collection(data, file)
       data["meetings"].each do |meeting|
-        next unless meeting.is_a?(Hash)
+        next unless meeting.is_a?(Hash) && meeting_shape?(meeting)
 
         urn = meeting["urn"]
         @meetings_by_urn[urn] = file if urn

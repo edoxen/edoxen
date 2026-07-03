@@ -324,7 +324,7 @@ $defs:
       urn:                 { type: string }
       on_motion:           { type: string }
       status:              { $ref: "#/$defs/VotingStatus" }
-      method:              { $ref: "#/$defs/VotingMethod" }
+      voting_method:       { $ref: "#/$defs/VotingMethod" }
       called_by:           { $ref: "#/$defs/Person" }
       called_at:           { type: string, format: date-time }
       result_declared_at:  { type: string, format: date-time }

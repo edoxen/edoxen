@@ -12,7 +12,7 @@ module Edoxen
     attribute :urn, :string
     attribute :on_motion, :string
     attribute :status, :string, values: Enums::VOTING_STATUS
-    attribute :method, :string, values: Enums::VOTING_METHOD
+    attribute :voting_method, :string, values: Enums::VOTING_METHOD
     attribute :called_by, Person
     attribute :called_at, :date_time
     attribute :result_declared_at, :date_time

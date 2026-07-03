@@ -1,4 +1,560 @@
 module Edoxen
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  module Enums
+    ACTION_TYPE: Array[String]
+    CONSIDERATION_TYPE: Array[String]
+    DECISION_KIND: Array[String]
+    DECISION_STATUS: Array[String]
+    DECISION_DATE_TYPE: Array[String]
+    DECISION_RELATION_TYPE: Array[String]
+    APPROVAL_TYPE: Array[String]
+    APPROVAL_DEGREE: Array[String]
+    URL_KIND: Array[String]
+    MEETING_TYPE: Array[String]
+    MEETING_STATUS: Array[String]
+    AGENDA_STATUS: Array[String]
+    AGENDA_ITEM_KIND: Array[String]
+    AGENDA_ITEM_OUTCOME: Array[String]
+    HOST_TYPE: Array[String]
+    MEETING_RELATION_TYPE: Array[String]
+    SOURCE_URL_KIND: Array[String]
+    PARTICIPATION_STATUS: Array[String]
+    VOTE_TYPE: Array[String]
+    VENUE_KIND: Array[String]
+    VIRTUAL_FEATURE: Array[String]
+    VISIBILITY: Array[String]
+    ATTENDANCE_ROLE: Array[String]
+    ATTENDANCE_RESPONSE: Array[String]
+    COMPONENT_KIND: Array[String]
+    MOTION_STATUS: Array[String]
+    VOTING_STATUS: Array[String]
+    VOTING_METHOD: Array[String]
+    VOTING_OUTCOME: Array[String]
+    TOPIC_STATUS: Array[String]
+    OFFICER_ROLE: Array[String]
+    RECURRENCE_FREQ: Array[String]
+  end
+
+  module ReferenceData
+    def self.find_unlocode: (String code) -> untyped
+    def self.unlocode_exists?: (String code) -> bool
+    def self.find_iata: (String code) -> untyped
+    def self.iata_exists?: (String code) -> bool
+  end
+
+  class Error < StandardError
+  end
+
+  class ValidationError < Error
+    SOURCE_SCHEMA: Symbol
+    SOURCE_MODEL: Symbol
+    SOURCE_SYNTAX: Symbol
+    attr_reader file: String
+    attr_reader line: Integer
+    attr_reader column: Integer
+    attr_reader pointer: String
+    attr_reader message_text: String
+    attr_reader source: Symbol
+    def initialize: (file: String, line: Integer, column: Integer, message_text: String, ?pointer: String, ?source: Symbol) -> void
+    def to_clickable_format: -> String
+  end
+
+  # Identifiers / references.
+  class StructuredIdentifier < Lutaml::Model::Serializable
+    attr_reader prefix: String?
+    attr_reader number: String?
+  end
+
+  class MeetingIdentifier < Lutaml::Model::Serializable
+    attr_reader venue: String?
+    attr_reader date: Date?
+  end
+
+  class Url < Lutaml::Model::Serializable
+    attr_reader kind: String?
+    attr_reader ref: String?
+    attr_reader format: String?
+  end
+
+  class SourceUrl < Lutaml::Model::Serializable
+    attr_reader ref: String?
+    attr_reader format: String?
+    attr_reader language_code: String?
+    attr_reader kind: String?
+  end
+
+  class DateRange < Lutaml::Model::Serializable
+    attr_reader start: Date?
+    attr_reader end: Date?
+  end
+
+  class Deadline < Lutaml::Model::Serializable
+    attr_reader date: Date?
+    attr_reader description: String?
+  end
+
+  class HostRef < Lutaml::Model::Serializable
+    attr_reader ref: String?
+    attr_reader type: String?
+    attr_reader role: String?
+    attr_reader contact: Person?
+  end
+
+  class Reference < Lutaml::Model::Serializable
+    attr_reader ref: String?
+    attr_reader kind: String?
+    attr_reader title: String?
+  end
+
+  class Person < Lutaml::Model::Serializable
+    attr_reader name: String?
+    attr_reader kind: String?
+    attr_reader role: String?
+    attr_reader affiliation: String?
+    attr_reader email: String?
+    attr_reader phone: String?
+    attr_reader orcid: String?
+  end
+
+  # Decision-Side.
+  class DecisionDate < Lutaml::Model::Serializable
+    attr_reader date: Date?
+    attr_reader type: String?
+  end
+
+  class DecisionRelation < Lutaml::Model::Serializable
+    attr_reader source: StructuredIdentifier?
+    attr_reader destination: StructuredIdentifier?
+    attr_reader type: String?
+  end
+
+  class Action < Lutaml::Model::Serializable
+    attr_reader type: String?
+    attr_reader date_effective: DecisionDate?
+    attr_reader message: String?
+  end
+
+  class Approval < Lutaml::Model::Serializable
+    attr_reader type: String?
+    attr_reader degree: String?
+    attr_reader date: DecisionDate?
+    attr_reader message: String?
+  end
+
+  class Consideration < Lutaml::Model::Serializable
+    attr_reader type: String?
+    attr_reader date_effective: DecisionDate?
+    attr_reader message: String?
+  end
+
+  class Localization < Lutaml::Model::Serializable
+    attr_reader language_code: String?
+    attr_reader script: String?
+    attr_reader title: String?
+    attr_reader subject: String?
+    attr_reader message: String?
+    attr_reader considering: String?
+  end
+
+  class Decision < Lutaml::Model::Serializable
+    attr_reader identifier: Array[StructuredIdentifier]?
+    attr_reader kind: String?
+    attr_reader status: String?
+    attr_reader doi: String?
+    attr_reader urn: String?
+    attr_reader agenda_item: String?
+    attr_reader dates: Array[DecisionDate]?
+    attr_reader categories: Array[String]?
+    attr_reader meeting: MeetingIdentifier?
+    attr_reader relations: Array[DecisionRelation]?
+    attr_reader urls: Array[Url]?
+    attr_reader brought_by_motions: Array[String]?
+    attr_reader about_topics: Array[String]?
+    attr_reader made_in_component: String?
+    attr_reader localizations: Array[Localization]?
+    def in_language: (String|Symbol code, ?fallback: bool) -> Localization?
+    def primary_localization: -> Localization?
+  end
+
+  class DecisionMetadata < Lutaml::Model::Serializable
+    attr_reader title: String?
+    attr_reader date: Date?
+    attr_reader source: String?
+    attr_reader source_urls: Array[SourceUrl]?
+    attr_reader city: String?
+    attr_reader country_code: String?
+    attr_reader meeting_urn: String?
+    def city_entry: -> untyped
+  end
+
+  class DecisionCollection < Lutaml::Model::Serializable
+    attr_reader metadata: DecisionMetadata?
+    attr_reader decisions: Array[Decision]?
+  end
+
+  # Procedural.
+  class Motion < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader urn: String?
+    attr_reader text: String?
+    attr_reader mover: Person?
+    attr_reader seconders: Array[Person]?
+    attr_reader status: String?
+    attr_reader introduced_at: untyped
+    attr_reader proposed_decision: String?
+    attr_reader resulting_decision: String?
+    attr_reader votings: Array[String]?
+    def carried?: -> bool
+    def pending?: -> bool
+  end
+
+  class VotingCounts < Lutaml::Model::Serializable
+    attr_reader ayes: Integer?
+    attr_reader noes: Integer?
+    attr_reader abstentions: Integer?
+    attr_reader absent: Integer?
+    def total: -> Integer
+    def margin: -> Integer
+    def tied?: -> bool
+  end
+
+  class VoteRecord < Lutaml::Model::Serializable
+    attr_reader decision_ref: String?
+    attr_reader voting_ref: String?
+    attr_reader person: Person?
+    attr_reader affiliation: String?
+    attr_reader vote: String?
+    attr_reader role: String?
+    attr_reader notes: String?
+    def affirmative?: -> bool
+    def teller?: -> bool
+  end
+
+  class Voting < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader urn: String?
+    attr_reader on_motion: String?
+    attr_reader status: String?
+    attr_reader voting_method: String?
+    attr_reader called_by: Person?
+    attr_reader called_at: untyped
+    attr_reader result_declared_at: untyped
+    attr_reader result: String?
+    attr_reader counts: VotingCounts?
+    attr_reader casting_vote: VoteRecord?
+    attr_reader vote_records: Array[VoteRecord]?
+    def decided?: -> bool
+    def in_progress?: -> bool
+    def passed?: -> bool
+    def negatived?: -> bool
+    def tied?: -> bool
+  end
+
+  # Topic.
+  class TopicDocument < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader title: String?
+    attr_reader version: String?
+    attr_reader status: String?
+    attr_reader url: String?
+    attr_reader format: String?
+    attr_reader language_code: String?
+  end
+
+  class TopicAsset < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader title: String?
+    attr_reader kind: String?
+    attr_reader url: String?
+    attr_reader format: String?
+  end
+
+  class Topic < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader urn: String?
+    attr_reader title: String?
+    attr_reader description: String?
+    attr_reader status: String?
+    attr_reader resumption_of: String?
+    attr_reader documents: Array[TopicDocument]?
+    attr_reader assets: Array[TopicAsset]?
+    attr_reader references: Array[Reference]?
+    attr_reader motions: Array[String]?
+    attr_reader decisions: Array[String]?
+  end
+
+  # Venue.
+  class Venue < Lutaml::Model::Serializable
+    attr_reader kind: String?
+    attr_reader name: String?
+    attr_reader label: String?
+    attr_reader description: String?
+    attr_reader capacity: Integer?
+    attr_reader url: String?
+    attr_reader unlocode: String?
+    attr_reader iata_code: String?
+    attr_reader address: String?
+    attr_reader city: String?
+    attr_reader country_code: String?
+    attr_reader lat: Float?
+    attr_reader lon: Float?
+    attr_reader building: String?
+    attr_reader floor: String?
+    attr_reader room: String?
+    attr_reader access_notes: String?
+    attr_reader uri: String?
+    attr_reader features: Array[String]?
+    attr_reader passcode: String?
+    attr_reader meeting_id: String?
+    attr_reader dial_in_numbers: Array[String]?
+    attr_reader waiting_room: bool?
+    attr_reader registration_required: bool?
+    def physical?: -> bool
+    def virtual?: -> bool
+    def unlocode_entry: -> untyped
+    def iata_entry: -> untyped
+    def features_list: -> String
+  end
+
+  class PhysicalVenue < Venue
+  end
+
+  class VirtualVenue < Venue
+  end
+
+  class VenueValidator
+    attr_reader venue: Venue
+    attr_reader errors: Array[String]
+    def initialize: (Venue venue) -> void
+    def validate: (?auto_populate: bool) -> Array[String]
+    def valid?: -> bool
+  end
+
+  # Recurrence.
+  class RecurrenceByDay < Lutaml::Model::Serializable
+    attr_reader ordinal: Integer?
+    attr_reader weekday: String?
+  end
+
+  class Recurrence < Lutaml::Model::Serializable
+    attr_reader freq: String?
+    attr_reader interval: Integer
+    attr_reader count: Integer?
+    attr_reader until: untyped
+    attr_reader by_day: Array[RecurrenceByDay]?
+    attr_reader by_month_day: Array[Integer]?
+    attr_reader by_month: Array[Integer]?
+    attr_reader by_week_no: Array[Integer]?
+    attr_reader by_year_day: Array[Integer]?
+    attr_reader by_hour: Array[Integer]?
+    attr_reader by_minute: Array[Integer]?
+    attr_reader by_second: Array[Integer]?
+    attr_reader by_set_pos: Array[Integer]?
+    attr_reader week_start: String
+  end
+
+  # Profile mechanism.
+  class ExtensionAttribute < Lutaml::Model::Serializable
+    attr_reader key: String?
+    attr_reader value: String?
+  end
+
+  class MeetingExtension < Lutaml::Model::Serializable
+    attr_reader profile: String?
+    attr_reader kind: String?
+    attr_reader ref: String?
+    attr_reader attributes: Array[ExtensionAttribute]?
+    attr_reader extensions: Array[MeetingExtension]?
+  end
+
+  # Officer.
+  class Officer < Lutaml::Model::Serializable
+    attr_reader role: String?
+    attr_reader person: Person?
+    attr_reader term_start: Date?
+    attr_reader term_end: Date?
+    def current?: (?Date date) -> bool
+  end
+
+  # Component.
+  class ComponentLocalization < Lutaml::Model::Serializable
+    attr_reader language_code: String?
+    attr_reader script: String?
+    attr_reader title: String?
+    attr_reader description: String?
+  end
+
+  class MeetingComponent < Lutaml::Model::Serializable
+    attr_reader identifier: String?
+    attr_reader urn: String?
+    attr_reader kind: String?
+    attr_reader title: String?
+    attr_reader description: String?
+    attr_reader starts_at: untyped
+    attr_reader ends_at: untyped
+    attr_reader venue_refs: Array[String]?
+    attr_reader chair: Person?
+    attr_reader agenda_ref: String?
+    attr_reader minutes_ref: String?
+    attr_reader attendance_refs: Array[String]?
+    attr_reader localizations: Array[ComponentLocalization]?
+    def duration_seconds: -> Integer?
+  end
+
+  # Series.
+  class MeetingSeries < Lutaml::Model::Serializable
+    attr_reader identifier: Array[StructuredIdentifier]?
+    attr_reader urn: String?
+    attr_reader name: String?
+    attr_reader description: String?
+    attr_reader recurrence: Recurrence?
+    attr_reader term: String?
+    attr_reader organizer: Person?
+    attr_reader hosts: Array[HostRef]?
+    attr_reader kind: String?
+    attr_reader meeting_refs: Array[String]?
+  end
+
+  # Meeting side.
+  class Attendance < Lutaml::Model::Serializable
+    attr_reader person: Person?
+    attr_reader status: String?
+    attr_reader role: String?
+    attr_reader response: String?
+    attr_reader affiliation: String?
+    attr_reader proxy_for: Person?
+    attr_reader notes: String?
+    def present?: -> bool
+    def declined?: -> bool
+  end
+
+  class AgendaItem < Lutaml::Model::Serializable
+    attr_reader label: String?
+    attr_reader kind: String?
+    attr_reader title: String?
+    attr_reader description: String?
+    attr_reader references: Array[Reference]?
+    attr_reader outcome: String?
+    attr_reader decision_ref: String?
+    attr_reader topics: Array[Topic]?
+    attr_reader components: Array[String]?
+  end
+
+  class Agenda < Lutaml::Model::Serializable
+    attr_reader identifier: Array[StructuredIdentifier]?
+    attr_reader status: String?
+    attr_reader source_doc: String?
+    attr_reader items: Array[AgendaItem]?
+    def find_item: (String|Symbol label) -> AgendaItem?
+  end
+
+  class MinutesSection < Lutaml::Model::Serializable
+    attr_reader number: String?
+    attr_reader title: String?
+    attr_reader narrative: String?
+    attr_reader page_start: Integer?
+    attr_reader page_end: Integer?
+    attr_reader references: Array[Reference]?
+  end
+
+  class Minutes < Lutaml::Model::Serializable
+    attr_reader identifier: Array[StructuredIdentifier]?
+    attr_reader urn: String?
+    attr_reader language_code: String?
+    attr_reader script: String?
+    attr_reader source_doc: String?
+    attr_reader source_pages: String?
+    attr_reader sections: Array[MinutesSection]?
+    def find_section: (String|Integer number) -> MinutesSection?
+  end
+
+  class MeetingRelation < Lutaml::Model::Serializable
+    attr_reader source: StructuredIdentifier?
+    attr_reader destination: StructuredIdentifier?
+    attr_reader type: String?
+  end
+
+  class MeetingLocalization < Lutaml::Model::Serializable
+    attr_reader language_code: String?
+    attr_reader script: String?
+    attr_reader title: String?
+    attr_reader general_area: String?
+    attr_reader practical_info: String?
+  end
+
+  class Meeting < Lutaml::Model::Serializable
+    attr_reader identifier: Array[StructuredIdentifier]?
+    attr_reader urn: String?
+    attr_reader ordinal: Integer?
+    attr_reader series_ref: String?
+    attr_reader type: String?
+    attr_reader status: String?
+    attr_reader visibility: String?
+    attr_reader date_range: DateRange?
+    attr_reader recurrence: Recurrence?
+    attr_reader venues: Array[Venue]?
+    attr_reader general_area: String?
+    attr_reader city: String?
+    attr_reader country_code: String?
+    attr_reader committee: String?
+    attr_reader committee_group: String?
+    attr_reader officers: Array[Officer]?
+    attr_reader hosts: Array[HostRef]?
+    attr_reader source_urls: Array[SourceUrl]?
+    attr_reader landing_url: String?
+    attr_reader registration_url: String?
+    attr_reader agenda: Agenda?
+    attr_reader components: Array[MeetingComponent]?
+    attr_reader deadlines: Array[Deadline]?
+    attr_reader attendance: Array[Attendance]?
+    attr_reader minutes: Array[Minutes]?
+    attr_reader decisions: Array[Decision]?
+    attr_reader motions: Array[Motion]?
+    attr_reader votings: Array[Voting]?
+    attr_reader localizations: Array[MeetingLocalization]?
+    attr_reader relations: Array[MeetingRelation]?
+    def in_language: (String|Symbol code, ?fallback: bool) -> MeetingLocalization?
+    def primary_localization: -> MeetingLocalization?
+    def find_agenda_item: (String|Symbol label) -> AgendaItem?
+    def city_entry: -> untyped
+    def officers_with_role: (String|Symbol role) -> Array[Officer]
+    def chair: -> Person?
+    def secretary: -> Person?
+    def physical_venues: -> Array[Venue]
+    def virtual_venues: -> Array[Venue]
+    def hybrid?: -> bool
+    def virtual_only?: -> bool
+    def physical_only?: -> bool
+  end
+
+  class MeetingCollectionMetadata < Lutaml::Model::Serializable
+    attr_reader title: String?
+    attr_reader source: String?
+  end
+
+  class MeetingCollection < Lutaml::Model::Serializable
+    attr_reader metadata: MeetingCollectionMetadata?
+    attr_reader meetings: Array[Meeting]?
+    def find_by_urn: (String urn) -> Meeting?
+    def find_by_identifier: (prefix: String|Symbol, number: String|Symbol) -> Meeting?
+  end
+
+  # Services.
+  class SchemaValidator
+    ValidationError: class Edoxen::ValidationError
+    def initialize: (?String schema_path) -> void
+    def validate_file: (String file_path) -> Array[Edoxen::ValidationError]
+    def validate_content: (String content, String file_path) -> Array[Edoxen::ValidationError]
+  end
+
+  class LinkChecker
+    LinkError: untyped
+    def self.check: (String dir) -> Array[LinkError]
+    def initialize: (String dir) -> void
+    def check: -> Array[LinkError]
+  end
+
+  class Cli
+  end
 end

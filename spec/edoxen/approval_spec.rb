@@ -15,7 +15,7 @@ RSpec.describe Edoxen::Approval do
           a = described_class.from_yaml(YAML.dump(payload))
           expect(a.type).to eq(approval_type)
           expect(a.degree).to eq(approval_degree)
-          expect(a.date).to be_a(Edoxen::ResolutionDate)
+          expect(a.date).to be_a(Edoxen::DecisionDate)
           expect(a.message).to eq("vote #{approval_type} at #{approval_degree}")
 
           reload = described_class.from_yaml(a.to_yaml)

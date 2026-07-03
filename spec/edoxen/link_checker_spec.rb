@@ -17,26 +17,24 @@ RSpec.describe Edoxen::LinkChecker do
           number: '1'
         urn: urn:oiml:ciml:meeting:ciml-1
         type: plenary
-        resolution_refs:
-        - urn:oiml:ciml:resolution-collection:ciml-1-resolutions
       YAML
-      write(dir, "resolutions.yaml", <<~YAML)
+      write(dir, "decisions.yaml", <<~YAML)
         ---
         metadata:
           meeting_urn: urn:oiml:ciml:meeting:ciml-1
-        resolutions: []
+        decisions: []
       YAML
       expect(described_class.check(dir)).to be_empty
     end
   end
 
-  it "reports a dangling meeting_urn on a ResolutionCollection" do
+  it "reports a dangling meeting_urn on a DecisionCollection" do
     Dir.mktmpdir do |dir|
-      write(dir, "resolutions.yaml", <<~YAML)
+      write(dir, "decisions.yaml", <<~YAML)
         ---
         metadata:
           meeting_urn: urn:oiml:ciml:meeting:ciml-99
-        resolutions: []
+        decisions: []
       YAML
       errs = described_class.check(dir)
       expect(errs.size).to eq(1)
@@ -45,12 +43,12 @@ RSpec.describe Edoxen::LinkChecker do
     end
   end
 
-  it "is tolerant of files that are neither Meetings nor ResolutionCollections" do
+  it "is tolerant of files that are neither Meetings nor DecisionCollections" do
     Dir.mktmpdir do |dir|
       write(dir, "noise.yaml", <<~YAML)
         ---
         title: Just metadata
-        description: Not a meeting or resolution collection
+        description: Not a meeting or decision collection
       YAML
       expect(described_class.check(dir)).to be_empty
     end

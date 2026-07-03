@@ -33,10 +33,10 @@ RSpec.describe Edoxen::AgendaItem do
     expect(ai.references.first.ref).to eq("ISO 9735-11")
   end
 
-  it "carries an optional resolution_ref URN" do
+  it "carries an optional decision_ref URN" do
     ai = described_class.from_yaml(YAML.dump(
-                                     "label" => "2", "resolution_ref" => "urn:oiml:doc:ciml:resolution:2021-01"
+                                     "label" => "2", "decision_ref" => "urn:oiml:doc:ciml:decision:2021-01"
                                    ))
-    expect(ai.resolution_ref).to eq("urn:oiml:doc:ciml:resolution:2021-01")
+    expect(ai.decision_ref).to eq("urn:oiml:doc:ciml:decision:2021-01")
   end
 end

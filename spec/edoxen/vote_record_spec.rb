@@ -7,20 +7,20 @@ RSpec.describe Edoxen::VoteRecord do
     Edoxen::Enums::VOTE_TYPE.each do |vote|
       it "round-trips vote=#{vote}" do
         payload = {
-          "resolution_ref" => "urn:example:resolution:1",
+          "decision_ref" => "urn:example:decision:1",
           "person" => { "name" => "Jane" },
           "vote" => vote
         }
         v = described_class.from_yaml(YAML.dump(payload))
         expect(v.vote).to eq(vote)
-        expect(v.resolution_ref).to eq("urn:example:resolution:1")
+        expect(v.decision_ref).to eq("urn:example:decision:1")
       end
     end
   end
 
   it "carries an affiliation and notes" do
     payload = {
-      "resolution_ref" => "urn:example:resolution:1",
+      "decision_ref" => "urn:example:decision:1",
       "person" => { "name" => "Jane" },
       "affiliation" => "NB of France",
       "vote" => "affirmative",

@@ -43,7 +43,7 @@ RSpec.describe "city_entry lookups" do
     end
   end
 
-  describe Edoxen::ResolutionMetadata, "#city_entry" do
+  describe Edoxen::DecisionMetadata, "#city_entry" do
     it "returns an Unlocodes::Entry for a known UN/LOCODE" do
       md = described_class.new(city: "HKHKG")
       entry = md.city_entry

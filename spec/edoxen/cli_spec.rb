@@ -6,9 +6,9 @@ require "tmpdir"
 require "fileutils"
 
 # Integration spec for the CLI. The CLI is intentionally thin: it glues
-# SchemaValidator and ResolutionCollection.from_yaml. Tests run the real
-# CLI process (no Thor mocks, no doubles) against fixture files in tmp/ so
-# they don't mutate the repo.
+# SchemaValidator and DecisionCollection.from_yaml. Tests run the real
+# CLI process (no Thor mocks, no doubles) against fixture files in tmp/
+# so they don't mutate the repo.
 RSpec.describe Edoxen::Cli do
   let(:cli_bin) { File.expand_path("../../exe/edoxen", __dir__) }
   let(:fixtures_dir) { File.expand_path("../fixtures", __dir__) }
@@ -42,7 +42,7 @@ RSpec.describe Edoxen::Cli do
         ---
         metadata:
           title: T
-        resolutions:
+        decisions:
           - identifier:
               - prefix: X
                 number: "1"
@@ -66,10 +66,9 @@ RSpec.describe Edoxen::Cli do
       expect(File.exist?(out)).to be true
       expect(stdout).to include("NORMALIZED")
 
-      # Round-trip: the output must re-parse identically.
-      original = Edoxen::ResolutionCollection.from_yaml(File.read("#{fixtures_dir}/ciml-56-44.yaml"))
-      normalized = Edoxen::ResolutionCollection.from_yaml(File.read(out))
-      expect(normalized.resolutions.size).to eq(original.resolutions.size)
+      original = Edoxen::DecisionCollection.from_yaml(File.read("#{fixtures_dir}/ciml-56-44.yaml"))
+      normalized = Edoxen::DecisionCollection.from_yaml(File.read(out))
+      expect(normalized.decisions.size).to eq(original.decisions.size)
     end
 
     it "errors when neither --output nor --inplace is given" do

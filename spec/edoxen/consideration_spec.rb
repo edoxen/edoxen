@@ -13,7 +13,7 @@ RSpec.describe Edoxen::Consideration do
         }
         c = described_class.from_yaml(YAML.dump(payload))
         expect(c.type).to eq(verb)
-        expect(c.date_effective).to be_a(Edoxen::ResolutionDate)
+        expect(c.date_effective).to be_a(Edoxen::DecisionDate)
         expect(c.message).to eq("#{verb} the prior decision")
 
         reload = described_class.from_yaml(c.to_yaml)

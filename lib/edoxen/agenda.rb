@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # The business-order document of a Meeting. Distinct from the
-  # timetable (Schedule) — the Agenda orders topics; the Schedule
-  # orders time slots.
+  # The business-order document of a Meeting. Distinct from the timetable
+  # (MeetingComponent) — the Agenda orders topics; components order time
+  # slots. Opening/closing sessions are components, not agenda entries.
   #
   # An Agenda may be versioned independently of the Meeting: a draft
   # agenda circulates weeks before; a final agenda at meeting time;
@@ -14,11 +14,8 @@ module Edoxen
     attribute :status, :string, values: Enums::AGENDA_STATUS
     attribute :source_doc, :string
     attribute :items, AgendaItem, collection: true
-    attribute :opening_session, ScheduleItem
-    attribute :closing_session, ScheduleItem
+    attribute :extensions, MeetingExtension, collection: true
 
-    # Find an agenda item by its label (e.g., "5.2"). Returns nil
-    # when no item matches.
     def find_item(label)
       items&.find { |item| item.label == label.to_s }
     end

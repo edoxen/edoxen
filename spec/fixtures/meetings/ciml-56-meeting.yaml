@@ -1,5 +1,5 @@
 ---
-# CIML 56th meeting (OIML) — bilingual EN/FR, links to a ResolutionCollection.
+# CIML 56th meeting (OIML) — bilingual EN/FR, links to a DecisionCollection.
 # Mirrors the canonical shape in edoxen/edoxen-model README.
 identifier:
   - prefix: CIML
@@ -8,7 +8,7 @@ urn: urn:oiml:ciml:meeting:ciml-56
 ordinal: 56
 type: plenary
 status: completed
-year: 2021
+visibility: public
 
 date_range:
   start: 2021-10-18
@@ -19,29 +19,32 @@ general_area: Paris
 city: FRPAR
 country_code: FR
 
-chair:
-  name: Roman Schwartz
-  role: chair
-secretary:
-  name: Anthony Donnellan
-  role: secretary
-  affiliation: BIML
-  email: secretary@oiml.org
+officers:
+  - role: chair
+    person:
+      name: Roman Schwartz
+  - role: secretary
+    person:
+      name: Anthony Donnellan
+      affiliation: BIML
+      email: secretary@oiml.org
 
 venues:
-  - name: OIML Headquarters
+  - kind: physical
+    name: OIML Headquarters
     address: 11 Rue Turgot, 75009 Paris, France
-    link: https://www.oiml.org/about/contact
+    country_code: FR
+    unlocode: FRPAR
 
 source_urls:
-  - ref: https://www.oiml.org/en/structure/ciml/pdf/56-ciml-resolutions-english.pdf
+  - ref: https://www.oiml.org/en/structure/ciml/pdf/56-ciml-decisions-english.pdf
     format: pdf
     language_code: eng
-    kind: resolutions_pdf
-  - ref: https://www.oiml.org/fr/structure/ciml/pdf/56-ciml-resolutions-french.pdf
+    kind: decisions_pdf
+  - ref: https://www.oiml.org/fr/structure/ciml/pdf/56-ciml-decisions-french.pdf
     format: pdf
     language_code: fra
-    kind: resolutions_pdf
+    kind: decisions_pdf
 
 agenda:
   status: final
@@ -55,22 +58,12 @@ agenda:
       kind: numbered
       title: Approval of the agenda
       outcome: resolved
-      resolution_ref: urn:oiml:doc:ciml:resolution:2021-01
+      decision_ref: urn:oiml:doc:ciml:decision:2021-01
     - label: "3"
       kind: numbered
       title: Approval of the minutes of the 55th CIML Meeting
       outcome: resolved
-      resolution_ref: urn:oiml:doc:ciml:resolution:2021-02
-
-schedule:
-  - date: 2021-10-18
-    time: "09:00-10:30"
-    event: Opening session
-    room: Salle Turgot
-  - date: 2021-10-22
-    time: "16:00-17:00"
-    event: Closing session
-    room: Salle Turgot
+      decision_ref: urn:oiml:doc:ciml:decision:2021-02
 
 deadlines:
   - date: 2021-09-30
@@ -85,6 +78,3 @@ localizations:
     script: Latn
     title: 56e réunion du CIML
     general_area: Paris, France
-
-resolution_refs:
-  - urn:oiml:ciml:resolution-collection:ciml-56

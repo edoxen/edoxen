@@ -31,29 +31,26 @@ RSpec.describe Edoxen::Meeting do
     m = described_class.from_yaml(YAML.dump(
                                     "identifier" => [{ "prefix" => "CIML", "number" => "56" }],
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",
-                                    "ordinal" => 56, "type" => "plenary", "year" => 2021,
+                                    "ordinal" => 56, "type" => "plenary",
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
-                                    "venues" => [{ "name" => "OIML HQ", "lat" => 48.87, "lon" => 2.34 }],
-                                    "chair" => { "name" => "Roman Schwartz" },
+                                    "venues" => [{ "kind" => "physical", "name" => "OIML HQ", "lat" => 48.87, "lon" => 2.34 }],
+                                    "officers" => [{ "role" => "chair", "person" => { "name" => "Roman Schwartz" } }],
                                     "agenda" => {
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]
                                     },
-                                    "schedule" => [{ "date" => "2021-10-18", "event" => "Opening" }],
                                     "deadlines" => [{ "date" => "2021-09-30", "description" => "Reg" }],
-                                    "localizations" => [{ "language_code" => "eng", "title" => "56th" }],
-                                    "resolution_refs" => ["urn:oiml:ciml:resolution-collection:ciml-56"]
+                                    "localizations" => [{ "language_code" => "eng", "title" => "56th" }]
                                   ))
     expect(m.identifier.first).to be_a(Edoxen::StructuredIdentifier)
     expect(m.date_range).to be_a(Edoxen::DateRange)
     expect(m.date_range.start).to eq(Date.new(2021, 10, 18))
-    expect(m.venues.first).to be_a(Edoxen::Location)
-    expect(m.chair).to be_a(Edoxen::Person)
+    expect(m.venues.first).to be_a(Edoxen::Venue)
+    expect(m.officers.first).to be_a(Edoxen::Officer)
+    expect(m.chair.name).to eq("Roman Schwartz")
     expect(m.agenda).to be_a(Edoxen::Agenda)
-    expect(m.schedule.first).to be_a(Edoxen::ScheduleItem)
     expect(m.deadlines.first).to be_a(Edoxen::Deadline)
     expect(m.localizations.first).to be_a(Edoxen::MeetingLocalization)
-    expect(m.resolution_refs).to eq(["urn:oiml:ciml:resolution-collection:ciml-56"])
   end
 
   describe "real-world fixtures round-trip" do

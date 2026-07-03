@@ -27,7 +27,10 @@ SCHEMA_ENUM_BINDINGS = {
   "ComponentKind" => :COMPONENT_KIND,
   "OfficerRole" => :OFFICER_ROLE,
   "RecurrenceFreq" => :RECURRENCE_FREQ,
-  "UrlKind" => :URL_KIND
+  "UrlKind" => :URL_KIND,
+  "SourceUrlKind" => :SOURCE_URL_KIND,
+  "HostType" => :HOST_TYPE,
+  "VoteType" => :VOTE_TYPE
 }.freeze
 
 # Schema <-> Ruby enum sync. The schema in `schema/edoxen.yaml` MUST agree,

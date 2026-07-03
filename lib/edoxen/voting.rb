@@ -14,8 +14,8 @@ module Edoxen
     attribute :status, :string, values: Enums::VOTING_STATUS
     attribute :method, :string, values: Enums::VOTING_METHOD
     attribute :called_by, Person
-    attribute :called_at, :datetime
-    attribute :result_declared_at, :datetime
+    attribute :called_at, :date_time
+    attribute :result_declared_at, :date_time
     attribute :result, :string, values: Enums::VOTING_OUTCOME
     attribute :counts, VotingCounts
     attribute :casting_vote, VoteRecord

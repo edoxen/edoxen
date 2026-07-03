@@ -17,16 +17,33 @@ require "spec_helper"
 SCHEMA_MODEL_BINDINGS = {
   Edoxen::StructuredIdentifier => "StructuredIdentifier",
   Edoxen::MeetingIdentifier => "MeetingIdentifier",
-  Edoxen::ResolutionDate => "ResolutionDate",
+  Edoxen::DecisionDate => "DecisionDate",
   Edoxen::Action => "Action",
   Edoxen::Approval => "Approval",
   Edoxen::Consideration => "Consideration",
   Edoxen::Localization => "Localization",
   Edoxen::SourceUrl => "SourceUrl",
   Edoxen::Url => "Url",
-  Edoxen::ResolutionRelation => "ResolutionRelation",
-  Edoxen::Resolution => "Resolution",
-  Edoxen::ResolutionMetadata => "ResolutionMetadata"
+  Edoxen::DecisionRelation => "DecisionRelation",
+  Edoxen::Decision => "Decision",
+  Edoxen::DecisionMetadata => "DecisionMetadata",
+  Edoxen::Motion => "Motion",
+  Edoxen::VotingCounts => "VotingCounts",
+  Edoxen::Voting => "Voting",
+  Edoxen::TopicDocument => "TopicDocument",
+  Edoxen::TopicAsset => "TopicAsset",
+  Edoxen::Topic => "Topic",
+  Edoxen::ExtensionAttribute => "ExtensionAttribute",
+  Edoxen::MeetingExtension => "MeetingExtension",
+  Edoxen::Venue => "Venue",
+  Edoxen::PhysicalVenue => "PhysicalVenue",
+  Edoxen::VirtualVenue => "VirtualVenue",
+  Edoxen::RecurrenceByDay => "RecurrenceByDay",
+  Edoxen::Recurrence => "Recurrence",
+  Edoxen::Officer => "Officer",
+  Edoxen::ComponentLocalization => "ComponentLocalization",
+  Edoxen::MeetingComponent => "MeetingComponent",
+  Edoxen::MeetingSeries => "MeetingSeries"
 }.freeze
 
 RSpec.describe "Schema <-> Ruby model shape sync" do

@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Edoxen::ResolutionDate do
+RSpec.describe Edoxen::DecisionDate do
   let(:fixture_yaml) do
     <<~YAML
       ---
@@ -11,8 +11,8 @@ RSpec.describe Edoxen::ResolutionDate do
     YAML
   end
 
-  describe "enum validation (LUTAML-canonical ResolutionDateType)" do
-    Edoxen::Enums::RESOLUTION_DATE_TYPE.each do |kind|
+  describe "enum validation (LUTAML-canonical DecisionDateType)" do
+    Edoxen::Enums::DECISION_DATE_TYPE.each do |kind|
       it "accepts type=#{kind}" do
         rd = described_class.from_yaml(YAML.dump(
                                          "date" => "2024-01-15", "type" => kind
@@ -22,8 +22,6 @@ RSpec.describe Edoxen::ResolutionDate do
     end
 
     it "preserves non-enum type strings (lutaml-model is permissive at write time)" do
-      # The schema is the strict source for enum enforcement — model is
-      # permissive to keep `from_yaml` robust against non-standard sources.
       rd = described_class.from_yaml(YAML.dump(
                                        "date" => "2024-01-15", "type" => "funky-new-date-type"
                                      ))

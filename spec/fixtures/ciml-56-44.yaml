@@ -19,11 +19,12 @@ metadata:
     - ref: https://www.oiml.org/fr/resolutions/ciml56-fr.pdf
       format: pdf
       language_code: fra
-resolutions:
+decisions:
   - identifier:
     - prefix: CIML
       number: "2025-44"
-    type: decision
+    kind: resolution
+    status: decided
     doi: 10.63493/resolutions/ciml202544
     urn: urn:oiml:doc:ciml:resolution:2025-44
     agenda_item: "16.2"

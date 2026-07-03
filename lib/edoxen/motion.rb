@@ -18,7 +18,7 @@ module Edoxen
     attribute :mover, Person
     attribute :seconders, Person, collection: true
     attribute :status, :string, values: Enums::MOTION_STATUS
-    attribute :introduced_at, :datetime
+    attribute :introduced_at, :date_time
     attribute :proposed_decision, :string
     attribute :resulting_decision, :string
     attribute :votings, :string, collection: true

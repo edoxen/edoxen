@@ -3,9 +3,8 @@
 require "spec_helper"
 
 # Schema <-> Ruby enum sync for the Meeting side. Parallel to
-# schema_enum_sync_spec.rb for the Resolution side. Asserts every
-# $defs/<EnumName>.enum array in schema/meeting.yaml equals the
-# matching Edoxen::Enums::* frozen array.
+# schema_enum_sync_spec.rb. Asserts every $defs/<EnumName>.enum array
+# in schema/meeting.yaml equals the matching Edoxen::Enums::* frozen array.
 MEETING_SCHEMA_ENUM_BINDINGS = {
   "MeetingType" => :MEETING_TYPE,
   "MeetingStatus" => :MEETING_STATUS,

@@ -6,7 +6,7 @@ module Edoxen
   class Approval < Lutaml::Model::Serializable
     attribute :type, :string, values: Enums::APPROVAL_TYPE
     attribute :degree, :string, values: Enums::APPROVAL_DEGREE
-    attribute :date, ResolutionDate
+    attribute :date, DecisionDate
     attribute :message, :string
   end
 end

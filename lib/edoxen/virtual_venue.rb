@@ -1,22 +1,15 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # VirtualVenue — a virtual place where a Meeting happens.
-  # Carries a URI (tel:, https:, sip:, xmpp:, rtsp:), the iCalendar
-  # FEATURE set (audio/video/chat/phone/screen/feed), and access
-  # details (passcode, meeting_id, dial-in numbers, waiting room,
-  # registration requirement).
+  # VirtualVenue — type marker for a Venue with kind == "virtual".
+  #
+  # The wire format is flat on Venue (all fields live there). This
+  # subclass exists for type-checking and to host virtual-only helpers
+  # so callers can ask `venue.is_a?(VirtualVenue)` and validators
+  # can dispatch by type.
   class VirtualVenue < Venue
-    attribute :uri, :string
-    attribute :features, :string, collection: true, values: Enums::VIRTUAL_FEATURE
-    attribute :passcode, :string
-    attribute :meeting_id, :string
-    attribute :dial_in_numbers, :string, collection: true
-    attribute :waiting_room, :boolean
-    attribute :registration_required, :boolean
-
-    def features_list
-      features&.join(", ") || ""
+    def initialize(attributes = {})
+      super(attributes.merge(kind: "virtual"))
     end
   end
 end

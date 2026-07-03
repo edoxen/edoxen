@@ -13,8 +13,8 @@ module Edoxen
     attribute :kind, :string, values: Enums::COMPONENT_KIND
     attribute :title, :string
     attribute :description, :string
-    attribute :starts_at, :datetime
-    attribute :ends_at, :datetime
+    attribute :starts_at, :date_time
+    attribute :ends_at, :date_time
     attribute :venue_refs, :string, collection: true
     attribute :chair, Person
     attribute :agenda_ref, :string

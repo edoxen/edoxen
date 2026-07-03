@@ -9,11 +9,12 @@ metadata:
   - ref: https://www.bipm.org/en/committees/ci/cipm/111-_2-2022
     format: html
     language_code: eng
-resolutions:
+decisions:
   - identifier:
     - prefix: CIPM
       number: "111-1"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - Meetings
     dates:
@@ -34,7 +35,8 @@ resolutions:
   - identifier:
     - prefix: CIPM
       number: "111-2"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - SI
       - Finance
@@ -68,7 +70,8 @@ resolutions:
   - identifier:
     - prefix: CIPM
       number: "111-12"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - General
     dates:

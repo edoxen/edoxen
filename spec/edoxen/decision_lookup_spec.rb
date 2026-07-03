@@ -2,8 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe Edoxen::Resolution, "#in_language" do
-  let(:resolution) do
+RSpec.describe Edoxen::Decision, "#in_language" do
+  let(:decision) do
     described_class.new(
       identifier: [Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")],
       localizations: [
@@ -15,28 +15,27 @@ RSpec.describe Edoxen::Resolution, "#in_language" do
   end
 
   it "returns the localization whose language_code matches" do
-    expect(resolution.in_language("fra").title).to eq("Titre français")
-    expect(resolution.in_language("deu").title).to eq("Deutscher Titel")
-    expect(resolution.in_language("eng").title).to eq("English Title")
+    expect(decision.in_language("fra").title).to eq("Titre français")
+    expect(decision.in_language("deu").title).to eq("Deutscher Titel")
+    expect(decision.in_language("eng").title).to eq("English Title")
   end
 
   it "accepts symbols as well as strings" do
-    expect(resolution.in_language(:fra).title).to eq("Titre français")
+    expect(decision.in_language(:fra).title).to eq("Titre français")
   end
 
   it "returns nil when the language is absent and fallback is disabled" do
-    expect(resolution.in_language("rus")).to be_nil
+    expect(decision.in_language("rus")).to be_nil
   end
 
   it "falls back to the first localization when fallback: true" do
-    # First declared localization is 'fra' in this fixture.
-    expect(resolution.in_language("rus", fallback: true).language_code).to eq("fra")
+    expect(decision.in_language("rus", fallback: true).language_code).to eq("fra")
   end
 end
 
-RSpec.describe Edoxen::Resolution, "#primary_localization" do
+RSpec.describe Edoxen::Decision, "#primary_localization" do
   it "prefers English when present" do
-    r = Edoxen::Resolution.new(
+    r = Edoxen::Decision.new(
       identifier: [Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")],
       localizations: [
         Edoxen::Localization.new(language_code: "fra", title: "Français"),
@@ -47,7 +46,7 @@ RSpec.describe Edoxen::Resolution, "#primary_localization" do
   end
 
   it "falls back to the first localization when English is absent" do
-    r = Edoxen::Resolution.new(
+    r = Edoxen::Decision.new(
       identifier: [Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")],
       localizations: [
         Edoxen::Localization.new(language_code: "fra", title: "Français"),
@@ -58,17 +57,17 @@ RSpec.describe Edoxen::Resolution, "#primary_localization" do
   end
 
   it "returns nil when no localizations are declared" do
-    r = Edoxen::Resolution.new
+    r = Edoxen::Decision.new
     expect(r.primary_localization).to be_nil
   end
 
   it "works against the multilingual fixture" do
-    collection = Edoxen::ResolutionCollection.from_yaml(
+    collection = Edoxen::DecisionCollection.from_yaml(
       File.read(File.expand_path("../fixtures/ciml-56-44.yaml", __dir__))
     )
-    resolution = collection.resolutions.first
-    expect(resolution.in_language("fra").title).to include("Décision")
-    expect(resolution.in_language("eng").title).to include("Decision")
-    expect(resolution.primary_localization.language_code).to eq("eng")
+    decision = collection.decisions.first
+    expect(decision.in_language("fra").title).to include("Décision")
+    expect(decision.in_language("eng").title).to include("Decision")
+    expect(decision.primary_localization.language_code).to eq("eng")
   end
 end

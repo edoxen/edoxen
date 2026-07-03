@@ -9,11 +9,12 @@ metadata:
   - ref: https://www.iso.org/committee/45318/x/category.html
     format: html
     language_code: eng
-resolutions:
+decisions:
   - identifier:
     - prefix: ISO
       number: "2019-01"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - Resolutions related to JWG 1
     dates:
@@ -61,7 +62,8 @@ resolutions:
   - identifier:
     - prefix: ISO
       number: "2019-20"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - General Resolutions
     dates:
@@ -89,7 +91,8 @@ resolutions:
   - identifier:
     - prefix: ISO
       number: "2019-22"
-    type: decision
+    kind: resolution
+    status: decided
     categories:
       - General Resolutions
     dates:

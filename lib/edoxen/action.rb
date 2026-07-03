@@ -5,7 +5,7 @@ module Edoxen
   # Localization to express the multilingual part of an action.
   class Action < Lutaml::Model::Serializable
     attribute :type, :string, values: Enums::ACTION_TYPE
-    attribute :date_effective, ResolutionDate
+    attribute :date_effective, DecisionDate
     attribute :message, :string
   end
 end

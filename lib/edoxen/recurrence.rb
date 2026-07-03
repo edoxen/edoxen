@@ -11,7 +11,7 @@ module Edoxen
     attribute :freq, :string, values: Enums::RECURRENCE_FREQ
     attribute :interval, :integer, default: 1
     attribute :count, :integer
-    attribute :until, :datetime
+    attribute :until, :date_time
     attribute :by_day, RecurrenceByDay, collection: true
     attribute :by_month_day, :integer, collection: true
     attribute :by_month, :integer, collection: true

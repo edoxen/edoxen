@@ -7,24 +7,30 @@ image:https://img.shields.io/gem/v/edoxen.svg[RubyGems Version]
 
 == Purpose
 
-Edoxen is a Ruby library for the canonical Edoxen information model of
-formal proceedings — meetings, agendas, minutes, attendance, votes,
-and the resolutions adopted by standards bodies and governance
-organisations. It is built on top of the
-https://github.com/lutaml/lutaml[ lutaml-model] serialization framework.
+Edoxen is a Ruby library for the canonical Edoxen information model —
+a **generic meeting, agenda, motion, voting, and decision model** that
+covers standards bodies (ISO, IEC, ITU, BIPM, OIML, ILO), parliamentary
+bodies (UK Hansard, HK LegCo, US Congress), technical community meetings
+(IETF, W3C, Apache), academic conferences (Crossref-registered),
+corporate boards, and generic web/virtual meetings.
 
-The information model is defined in
-https://github.com/edoxen/edoxen-model/tree/main/models[ LutaML UML
-files] (one `.lutaml` per concept). This gem mirrors that model exactly —
-attribute declarations, enum values, and field shapes — so that anything
-you can express in LutaML you can also construct, serialize, and validate
-in Ruby.
+Built on top of the https://github.com/lutaml/lutaml[lutaml-model]
+serialization framework. The information model is defined in
+https://github.com/edoxen/edoxen-model/tree/main/models[LutaML UML files]
+(one `.lutaml` per concept); this gem mirrors that model exactly —
+attribute declarations, enum values, and field shapes — so anything
+expressible in LutaML is constructable, serializable, and validatable in
+Ruby.
 
-The intended users are standards organizations and governance bodies that
-need to publish structured records of formal proceedings — the full
-lifecycle from draft agenda through adopted resolution, in any ISO 639-3
-language. Real-world samples (ISO/TC 154, CIPM, OIML CIML) ship in
-`spec/fixtures/`.
+=== Generic core + profile extensions
+
+The core schema is the **intersection** of all domains. Domain-specific
+concepts (Bill, Witness, Petition, Address, Quorum Bell, etc.) live in
+**profile extensions** via the `MeetingExtension` slot every core entity
+carries — the ISO 8601-2 §15 profile mechanism. Adopters register a
+profile namespace (`legco`, `us-congress`, `ietf`, `oiml`) and define
+extension kinds within it; consumers ignore profiles they don't
+understand.
 
 == Installation
 
@@ -41,103 +47,199 @@ Then `bundle install`, or `gem install edoxen` standalone.
 ----
 require 'edoxen'
 
-yaml = File.read('resolutions.yaml')
-collection = Edoxen::ResolutionCollection.from_yaml(yaml)
+yaml = File.read('decisions.yaml')
+collection = Edoxen::DecisionCollection.from_yaml(yaml)
 
-collection.resolutions.each do |resolution|
-  # identifier is StructuredIdentifier[1..*] — a Resolution can carry
-  # its TC number, SC number, and any cross-cutting reference number.
-  id = resolution.identifier.first
+collection.decisions.each do |decision|
+  id = decision.identifier.first
   puts "#{id.prefix}/#{id.number}"
 
-  # Canonical rendering — English when available, else the first
-  # declared localization. See "Lookup accessors" below.
-  loc = resolution.primary_localization
+  loc = decision.primary_localization
   puts "  [#{loc.language_code}/#{loc.script}] #{loc.title}"
 
   loc.actions.each do |action|
     puts "    - #{action.type}: #{action.message}"
   end
-
-  # Or look up a specific language explicitly:
-  fra = resolution.in_language("fra")
-  puts "  FR: #{fra.title}" if fra
 end
+
+# Or look up a specific language explicitly:
+fra = decision.in_language("fra")
+puts "  FR: #{fra.title}" if fra
 
 # Round-trip back to YAML
 puts collection.to_yaml
 ----
 
+== The five faces of a meeting
+
+A meeting has **five concerns**, each modelled as a distinct first-class
+entity rather than a column on a flat table:
+
+[cols="1,3,2"]
+|===
+
+| Concern | What it captures | Top-level
+
+| *Decisions*
+| Formal outcomes adopted by the meeting: resolution, order, ruling,
+  determination, recommendation, statement, finding, opinion.
+| `DecisionCollection`
+
+| *Motions* + *Votings*
+| The procedural record — who moved what, how the question was put, how
+  members voted, what the chair declared.
+| `Meeting.motions[]` / `Meeting.votings[]`
+
+| *Topics*
+| The subjects of discussion. A topic carries documents, assets,
+  references, and URN links to the motions and decisions it produced.
+| `AgendaItem.topics[]`
+
+| *Meetings*
+| The event itself: identifier, dates, polymorphic venues, officers,
+  agenda, components, attendance, minutes.
+| `MeetingCollection`
+
+| *Series*
+| The recurring parent of meetings — annual plenaries, monthly board
+  meetings, IETF meeting series, etc.
+| (top-level standalone)
+
+|===
+
+A Meeting carries its decisions, motions, and votings directly. The
+DecisionCollection is the standalone form for publishing decisions
+without meeting-level detail.
+
 == Data model
 
 The full model is in `lib/edoxen/*.rb` (Ruby) and `schema/edoxen.yaml`
-(JSON-Schema). Both are kept in lockstep by
-`spec/edoxen/schema_enum_sync_spec.rb`.
++ `schema/meeting.yaml` (JSON-Schema). Both are kept in lockstep by
+runtime sync specs.
 
 [source]
 ----
-ResolutionCollection
-├── metadata:  ResolutionMetadata
-│                ├── title / title_localized[]
-│                ├── date
-│                ├── source
-│                ├── source_urls: SourceUrl[]
-│                ├── city, country_code
-└── resolutions: Resolution[]
-                   ├── identifier: StructuredIdentifier[1..*]
-                   ├── type: ResolutionType (resolution | recommendation | decision | declaration)
-                   ├── doi, urn, agenda_item
-                   ├── dates: ResolutionDate[]
-                   ├── categories: String[]
-                   ├── meeting: MeetingIdentifier
-                   ├── relations: ResolutionRelation[]
-                   ├── urls: Url[]
-                   └── localizations: Localization[1..*]
-                                      ├── language_code (ISO 639-3)
-                                      ├── script       (ISO 15924)
-                                      ├── title, subject, message, considering
-                                      ├── considerations: Consideration[]
-                                      ├── approvals: Approval[]
-                                      └── actions: Action[]
+DecisionCollection                        MeetingCollection
+├── metadata: DecisionMetadata            ├── metadata: MeetingCollectionMetadata
+│   ├── title / title_localized[]         └── meetings: Meeting[]
+│   ├── date, source                          ├── identifier, urn, ordinal
+│   ├── source_urls[]                         ├── series_ref (→ MeetingSeries)
+│   ├── city (UN/LOCODE), country_code        ├── type, status, visibility
+│   └── meeting_urn (back-ref to Meeting)     ├── date_range, recurrence
+└── decisions: Decision[]                     ├── venues: Venue[]  (polymorphic)
+    ├── identifier: StructuredIdentifier[1..*]|    ├── kind: physical | virtual
+    ├── kind (DecisionKind)                    |    ├── name, label, capacity
+    ├── status (DecisionStatus)                |    ├── (physical) unlocode, iata_code,
+    ├── doi, urn, agenda_item                  |    │             address, country_code, lat, lon
+    ├── dates: DecisionDate[]                  |    └── (virtual)  uri, features, passcode,
+    ├── categories, relations, urls            ├── officers: Officer[] (role + person + term)
+    ├── brought_by_motions[]                   ├── hosts: HostRef[] (typed)
+    ├── about_topics[]                         ├── source_urls[], landing_url, registration_url
+    ├── made_in_component                      ├── agenda: Agenda (items, status)
+    └── localizations: Localization[1..*]      ├── components: MeetingComponent[]
+         ├── language_code, script             │    (track, session, debate, breakout, keynote,
+         ├── title, subject, message           │     opening, closing, break, reception, ...)
+         ├── considerations: Consideration[]   ├── deadlines: Deadline[]
+         ├── approvals: Approval[]             ├── attendance: Attendance[]
+         └── actions: Action[]                 │    (status, role, response, proxy_for)
+                                              ├── minutes: Minutes[]
+Motion                                        ├── motions: Motion[]
+├── identifier, urn                           │    (status: introduced → seconded → debating
+├── text, mover, seconders[]                  │     → question_put → voting → carried/negatived)
+├── status (MotionStatus)                     ├── votings: Voting[]
+├── introduced_at                             │    (status: called → in_progress → decided;
+├── proposed_decision, resulting_decision     │     voting_method, counts, casting_vote,
+└── votings[]                                 │     vote_records[])
+                                              ├── decisions: Decision[]  (inline)
+Voting                                        ├── localizations: MeetingLocalization[]
+├── status (VotingStatus)                     ├── relations: MeetingRelation[]
+├── voting_method (VotingMethod)              └── extensions: MeetingExtension[]
+├── result (VotingOutcome)
+├── counts: VotingCounts {ayes, noes,
+│                        abstentions, absent}
+├── casting_vote: VoteRecord
+└── vote_records: VoteRecord[]
+
+MeetingExtension (profile mechanism)
+├── profile (e.g. "legco", "ietf", "us-congress")
+├── kind
+├── ref (URN to external profile record)
+└── attributes: ExtensionAttribute[] {key, value}
 ----
 
-Every translatable field on a Resolution is wrapped inside one of its
-`localizations[]` entries. Language-agnostic admin fields
-(`identifier`, `doi`, `urn`, `agenda_item`, `dates`, `categories`,
-`meeting`, `relations`, `urls`) live on the parent `Resolution`.
+Every core entity has an `extensions: MeetingExtension[0..*]` slot.
+Adopters extend the generic core without modifying it.
+
+=== Polymorphic Venue
+
+A `Venue` is one flat class on the wire; the `kind` field discriminates
+physical vs virtual and validators enforce that fields match `kind`.
+
+* Physical: UN/LOCODE + IATA + address + geo-coordinates.
+* Virtual: URI + iCalendar-style features + access details.
+
+A meeting can have multiple venues of either kind (hybrid meetings,
+multi-room conferences bridged by video, etc.). UN/LOCODE and IATA codes
+are validated against the canonical `unlocodes` and `iata` gems by
+`Edoxen::VenueValidator`.
 
 === Lookup accessors
 
 Direct iteration over `localizations[]` is discouraged — the
 language-preference policy lives behind two accessors:
 
-* `Resolution#in_language(code, fallback: false)` — exact match by
+* `Decision#in_language(code, fallback: false)` — exact match by
   ISO 639-3 code, or `nil` (or the first declared localization when
   `fallback: true`).
-* `Resolution#primary_localization` — English when available, else
-  the first declared localization. Mirrors the glossarist
-  LocalizedConcept "preferred language" notion.
+* `Decision#primary_localization` — English when available, else
+  the first declared localization.
+
+The same pair exists on `Meeting` (`MeetingLocalization`).
 
 [source,ruby]
 ----
-resolution.in_language("fra")           # => Localization or nil
-resolution.in_language("deu", fallback: true)
-resolution.primary_localization         # English-or-first
+decision.in_language("fra")           # => Localization or nil
+decision.in_language("deu", fallback: true)
+decision.primary_localization         # English-or-first
+
+meeting.chair                          # => Person (via officers + role)
+meeting.secretary                      # => Person
+meeting.officers_with_role(:treasurer) # => [Officer]
+meeting.hybrid?                        # true if both physical + virtual venues
+meeting.physical_only? / meeting.virtual_only?
+
+validator = Edoxen::VenueValidator.new(venue)
+validator.valid?                       # checks UN/LOCODE + IATA against the gems
+validator.validate(auto_populate: true) # also fills city/country_code from UN/LOCODE
 ----
 
-== Multilingual resolution sets
+== Multilingual by default
+
+Per-language content lives inside `localizations[]` siblings — one
+entry per language. Admin fields (`identifier`, `doi`, `urn`, `dates`,
+`meeting`) are declared once on the parent; translatable content
+(`title`, `subject`, `considerations`, `actions`, `approvals`) lives
+inside each `Localization`.
+
+This pattern — borrowed from the
+https://github.com/glossarist/concept-model[glossarist] project — lets
+translators work on each language in isolation while comparing them
+side-by-side in the same file. Drift shows up on git diff, not on a
+translator's spreadsheet.
 
 [source,yaml]
 ----
-resolutions:
+decisions:
   - identifier:
       - prefix: CIML
         number: "2025-44"
-    doi: 10.63493/resolutions/ciml202544
+    kind: resolution
+    status: decided
+    doi: 10.63493/decisions/ciml202544
     agenda_item: "16.2"
     dates:
       - date: 2025-10-13
-        type: discussed
+        type: adoption
     localizations:
       - language_code: eng
         script: Latn
@@ -167,24 +269,21 @@ resolutions:
 
 == Command-line interface
 
-The `edoxen` executable exposes four commands — two for Resolution
-collections, two for Meeting/Agenda documents.
+The `edoxen` executable exposes six commands.
 
-=== `validate` — JSON-Schema validation + model parsing for Resolutions
+=== `validate` — schema + model validation for Decisions
 
 [source,sh]
 ----
 $ edoxen validate "spec/fixtures/*.yaml"
 ----
 
-Runs both `Edoxen::SchemaValidator` and `Edoxen::ResolutionCollection.from_yaml`
-against each matching file. The schema catches `additionalProperties`,
+Runs both `Edoxen::SchemaValidator` and `Edoxen::DecisionCollection.from_yaml`
+against each matching file. Schema catches `additionalProperties`,
 `required`, enum, and pattern violations; the model catches structural
 problems the schema can't express.
 
-Exit code is non-zero if any file fails.
-
-=== `normalize` — round-trip Resolution YAML through the model
+=== `normalize` — round-trip Decision YAML through the model
 
 [source,sh]
 ----
@@ -192,92 +291,61 @@ $ edoxen normalize "spec/fixtures/*.yaml" --output clean/
 $ edoxen normalize legacy.yaml --inplace
 ----
 
-Loads each YAML file, parses it through the Ruby model, and writes the
-result back. Either `--output DIR` or `--inplace` is required (mutually
-exclusive).
+Either `--output DIR` or `--inplace` is required (mutually exclusive).
 
-=== `validate-meetings` — validate Meeting/Agenda YAML
+=== `validate-meetings` / `normalize-meetings`
+
+Same shape, for Meeting/Agenda YAML against `schema/meeting.yaml`.
 
 [source,sh]
 ----
 $ edoxen validate-meetings "spec/fixtures/meetings/*.yaml"
-----
-
-Validates against `schema/meeting.yaml` and parses through
-`Edoxen::Meeting` (single-Meeting files) or `Edoxen::MeetingCollection`
-(wrappers). The schema's root is `oneOf` — both shapes are accepted.
-
-=== `normalize-meetings` — round-trip Meeting YAML through the model
-
-[source,sh]
-----
 $ edoxen normalize-meetings "spec/fixtures/meetings/*.yaml" --output clean/
 ----
 
-Same shape as `normalize`, but for Meeting/Agenda documents.
+The schema's root is `oneOf` — both single-Meeting and MeetingCollection
+shapes are accepted.
 
-== Meeting & Agenda model
+=== `unlocode CODE` / `iata CODE` — registry lookup
 
-The Meeting model represents the *event* that produces Resolutions,
-plus the agenda document that orders its business. Mirrors
-`edoxen-model/models/meeting*.lutaml`.
-
-[source]
+[source,sh]
 ----
-MeetingCollection
-├── metadata:  MeetingCollectionMetadata
-└── meetings: Meeting[]
-              ├── identifier: StructuredIdentifier[1..*]
-              ├── urn, ordinal, type (MeetingType), status (MeetingStatus), year
-              ├── date_range: DateRange {start, end}
-              ├── committee, committee_group
-              ├── venues: Location[]   (multi-venue supported)
-              ├── general_area, city (UN/LOCODE, e.g. FRPAR), country_code (ISO 3166-1), virtual
-              ├── chair, secretary: Person
-              ├── host, hosts: HostRef[]   (typed: national_body/liaison/associate/organizer)
-              ├── source_urls: SourceUrl[]   (with `kind` discriminator)
-              ├── landing_url, registration_url
-              ├── agenda: Agenda
-              │            ├── identifier, status (AgendaStatus), source_doc
-              │            ├── items: AgendaItem[]
-              │            │            ├── label, kind (numbered/unnumbered/header/opening/closing)
-              │            │            ├── title, description
-              │            │            ├── references: Reference[]
-              │            │            ├── outcome (discussed/resolved/deferred/adopted/withdrawn)
-              │            │            └── resolution_ref (URN link to a Resolution)
-              │            └── opening_session, closing_session: ScheduleItem
-              ├── schedule: ScheduleItem[]   (the time-bound timetable)
-              ├── deadlines: Deadline[]
-              ├── localizations: MeetingLocalization[]   (per-language content)
-              ├── relations: MeetingRelation[]   (continues_from, joint_with, ...)
-              └── resolution_refs: String[]   (URN links to ResolutionCollections)
+$ edoxen unlocode FRPAR
+UN/LOCODE:  FRPAR
+  Name:      Paris
+  Country:   FR
+  ...
+
+$ edoxen iata JFK
+IATA:       JFK
+  Name:      John F. Kennedy International Airport
+  Country:   US
 ----
 
-=== Linking Meetings to ResolutionCollections
+== Profile mechanism (ISO 8601-2 §15)
 
-Meetings and ResolutionCollections are separate documents joined by URN:
+Every core entity has an `extensions: MeetingExtension[0..*]` slot.
+Adopters register a profile namespace and define extension kinds within
+it.
 
-- `Meeting.resolution_refs: [urn:...]`
-- `ResolutionCollection.metadata.meeting_urn: urn:...`
-
-The join is by URN because the two have different lifetimes — agendas
-exist weeks before a meeting, resolutions only after adoption.
-
-=== Lookup accessors (parallel to the Resolution side)
-
-[source,ruby]
+[source,yaml]
 ----
-meeting = Edoxen::Meeting.from_yaml(File.read('meeting.yaml'))
-
-meeting.in_language("fra")                  # => MeetingLocalization or nil
-meeting.in_language("deu", fallback: true)  # falls back to first
-meeting.primary_localization                # English-or-first
-meeting.find_agenda_item("5.2")             # AgendaItem by label
-
-collection = Edoxen::MeetingCollection.from_yaml(...)
-collection.find_by_urn("urn:oiml:ciml:meeting:ciml-56")
-collection.find_by_identifier(prefix: "CIML", number: "56")
+extensions:
+  - profile: legco
+    kind: vote_block
+    ref: urn:legco:vote-block:2024-01-15:item-5
+  - profile: ietf
+    kind: wg_meeting_meta
+    attributes:
+      - key: wg_name
+        value: quic
+      - key: draft_name
+        value: draft-ietf-quic-v2
 ----
+
+Consumers ignore profile extensions they don't understand. See
+https://github.com/edoxen/edoxen-model/tree/main/references/profiles[the
+HK LegCo profile example] for a real-world reference.
 
 == Architecture
 
@@ -288,39 +356,82 @@ collection.find_by_identifier(prefix: "CIML", number: "56")
 * Each model lives in its own file under `lib/edoxen/`. Models declare
   `attribute` only — `lutaml-model` auto-emits an identity map (wire
   name = snake_case attribute name) when no explicit `key_value` block
-  is present. Add a `key_value do; map "wire", to: :attr; end` block
-  only when the wire name differs from the attribute name.
+  is present.
 * `lib/edoxen/enums.rb` is the single source of truth for every enum
-  value used by the gem. Both the Ruby model (`attribute :type, :string,
-  values: Enums::ACTION_TYPE`) and the schemas reference the
-  same constants.
+  value used by the gem. Both the Ruby model (`attribute :kind, :string,
+  values: Enums::DECISION_KIND`) and the schemas reference the same
+  constants.
 * `lib/edoxen/error.rb` defines the unified `Edoxen::ValidationError`
   — produced by both `SchemaValidator` (with `source: :schema` or
   `:syntax`) and by model parse rescues in the CLI (with `source:
-  :model`). Carries `file`, `line`, `column`, `pointer`,
-  `message_text`, and `source`.
+  :model`).
 * `lib/edoxen/schema_validator.rb` is intentionally small: two
   validate methods, a `LineMap` module for line-accurate error
   reporting (longest-prefix match — no path-shape hardcoding), and
   date coercion so `json_schemer` can validate `format: date` against
   YAML-loaded `Date` instances.
-* `lib/edoxen/cli.rb` exposes four Thor commands (`validate`,
-  `normalize`, `validate-meetings`, `normalize-meetings`) that
-  delegate their shared scaffolding
-  (expand/sort/empty/header/loop/tally/summary/exit) to the deep
+* `lib/edoxen/cli.rb` exposes six Thor commands (`validate`,
+  `normalize`, `validate-meetings`, `normalize-meetings`, `unlocode`,
+  `iata`) that delegate their shared scaffolding to the deep
   `Edoxen::Cli::Batch` module.
+* `lib/edoxen/venue_validator.rb` validates polymorphic `Venue`
+  instances using the `unlocodes` and `iata` gems; optionally
+  auto-populates `city` and `country_code` from the UN/LOCODE registry.
 
 === Schema ↔ Ruby invariants
 
 Two pairs of runtime specs guard each side of the schema ↔ Ruby
 boundary:
 
-* Resolution side: `schema_enum_sync_spec.rb` +
+* Decision side: `schema_enum_sync_spec.rb` +
   `schema_model_sync_spec.rb` against `schema/edoxen.yaml`.
 * Meeting side: `schema_meeting_enum_sync_spec.rb` +
   `schema_meeting_model_sync_spec.rb` against `schema/meeting.yaml`.
 
 Drift fails CI immediately, not at fixture-validation time.
+
+== Migrating from v0.x (Resolution → Decision)
+
+v2.0 is a breaking release. The migration is mechanical:
+
+[cols="1,3"]
+|===
+
+| `Resolution` class
+| `Decision` class with `kind: resolution`
+
+| `ResolutionType` enum (4 values)
+| `DecisionKind` enum (9 values: resolution, order, ruling, determination,
+  recommendation, statement, finding, opinion, other)
+
+| `ResolutionCollection`
+| `DecisionCollection`
+
+| `Meeting.virtual: Boolean`
+| `Meeting.venues: Venue[]` (polymorphic)
+
+| `Meeting.chair` / `Meeting.secretary`
+| `Meeting.officers: Officer[]` (role discriminates)
+
+| `Meeting.schedule[]` (ScheduleItem)
+| `Meeting.components: MeetingComponent[]` (flat)
+
+| `Resolution` alone
+| `Decision` + `Motion` + `Voting` (procedural core)
+
+| (none)
+| `Topic` + `TopicDocument` + `TopicAsset`
+
+| (none)
+| `MeetingSeries`, `Recurrence` (ISO 8601-2 §13)
+
+| (none)
+| `MeetingExtension` (profile mechanism, ISO 8601-2 §15)
+
+|===
+
+See the https://github.com/edoxen/edoxen.github.io/blob/main/docs/migration-v2.md[migration
+guide] for full details.
 
 == Contributing
 

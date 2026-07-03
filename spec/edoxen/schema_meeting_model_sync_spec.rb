@@ -9,11 +9,8 @@ require "spec_helper"
 # flags.
 MEETING_SCHEMA_MODEL_BINDINGS = {
   Edoxen::DateRange => "DateRange",
-  Edoxen::Location => "Location",
   Edoxen::Person => "Person",
   Edoxen::HostRef => "HostRef",
-  Edoxen::ScheduleItemLocalization => "ScheduleItemLocalization",
-  Edoxen::ScheduleItem => "ScheduleItem",
   Edoxen::Deadline => "Deadline",
   Edoxen::Reference => "Reference",
   Edoxen::AgendaItem => "AgendaItem",

@@ -184,6 +184,19 @@ module Edoxen
       say "  Functions: #{funcs.join(", ")}" unless funcs.empty?
     end
 
+    desc "iata CODE", "Resolve an IATA airport/city code via the canonical registry."
+    def iata(code)
+      entry = Edoxen::ReferenceData.find_iata(code)
+      if entry.nil?
+        say "No entry for #{code.upcase} in the IATA registry.", :red
+        exit 1
+      end
+
+      say "IATA:       #{entry.code}", :blue
+      say "  Name:      #{entry.name}"
+      say "  Country:   #{entry.country}"
+    end
+
     private
 
     def meeting_schema_path
@@ -191,7 +204,7 @@ module Edoxen
     end
 
     def collect_model_errors(file)
-      ResolutionCollection.from_yaml(File.read(file))
+      DecisionCollection.from_yaml(File.read(file))
       []
     rescue StandardError => e
       [Edoxen::ValidationError.new(
@@ -251,7 +264,7 @@ module Edoxen
     def normalize_file(file)
       original = File.read(file)
       yaml_language_server_comment = extract_yaml_language_server_comment(original)
-      normalized = ResolutionCollection.from_yaml(original).to_yaml
+      normalized = DecisionCollection.from_yaml(original).to_yaml
       write_normalized(file, normalized, yaml_language_server_comment)
     end
 

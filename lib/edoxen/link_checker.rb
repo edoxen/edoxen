@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # Walks a directory tree of Meeting and ResolutionCollection YAML
+  # Walks a directory tree of Meeting and DecisionCollection YAML
   # files and asserts that every cross-document URN link resolves.
   #
   # Invariants enforced:
   #
   #   * Every Meeting#urn (if set) is referenced by exactly one
-  #     ResolutionCollection#metadata.meeting_urn (if the collection
+  #     DecisionCollection#metadata.meeting_urn (if the collection
   #     exists in the scanned directory).
-  #   * Every ResolutionCollection#metadata.meeting_urn (if set)
+  #   * Every DecisionCollection#metadata.meeting_urn (if set)
   #     resolves to a Meeting whose urn matches.
   #
   # Use from CLI / scripts via the public `check` class method. Returns
@@ -24,7 +24,7 @@ module Edoxen
     end
 
     # Walk `dir` (recursive scan of *.yaml and *.yml), classify each
-    # file as Meeting or ResolutionCollection, and assert every
+    # file as Meeting or DecisionCollection, and assert every
     # cross-document URN resolves to a real record.
     #
     # @return [Array<LinkError>] empty when all links resolve.
@@ -56,7 +56,7 @@ module Edoxen
 
       errors = []
 
-      # ResolutionCollection → Meeting
+      # DecisionCollection → Meeting
       @collections_by_meeting_urn.each do |meeting_urn, file|
         next if @meetings_by_urn.key?(meeting_urn)
 
@@ -79,7 +79,7 @@ module Edoxen
     end
 
     def collection_shape?(data)
-      data["resolutions"].is_a?(Array) || data["metadata"].is_a?(Hash)
+      data["decisions"].is_a?(Array) || data["resolutions"].is_a?(Array) || data["metadata"].is_a?(Hash)
     end
   end
 end

@@ -24,7 +24,7 @@ RSpec.describe Edoxen::MeetingCollection do
       c = described_class.from_yaml(File.read(fixture))
       match = c.find_by_urn("urn:oiml:ciml:meeting:ciml-56")
       expect(match).not_to be_nil
-      expect(match.year).to eq(2021)
+      expect(match.ordinal).to eq(56)
     end
 
     it "returns nil when no URN matches" do
@@ -38,7 +38,7 @@ RSpec.describe Edoxen::MeetingCollection do
       c = described_class.from_yaml(File.read(fixture))
       match = c.find_by_identifier(prefix: "CIML", number: "55")
       expect(match).not_to be_nil
-      expect(match.year).to eq(2020)
+      expect(match.ordinal).to eq(55)
     end
 
     it "returns nil when no identifier matches" do

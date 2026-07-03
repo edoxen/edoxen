@@ -8,13 +8,13 @@ Gem::Specification.new do |spec|
   spec.authors = ["Ribose Inc."]
   spec.email = ["open.source@ribose.com"]
 
-  spec.summary = "Edoxen is a set of information models used for representing resolution and decision information."
+  spec.summary = "Edoxen is a generic information model for meetings, agendas, and decisions."
   spec.description = <<~HEREDOC
-    Edoxen provides a Ruby library for working with resolution models, allowing
-    users to create, manipulate, and serialize resolution data in a structured
-    format. It is built on top of the lutaml-model serialization framework,
-    which provides a flexible and extensible way to define data models and
-    serialize them to YAML or JSON formats.
+    Edoxen provides a Ruby library for working with a generic meeting/decision
+    model, allowing users to create, manipulate, and serialize meeting, agenda,
+    motion, voting, and decision data in a structured format. Built on top of
+    the lutaml-model serialization framework, with profile-based customization
+    (ISO 8601-2 §15) for domain-specific extensions.
   HEREDOC
 
   spec.homepage = "https://github.com/metanorma/edoxen"
@@ -25,8 +25,6 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/metanorma/edoxen"
   spec.metadata["changelog_uri"] = "https://github.com/metanorma/edoxen"
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
       (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
@@ -40,4 +38,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "lutaml-model", "~> 0.7"
   spec.add_dependency "thor", "~> 1.0"
   spec.add_dependency "unlocodes", "~> 0.1"
+  spec.add_dependency "iata", "~> 0.1"
 end

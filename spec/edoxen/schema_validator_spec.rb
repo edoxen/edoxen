@@ -51,19 +51,19 @@ RSpec.describe Edoxen::SchemaValidator do
     it "reports an `additionalProperties` violation at the offending path" do
       content = <<~YAML
         ---
-        resolution:
+        decision:
           type: bogus
       YAML
       errors = validator.validate_content(content, "memory")
       expect(errors).not_to be_empty
       expect(errors.first.message_text).to include("disallowed additional")
-      expect(errors.first.pointer).to include("/resolution")
+      expect(errors.first.pointer).to include("/decision")
     end
 
     it "reports a `required` violation at the missing-key path" do
       content = <<~YAML
         ---
-        resolutions:
+        decisions:
           - identifier:
               - prefix: X
                 number: "1"
@@ -76,7 +76,7 @@ RSpec.describe Edoxen::SchemaValidator do
     it "reports an `enum` violation when an action verb is not in ActionType" do
       content = <<~YAML
         ---
-        resolutions:
+        decisions:
           - identifier:
               - prefix: X
                 number: "1"
@@ -99,7 +99,7 @@ RSpec.describe Edoxen::SchemaValidator do
     it "reports a `pattern` violation for an invalid ISO 639-3 code" do
       content = <<~YAML
         ---
-        resolutions:
+        decisions:
           - identifier:
               - prefix: X
                 number: "1"
@@ -125,7 +125,7 @@ RSpec.describe Edoxen::SchemaValidator do
         ---
         metadata:
           title: T
-        resolutions:
+        decisions:
           - identifier:
               - prefix: X
                 number: "1"
@@ -143,7 +143,7 @@ RSpec.describe Edoxen::SchemaValidator do
       errors = validator.validate_content(content, "memory")
       enum_error = errors.find { |e| e.message_text.include?("not one of") }
       expect(enum_error).not_to be_nil
-      # /resolutions/0 is on line 5; /resolutions/0/localizations/0/actions/0/type
+      # /decisions/0 is on line 5; /decisions/0/localizations/0/actions/0/type
       # is on line 13. Longest-prefix match should locate line 13 specifically.
       expect(enum_error.line).to be >= 12
     end

@@ -2,9 +2,9 @@
 
 require "spec_helper"
 
-RSpec.describe Edoxen::ResolutionRelation do
-  describe "LUTAML ResolutionRelationType coverage" do
-    Edoxen::Enums::RESOLUTION_RELATION_TYPE.each do |rel|
+RSpec.describe Edoxen::DecisionRelation do
+  describe "LUTAML DecisionRelationType coverage" do
+    Edoxen::Enums::DECISION_RELATION_TYPE.each do |rel|
       it "round-trips a relation of type=#{rel}" do
         payload = {
           "source" => { "prefix" => "ISO", "number" => "1" },

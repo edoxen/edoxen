@@ -1,19 +1,17 @@
 ---
 $schema: "http://json-schema.org/draft-07/schema#"
 $id: "https://github.com/edoxen/edoxen/schema/edoxen.yaml"
-title: "Edoxen Resolution Collection Schema"
+title: "Edoxen Decision Collection Schema"
 description: |
-  Schema for validating Edoxen ResolutionCollection YAML files.
+  Schema for validating Edoxen DecisionCollection YAML files.
 
   Mirrors the canonical LutaML information model in
   https://github.com/edoxen/edoxen-model/tree/main/models .
 
-  The enum constants declared under `$defs` (ActionType,
-  ConsiderationType, ApprovalType, ApprovalDegree, ResolutionType,
-  ResolutionDateType, ResolutionRelationType, UrlKind) are the
-  authoritative wire values. `spec/edoxen/schema_enum_sync_spec.rb`
-  asserts each one is character-for-character identical to the
-  corresponding `Edoxen::Enums::*` frozen array.
+  The enum constants declared under `$defs` are the authoritative wire
+  values. `spec/edoxen/schema_enum_sync_spec.rb` asserts each one is
+  character-for-character identical to the corresponding `Edoxen::Enums::*`
+  frozen array.
 
   Trade-off: json_schemer's `valid_values` is not populated when an
   `enum` is reached via `$ref`, so the validator's enum-violation
@@ -24,14 +22,14 @@ additionalProperties: false
 
 properties:
   metadata:
-    $ref: "#/$defs/ResolutionMetadata"
-  resolutions:
+    $ref: "#/$defs/DecisionMetadata"
+  decisions:
     type: array
     items:
-      $ref: "#/$defs/Resolution"
+      $ref: "#/$defs/Decision"
 
 required:
-  - resolutions
+  - decisions
 
 $defs:
 
@@ -41,29 +39,25 @@ $defs:
 
   StructuredIdentifier:
     type: object
-    description: "A resolution identifier (prefix + number). A Resolution may carry 1..* of these."
+    description: "An identifier (prefix + number). A Decision carries 1..* of these."
     additionalProperties: false
     required: [prefix, number]
     properties:
       prefix:
         type: string
-        description: "Authority prefix, e.g. 'ISO', 'OIML', 'CIML'."
       number:
         type: string
-        description: "Resolution number issued under that prefix."
 
   MeetingIdentifier:
     type: object
-    description: "Identifies the meeting a Resolution belongs to."
+    description: "Identifies the meeting a Decision belongs to."
     additionalProperties: false
     properties:
       venue:
         type: string
-        description: "Meeting venue name (free text)."
       date:
         type: string
         format: date
-        description: "Meeting date."
 
   Url:
     type: object
@@ -78,9 +72,9 @@ $defs:
       format:
         type: string
 
-  ResolutionRelation:
+  DecisionRelation:
     type: object
-    description: "Directed relation between two resolutions identified by their StructuredIdentifier."
+    description: "Directed relation between two decisions identified by their StructuredIdentifier."
     additionalProperties: false
     required: [source, destination, type]
     properties:
@@ -89,13 +83,13 @@ $defs:
       destination:
         $ref: "#/$defs/StructuredIdentifier"
       type:
-        $ref: "#/$defs/ResolutionRelationType"
+        $ref: "#/$defs/DecisionRelationType"
 
   # ====================================================================
   # Date carriers.
   # ====================================================================
 
-  ResolutionDate:
+  DecisionDate:
     type: object
     description: "Date with semantic kind (adoption / drafted / discussed)."
     additionalProperties: false
@@ -104,13 +98,11 @@ $defs:
       date:
         type: string
         format: date
-        description: "The date itself."
       type:
-        $ref: "#/$defs/ResolutionDateType"
+        $ref: "#/$defs/DecisionDateType"
 
   # ====================================================================
-  # Per-localization sub-structures. Each is owned by exactly one
-  # Language; the language_code discriminator lives on Localization.
+  # Per-localization sub-structures.
   # ====================================================================
 
   Action:
@@ -122,7 +114,7 @@ $defs:
       type:
         $ref: "#/$defs/ActionType"
       date_effective:
-        $ref: "#/$defs/ResolutionDate"
+        $ref: "#/$defs/DecisionDate"
       message:
         type: string
 
@@ -137,48 +129,42 @@ $defs:
       degree:
         $ref: "#/$defs/ApprovalDegree"
       date:
-        $ref: "#/$defs/ResolutionDate"
+        $ref: "#/$defs/DecisionDate"
       message:
         type: string
 
   Consideration:
     type: object
-    description: "The basis for a Resolution: a verb + one effective date + reasoning."
+    description: "The basis for a Decision: a verb + one effective date + reasoning."
     additionalProperties: false
     required: [type, message, date_effective]
     properties:
       type:
         $ref: "#/$defs/ConsiderationType"
       date_effective:
-        $ref: "#/$defs/ResolutionDate"
+        $ref: "#/$defs/DecisionDate"
       message:
         type: string
 
   Localization:
     type: object
     description: |
-      A monolingual rendering of a Resolution. Mirrors the glossarist
+      A monolingual rendering of a Decision. Mirrors the glossarist
       LocalizedConcept pattern: language-agnostic fields live on the
-      parent Resolution; per-language content lives here.
+      parent Decision; per-language content lives here.
     additionalProperties: false
     required: [language_code]
     properties:
       language_code:
         type: string
         pattern: "^[a-z]{3}$"
-        description: "ISO 639-3 three-letter language code (eng, fra, deu, spa, jpn, ...)."
       script:
         type: string
         pattern: "^[A-Z][a-z]{3}$"
-        description: "ISO 15924 four-letter script code (Latn, Cyrl, Hant, Arab)."
-      title:
-        type: string
-      subject:
-        type: string
-      message:
-        type: string
-      considering:
-        type: string
+      title:        { type: string }
+      subject:      { type: string }
+      message:      { type: string }
+      considering:  { type: string }
       considerations:
         type: array
         items:
@@ -198,30 +184,23 @@ $defs:
     additionalProperties: false
     required: [ref, format, language_code]
     properties:
-      ref:
-        type: string
-        description: "The URL string."
-      format:
-        type: string
-        description: "Document format, e.g. 'pdf', 'html'."
+      ref:           { type: string }
+      format:        { type: string }
       language_code:
         type: string
         pattern: "^[a-z]{3}$"
       kind:
-        type: string
-        description: "Optional discriminator (agenda_pdf, minutes_pdf, ...)."
-        enum: [agenda_pdf, minutes_pdf, resolutions_pdf, report_pdf, register_url, landing_page]
+        $ref: "#/$defs/SourceUrlKind"
 
   # ====================================================================
   # Top-level structures.
   # ====================================================================
 
-  Resolution:
+  Decision:
     type: object
     description: |
-      A formal Resolution. Language-agnostic admin fields live here;
-      every translatable field is wrapped inside `localizations[]`
-      (one entry per available language; at least one is required).
+      A formal Decision. Language-agnostic admin fields live here;
+      every translatable field is wrapped inside `localizations[]`.
     additionalProperties: false
     required: [identifier, localizations]
     properties:
@@ -230,83 +209,516 @@ $defs:
         minItems: 1
         items:
           $ref: "#/$defs/StructuredIdentifier"
-      type:
-        $ref: "#/$defs/ResolutionType"
-      doi:
-        type: string
-      urn:
-        type: string
-      agenda_item:
-        type: string
+      kind:
+        $ref: "#/$defs/DecisionKind"
+      status:
+        $ref: "#/$defs/DecisionStatus"
+      doi:               { type: string }
+      urn:               { type: string }
+      agenda_item:       { type: string }
       dates:
         type: array
         items:
-          $ref: "#/$defs/ResolutionDate"
+          $ref: "#/$defs/DecisionDate"
       categories:
         type: array
-        items:
-          type: string
+        items: { type: string }
       meeting:
         $ref: "#/$defs/MeetingIdentifier"
       relations:
         type: array
         items:
-          $ref: "#/$defs/ResolutionRelation"
+          $ref: "#/$defs/DecisionRelation"
       urls:
         type: array
         items:
           $ref: "#/$defs/Url"
+      brought_by_motions:
+        type: array
+        items: { type: string }
+      about_topics:
+        type: array
+        items: { type: string }
+      made_in_component: { type: string }
       localizations:
         type: array
         minItems: 1
         items:
           $ref: "#/$defs/Localization"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
-  ResolutionMetadata:
+  DecisionMetadata:
     type: object
     description: "Collection-level metadata (title, meeting date, source, source URLs, host venue)."
     additionalProperties: false
     properties:
-      title:
-        type: string
-        description: "Default title (no language). For multilingual, use `title_localized[]`."
+      title:        { type: string }
       title_localized:
         type: array
         items:
           $ref: "#/$defs/Localization"
-        description: "Per-language title records (parallel pattern to Resolution#localizations)."
       date:
         type: string
         format: date
-        description: "Meeting date."
-      source:
-        type: string
-        description: "Source organization / secretariat that issued the collection."
+      source:        { type: string }
       source_urls:
         type: array
         items:
           $ref: "#/$defs/SourceUrl"
-        description: "Canonical URLs to the source PDFs in each available language."
       city:
         type: string
         pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
-        description: "UN/LOCODE of the host city (5-char: 2-letter ISO 3166-1 country + 3-char location, e.g. FRPAR, CNSHA, HKHKG). Supersedes the IATA city code."
       country_code:
         type: string
-        description: "ISO 3166-1 alpha-2 country code (2-letter, e.g. DE, FR, JP) of the host country."
-      meeting_urn:
-        type: string
-        description: "URN back-reference to the Meeting that produced this collection."
+        pattern: "^[A-Z]{2}$"
+      meeting_urn:   { type: string }
 
   # ====================================================================
-  # Enums. Each is referenced by its $ref name above. The schema
-  # <-> Ruby enum sync spec asserts each value-list matches the
-  # corresponding Edoxen::Enums::* frozen array.
+  # Procedural: Motion, Voting, VotingCounts.
+  # ====================================================================
+
+  Motion:
+    type: object
+    description: "A procedural act that brings a Decision."
+    additionalProperties: false
+    properties:
+      identifier:          { type: string }
+      urn:                 { type: string }
+      text:                { type: string }
+      mover:               { $ref: "#/$defs/Person" }
+      seconders:
+        type: array
+        items:
+          $ref: "#/$defs/Person"
+      status:              { $ref: "#/$defs/MotionStatus" }
+      introduced_at:       { type: string, format: date-time }
+      proposed_decision:   { type: string }
+      resulting_decision:  { type: string }
+      votings:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  VotingCounts:
+    type: object
+    description: "Tally for a Voting instance."
+    additionalProperties: false
+    properties:
+      ayes:         { type: integer }
+      noes:         { type: integer }
+      abstentions:  { type: integer }
+      absent:       { type: integer }
+
+  Voting:
+    type: object
+    description: "State machine for a single vote on a Motion."
+    additionalProperties: false
+    properties:
+      identifier:          { type: string }
+      urn:                 { type: string }
+      on_motion:           { type: string }
+      status:              { $ref: "#/$defs/VotingStatus" }
+      voting_method:       { $ref: "#/$defs/VotingMethod" }
+      called_by:           { $ref: "#/$defs/Person" }
+      called_at:           { type: string, format: date-time }
+      result_declared_at:  { type: string, format: date-time }
+      result:              { $ref: "#/$defs/VotingOutcome" }
+      counts:              { $ref: "#/$defs/VotingCounts" }
+      casting_vote:        { $ref: "#/$defs/VoteRecord" }
+      vote_records:
+        type: array
+        items:
+          $ref: "#/$defs/VoteRecord"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Topic and friends.
+  # ====================================================================
+
+  TopicDocument:
+    type: object
+    description: "Text-bearing document about a Topic."
+    additionalProperties: false
+    properties:
+      identifier:    { type: string }
+      title:         { type: string }
+      version:       { type: string }
+      status:        { type: string }
+      url:           { type: string }
+      format:        { type: string }
+      language_code:
+        type: string
+        pattern: "^[a-z]{3}$"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  TopicAsset:
+    type: object
+    description: "Non-text resource about a Topic."
+    additionalProperties: false
+    properties:
+      identifier: { type: string }
+      title:      { type: string }
+      kind:       { type: string }
+      url:        { type: string }
+      format:     { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Topic:
+    type: object
+    description: "The subject of discussion at a Meeting."
+    additionalProperties: false
+    properties:
+      identifier:     { type: string }
+      urn:            { type: string }
+      title:          { type: string }
+      description:    { type: string }
+      status:         { $ref: "#/$defs/TopicStatus" }
+      resumption_of:  { type: string }
+      documents:
+        type: array
+        items:
+          $ref: "#/$defs/TopicDocument"
+      assets:
+        type: array
+        items:
+          $ref: "#/$defs/TopicAsset"
+      references:
+        type: array
+        items:
+          $ref: "#/$defs/Reference"
+      motions:
+        type: array
+        items: { type: string }
+      decisions:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Polymorphic Venue (flat wire shape; kind discriminates subtype).
+  # ====================================================================
+
+  Venue:
+    type: object
+    description: |
+      Polymorphic place where a Meeting happens. `kind` discriminates
+      physical vs virtual; all fields from both subtypes live here as
+      optional siblings. Validators (Edoxen::VenueValidator) enforce
+      that fields match `kind`.
+    additionalProperties: false
+    properties:
+      kind:              { $ref: "#/$defs/VenueKind" }
+      name:              { type: string }
+      label:             { type: string }
+      description:       { type: string }
+      capacity:          { type: integer }
+      url:               { type: string }
+
+      # Physical-venue fields.
+      unlocode:
+        type: string
+        pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
+      iata_code:
+        type: string
+        pattern: "^[A-Z]{3}$"
+      address:           { type: string }
+      city:              { type: string }
+      country_code:
+        type: string
+        pattern: "^[A-Z]{2}$"
+      lat:               { type: number }
+      lon:               { type: number }
+      building:          { type: string }
+      floor:             { type: string }
+      room:              { type: string }
+      access_notes:      { type: string }
+
+      # Virtual-venue fields.
+      uri:               { type: string }
+      features:
+        type: array
+        items:
+          $ref: "#/$defs/VirtualFeature"
+      passcode:                 { type: string }
+      meeting_id:               { type: string }
+      dial_in_numbers:
+        type: array
+        items: { type: string }
+      waiting_room:             { type: boolean }
+      registration_required:    { type: boolean }
+
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  PhysicalVenue:
+    description: "Marker — Venue with kind=physical. Wire shape is identical to Venue."
+    allOf:
+      - $ref: "#/$defs/Venue"
+
+  VirtualVenue:
+    description: "Marker — Venue with kind=virtual. Wire shape is identical to Venue."
+    allOf:
+      - $ref: "#/$defs/Venue"
+
+  # ====================================================================
+  # Recurrence (ISO 8601-2 §13 structured form).
+  # ====================================================================
+
+  RecurrenceByDay:
+    type: object
+    description: "BYDAY part of a recurrence. `ordinal` is null for 'every', +1 for first, -1 for last."
+    additionalProperties: false
+    properties:
+      ordinal: { type: integer }
+      weekday: { type: string }
+
+  Recurrence:
+    type: object
+    description: "Structured ISO 8601-2 §13 recurrence."
+    additionalProperties: false
+    properties:
+      freq:        { $ref: "#/$defs/RecurrenceFreq" }
+      interval:    { type: integer }
+      count:       { type: integer }
+      until:       { type: string, format: date-time }
+      by_day:
+        type: array
+        items:
+          $ref: "#/$defs/RecurrenceByDay"
+      by_month_day:
+        type: array
+        items: { type: integer }
+      by_month:
+        type: array
+        items: { type: integer }
+      by_week_no:
+        type: array
+        items: { type: integer }
+      by_year_day:
+        type: array
+        items: { type: integer }
+      by_hour:
+        type: array
+        items: { type: integer }
+      by_minute:
+        type: array
+        items: { type: integer }
+      by_second:
+        type: array
+        items: { type: integer }
+      by_set_pos:
+        type: array
+        items: { type: integer }
+      week_start: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Profile mechanism (ISO 8601-2 §15).
+  # ====================================================================
+
+  ExtensionAttribute:
+    type: object
+    description: "A key-value pair within a MeetingExtension."
+    additionalProperties: false
+    required: [key, value]
+    properties:
+      key:   { type: string }
+      value: { type: string }
+
+  MeetingExtension:
+    type: object
+    description: "Profile-specific extension. Adopters register their namespace via `profile`."
+    additionalProperties: false
+    properties:
+      profile: { type: string }
+      kind:    { type: string }
+      ref:     { type: string }
+      attributes:
+        type: array
+        items:
+          $ref: "#/$defs/ExtensionAttribute"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Shared structural types.
+  # ====================================================================
+
+  Person:
+    type: object
+    description: "Identity + role + affiliation + contact."
+    additionalProperties: false
+    properties:
+      name:        { type: string }
+      kind:        { type: string }
+      role:        { type: string }
+      affiliation: { type: string }
+      email:       { type: string }
+      phone:       { type: string }
+      orcid:       { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Reference:
+    type: object
+    description: "Generic document reference."
+    additionalProperties: false
+    properties:
+      ref:   { type: string }
+      kind:  { type: string }
+      title: { type: string }
+
+  VoteRecord:
+    type: object
+    description: "One vote by one person on one decision/voting."
+    additionalProperties: false
+    required: [person, vote]
+    properties:
+      decision_ref: { type: string }
+      voting_ref:   { type: string }
+      person:       { $ref: "#/$defs/Person" }
+      affiliation:  { type: string }
+      vote:         { $ref: "#/$defs/VoteType" }
+      role:         { type: string }
+      notes:        { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Officer:
+    type: object
+    description: "A person holding a structural role in a Meeting."
+    additionalProperties: false
+    properties:
+      role:        { $ref: "#/$defs/OfficerRole" }
+      person:      { $ref: "#/$defs/Person" }
+      term_start:  { type: string, format: date }
+      term_end:    { type: string, format: date }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  ComponentLocalization:
+    type: object
+    description: "Per-language content for a MeetingComponent."
+    additionalProperties: false
+    required: [language_code]
+    properties:
+      language_code:
+        type: string
+        pattern: "^[a-z]{3}$"
+      script:
+        type: string
+        pattern: "^[A-Z][a-z]{3}$"
+      title:       { type: string }
+      description: { type: string }
+
+  MeetingComponent:
+    type: object
+    description: "Flat sub-event of a Meeting."
+    additionalProperties: false
+    properties:
+      identifier:  { type: string }
+      urn:         { type: string }
+      kind:        { $ref: "#/$defs/ComponentKind" }
+      title:       { type: string }
+      description: { type: string }
+      starts_at:   { type: string, format: date-time }
+      ends_at:     { type: string, format: date-time }
+      venue_refs:
+        type: array
+        items: { type: string }
+      chair:       { $ref: "#/$defs/Person" }
+      agenda_ref:  { type: string }
+      minutes_ref: { type: string }
+      attendance_refs:
+        type: array
+        items: { type: string }
+      localizations:
+        type: array
+        items:
+          $ref: "#/$defs/ComponentLocalization"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  MeetingSeries:
+    type: object
+    description: "Parent of recurring Meeting instances."
+    additionalProperties: false
+    properties:
+      identifier:
+        type: array
+        items:
+          $ref: "#/$defs/StructuredIdentifier"
+      urn:           { type: string }
+      name:          { type: string }
+      description:   { type: string }
+      recurrence:    { $ref: "#/$defs/Recurrence" }
+      term:          { type: string }
+      organizer:     { $ref: "#/$defs/Person" }
+      hosts:
+        type: array
+        items:
+          $ref: "#/$defs/HostRef"
+      kind:          { type: string }
+      meeting_refs:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  HostRef:
+    type: object
+    description: "Typed reference to a hosting organization."
+    additionalProperties: false
+    required: [ref]
+    properties:
+      ref:     { type: string }
+      type:    { $ref: "#/$defs/HostType" }
+      role:    { type: string }
+      contact: { $ref: "#/$defs/Person" }
+
+  # ====================================================================
+  # Enums. Each value-list must equal the matching Edoxen::Enums::*
+  # frozen array; spec/edoxen/schema_enum_sync_spec.rb enforces.
   # ====================================================================
 
   ActionType:
     type: string
-    description: "Edoxen::Enums::ACTION_TYPE — LUTAML action.lutaml (deduped)."
+    description: "Edoxen::Enums::ACTION_TYPE."
     enum:
       - adopts
       - thanks
@@ -339,7 +751,7 @@ $defs:
 
   ConsiderationType:
     type: string
-    description: "Edoxen::Enums::CONSIDERATION_TYPE — LUTAML consideration.lutaml (deduped)."
+    description: "Edoxen::Enums::CONSIDERATION_TYPE."
     enum:
       - having
       - noting
@@ -361,30 +773,115 @@ $defs:
 
   ApprovalType:
     type: string
-    description: "Edoxen::Enums::APPROVAL_TYPE — LUTAML approval_type.lutaml."
+    description: "Edoxen::Enums::APPROVAL_TYPE."
     enum: [affirmative, negative]
 
   ApprovalDegree:
     type: string
-    description: "Edoxen::Enums::APPROVAL_DEGREE — LUTAML approval_degree.lutaml."
+    description: "Edoxen::Enums::APPROVAL_DEGREE."
     enum: [unanimous, majority, minority]
 
-  ResolutionType:
+  DecisionKind:
     type: string
-    description: "Edoxen::Enums::RESOLUTION_TYPE — LUTAML resolution_type.lutaml."
-    enum: [resolution, recommendation, decision, declaration]
+    description: "Edoxen::Enums::DECISION_KIND."
+    enum: [resolution, order, ruling, determination, recommendation, statement, finding, opinion, other]
 
-  ResolutionDateType:
+  DecisionStatus:
     type: string
-    description: "Edoxen::Enums::RESOLUTION_DATE_TYPE — LUTAML resolution_date_type.lutaml."
-    enum: [adoption, drafted, discussed]
+    description: "Edoxen::Enums::DECISION_STATUS."
+    enum: [draft, proposed, under_consideration, decided, negatived, withdrawn, deferred]
 
-  ResolutionRelationType:
+  DecisionDateType:
     type: string
-    description: "Edoxen::Enums::RESOLUTION_RELATION_TYPE — LUTAML resolution_relation_type.lutaml."
-    enum: [annexOf, hasAnnex, updates, refines, replaces, considers]
+    description: "Edoxen::Enums::DECISION_DATE_TYPE."
+    enum: [adoption, drafted, discussed, proposed, decided, negatived, withdrawn, published, effective]
+
+  DecisionRelationType:
+    type: string
+    description: "Edoxen::Enums::DECISION_RELATION_TYPE."
+    enum: [annexOf, hasAnnex, updates, refines, replaces, considers, cites]
+
+  MotionStatus:
+    type: string
+    description: "Edoxen::Enums::MOTION_STATUS."
+    enum: [introduced, seconded, debating, question_put, voting, carried, negatived, withdrawn, lapsed]
+
+  VotingStatus:
+    type: string
+    description: "Edoxen::Enums::VOTING_STATUS."
+    enum: [called, in_progress, decided, withdrawn, deferred]
+
+  VotingMethod:
+    type: string
+    description: "Edoxen::Enums::VOTING_METHOD."
+    enum: [voice, division, show_of_hands, roll_call, electronic, secret_ballot, unanimous_consent, consensus]
+
+  VotingOutcome:
+    type: string
+    description: "Edoxen::Enums::VOTING_OUTCOME."
+    enum: [passed, negatived, tied, withdrawn]
+
+  TopicStatus:
+    type: string
+    description: "Edoxen::Enums::TOPIC_STATUS."
+    enum: [open, under_discussion, decided, deferred, withdrawn]
+
+  VenueKind:
+    type: string
+    description: "Edoxen::Enums::VENUE_KIND."
+    enum: [physical, virtual]
+
+  VirtualFeature:
+    type: string
+    description: "Edoxen::Enums::VIRTUAL_FEATURE."
+    enum: [audio, video, chat, phone, screen, feed]
+
+  Visibility:
+    type: string
+    description: "Edoxen::Enums::VISIBILITY."
+    enum: [public, private, confidential]
+
+  AttendanceRole:
+    type: string
+    description: "Edoxen::Enums::ATTENDANCE_ROLE."
+    enum: [chair, required, optional, non_participant]
+
+  AttendanceResponse:
+    type: string
+    description: "Edoxen::Enums::ATTENDANCE_RESPONSE."
+    enum: [pending, confirmed, declined, tentative, delegated]
+
+  ComponentKind:
+    type: string
+    description: "Edoxen::Enums::COMPONENT_KIND."
+    enum: [track, session, debate, breakout, bof, plenary_session, working_group_session, committee_of_the_whole, keynote, address, statement, question_time, opening, closing, break, reception, registration, networking, other]
+
+  OfficerRole:
+    type: string
+    description: "Edoxen::Enums::OFFICER_ROLE."
+    enum: [chair, vice_chair, deputy_chair, secretary, treasurer, parliamentarian, presiding_officer, sergeant_at_arms, other]
+
+  RecurrenceFreq:
+    type: string
+    description: "Edoxen::Enums::RECURRENCE_FREQ."
+    enum: [secondly, minutely, hourly, daily, weekly, monthly, yearly]
 
   UrlKind:
     type: string
     description: "Edoxen::Enums::URL_KIND."
     enum: [access, report]
+
+  SourceUrlKind:
+    type: string
+    description: "Edoxen::Enums::SOURCE_URL_KIND."
+    enum: [agenda_pdf, minutes_pdf, decisions_pdf, report_pdf, register_url, landing_page]
+
+  HostType:
+    type: string
+    description: "Edoxen::Enums::HOST_TYPE."
+    enum: [national_body, liaison, associate, organizer]
+
+  VoteType:
+    type: string
+    description: "Edoxen::Enums::VOTE_TYPE."
+    enum: [affirmative, negative, abstain, absent, not_applicable]

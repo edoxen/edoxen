@@ -26,7 +26,7 @@ RSpec.describe Edoxen::Action do
         }
         a = described_class.from_yaml(YAML.dump(payload))
         expect(a.type).to eq(verb)
-        expect(a.date_effective).to be_a(Edoxen::ResolutionDate)
+        expect(a.date_effective).to be_a(Edoxen::DecisionDate)
         expect(a.date_effective.date).to eq(Date.new(2024, 1, 15))
         expect(a.message).to eq("#{verb} the proposal")
 

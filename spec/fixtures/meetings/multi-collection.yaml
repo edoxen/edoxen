@@ -9,8 +9,8 @@ meetings:
       - prefix: CIML
         number: "55"
     urn: urn:oiml:ciml:meeting:ciml-55
+    ordinal: 55
     type: plenary
-    year: 2020
     date_range:
       start: 2020-10-19
       end: 2020-10-23
@@ -22,8 +22,8 @@ meetings:
       - prefix: CIML
         number: "56"
     urn: urn:oiml:ciml:meeting:ciml-56
+    ordinal: 56
     type: plenary
-    year: 2021
     date_range:
       start: 2021-10-18
       end: 2021-10-22

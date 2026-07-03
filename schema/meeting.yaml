@@ -23,8 +23,7 @@ $defs:
 
   # ====================================================================
   # Reused from schema/edoxen.yaml (re-declared here so this file is
-  # self-contained — schema/meeting.yaml does not depend on
-  # schema/edoxen.yaml).
+  # self-contained).
   # ====================================================================
 
   StructuredIdentifier:
@@ -50,10 +49,6 @@ $defs:
       kind:
         $ref: "#/$defs/SourceUrlKind"
 
-  # ====================================================================
-  # Meeting-side primitive types.
-  # ====================================================================
-
   DateRange:
     type: object
     description: "Start + end date pair for multi-day meetings."
@@ -66,30 +61,22 @@ $defs:
         type: string
         format: date
 
-  Location:
-    type: object
-    description: "Venue geography. Multi-venue meetings carry one Location per venue."
-    additionalProperties: false
-    properties:
-      name:    { type: string }
-      address: { type: string }
-      link:    { type: string }
-      phone:   { type: string }
-      note:    { type: string }
-      lat:     { type: number }
-      lon:     { type: number }
-
   Person:
     type: object
-    description: "Identity + role + affiliation + contact."
+    description: "Identity + role + affiliation + contact + kind."
     additionalProperties: false
     properties:
       name:        { type: string }
+      kind:        { type: string }
       role:        { type: string }
       affiliation: { type: string }
       email:       { type: string }
       phone:       { type: string }
       orcid:       { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   HostRef:
     type: object
@@ -97,44 +84,10 @@ $defs:
     additionalProperties: false
     required: [ref]
     properties:
-      ref:    { type: string }
-      type:
-        $ref: "#/$defs/HostType"
-      role:   { type: string }
-      contact:
-        $ref: "#/$defs/Person"
-
-  ScheduleItemLocalization:
-    type: object
-    description: "Per-language content for a ScheduleItem."
-    additionalProperties: false
-    required: [language_code]
-    properties:
-      language_code:
-        type: string
-        pattern: "^[a-z]{3}$"
-      script:
-        type: string
-        pattern: "^[A-Z][a-z]{3}$"
-      event:       { type: string }
-      description: { type: string }
-
-  ScheduleItem:
-    type: object
-    description: "One entry in the meeting timetable."
-    additionalProperties: false
-    properties:
-      date:
-        type: string
-        format: date
-      time:        { type: string }
-      event:       { type: string }
-      description: { type: string }
-      room:        { type: string }
-      localizations:
-        type: array
-        items:
-          $ref: "#/$defs/ScheduleItemLocalization"
+      ref:     { type: string }
+      type:    { $ref: "#/$defs/HostType" }
+      role:    { type: string }
+      contact: { $ref: "#/$defs/Person" }
 
   Attendance:
     type: object
@@ -142,36 +95,39 @@ $defs:
     additionalProperties: false
     required: [person, status]
     properties:
-      person:
-        $ref: "#/$defs/Person"
-      status:
-        $ref: "#/$defs/ParticipationStatus"
+      person:      { $ref: "#/$defs/Person" }
+      status:      { $ref: "#/$defs/ParticipationStatus" }
+      role:        { $ref: "#/$defs/AttendanceRole" }
+      response:    { $ref: "#/$defs/AttendanceResponse" }
       affiliation: { type: string }
-      proxy_for:
-        $ref: "#/$defs/Person"
-      notes: { type: string }
+      proxy_for:   { $ref: "#/$defs/Person" }
+      notes:       { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   VoteRecord:
     type: object
-    description: "One vote by one person on one resolution at one meeting."
+    description: "One vote by one person on one decision/voting."
     additionalProperties: false
-    required: [resolution_ref, person, vote]
+    required: [person, vote]
     properties:
-      resolution_ref: { type: string }
-      person:
-        $ref: "#/$defs/Person"
-      affiliation: { type: string }
-      vote:
-        $ref: "#/$defs/VoteType"
-      notes: { type: string }
+      decision_ref: { type: string }
+      voting_ref:   { type: string }
+      person:       { $ref: "#/$defs/Person" }
+      affiliation:  { type: string }
+      vote:         { $ref: "#/$defs/VoteType" }
+      role:         { type: string }
+      notes:        { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   MinutesSection:
     type: object
-    description: |
-      One section of a Meeting's minutes — typically tied to an agenda
-      item by its `number` field. Carries the narrative as Markdown
-      (the format the GLM-OCR pipeline emits) plus an optional page
-      range for provenance back to the source PDF.
+    description: "One section of a Meeting's minutes — typically tied to an agenda item by `number`."
     additionalProperties: false
     properties:
       number:      { type: string }
@@ -188,12 +144,8 @@ $defs:
     type: object
     description: |
       The narrative record of a Meeting — what was said, by whom, in
-      what order, with what outcome. Distinct from Agenda (the business
-      order drafted before the meeting) and from ResolutionCollection
-      (the formal decisions adopted). The Minutes are the running
-      record. One Minutes document per language; sections are typically
-      keyed by agenda-item number so consumers can join
-      Minutes ↔ AgendaItem ↔ Resolution.
+      what order, with what outcome. Distinct from Agenda and from
+      DecisionCollection.
     additionalProperties: false
     properties:
       identifier:
@@ -244,19 +196,26 @@ $defs:
     additionalProperties: false
     properties:
       label:       { type: string }
-      kind:
-        $ref: "#/$defs/AgendaItemKind"
+      kind:        { $ref: "#/$defs/AgendaItemKind" }
       title:       { type: string }
       description: { type: string }
       references:
         type: array
         items:
           $ref: "#/$defs/Reference"
-      outcome:
-        $ref: "#/$defs/AgendaItemOutcome"
-      resolution_ref:
-        type: string
-        description: "URN of the resolution this item produced."
+      outcome:       { $ref: "#/$defs/AgendaItemOutcome" }
+      decision_ref:  { type: string }
+      topics:
+        type: array
+        items:
+          $ref: "#/$defs/Topic"
+      components:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   Agenda:
     type: object
@@ -269,17 +228,296 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/StructuredIdentifier"
-      status:
-        $ref: "#/$defs/AgendaStatus"
-      source_doc: { type: string }
+      status:      { $ref: "#/$defs/AgendaStatus" }
+      source_doc:  { type: string }
       items:
         type: array
         items:
           $ref: "#/$defs/AgendaItem"
-      opening_session:
-        $ref: "#/$defs/ScheduleItem"
-      closing_session:
-        $ref: "#/$defs/ScheduleItem"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Topic, Venue, Recurrence, MeetingExtension (shared with edoxen.yaml).
+  # ====================================================================
+
+  TopicDocument:
+    type: object
+    description: "Text-bearing document about a Topic."
+    additionalProperties: false
+    properties:
+      identifier:    { type: string }
+      title:         { type: string }
+      version:       { type: string }
+      status:        { type: string }
+      url:           { type: string }
+      format:        { type: string }
+      language_code:
+        type: string
+        pattern: "^[a-z]{3}$"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  TopicAsset:
+    type: object
+    description: "Non-text resource about a Topic."
+    additionalProperties: false
+    properties:
+      identifier: { type: string }
+      title:      { type: string }
+      kind:       { type: string }
+      url:        { type: string }
+      format:     { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Topic:
+    type: object
+    description: "The subject of discussion at a Meeting."
+    additionalProperties: false
+    properties:
+      identifier:     { type: string }
+      urn:            { type: string }
+      title:          { type: string }
+      description:    { type: string }
+      status:         { $ref: "#/$defs/TopicStatus" }
+      resumption_of:  { type: string }
+      documents:
+        type: array
+        items:
+          $ref: "#/$defs/TopicDocument"
+      assets:
+        type: array
+        items:
+          $ref: "#/$defs/TopicAsset"
+      references:
+        type: array
+        items:
+          $ref: "#/$defs/Reference"
+      motions:
+        type: array
+        items: { type: string }
+      decisions:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Venue:
+    type: object
+    description: "Polymorphic place where a Meeting happens. `kind` discriminates physical/virtual."
+    additionalProperties: false
+    properties:
+      kind:              { $ref: "#/$defs/VenueKind" }
+      name:              { type: string }
+      label:             { type: string }
+      description:       { type: string }
+      capacity:          { type: integer }
+      url:               { type: string }
+
+      unlocode:
+        type: string
+        pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
+      iata_code:
+        type: string
+        pattern: "^[A-Z]{3}$"
+      address:           { type: string }
+      city:              { type: string }
+      country_code:
+        type: string
+        pattern: "^[A-Z]{2}$"
+      lat:               { type: number }
+      lon:               { type: number }
+      building:          { type: string }
+      floor:             { type: string }
+      room:              { type: string }
+      access_notes:      { type: string }
+
+      uri:               { type: string }
+      features:
+        type: array
+        items:
+          $ref: "#/$defs/VirtualFeature"
+      passcode:                 { type: string }
+      meeting_id:               { type: string }
+      dial_in_numbers:
+        type: array
+        items: { type: string }
+      waiting_room:             { type: boolean }
+      registration_required:    { type: boolean }
+
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  RecurrenceByDay:
+    type: object
+    description: "BYDAY part of a recurrence."
+    additionalProperties: false
+    properties:
+      ordinal: { type: integer }
+      weekday: { type: string }
+
+  Recurrence:
+    type: object
+    description: "Structured ISO 8601-2 §13 recurrence."
+    additionalProperties: false
+    properties:
+      freq:        { $ref: "#/$defs/RecurrenceFreq" }
+      interval:    { type: integer }
+      count:       { type: integer }
+      until:       { type: string, format: date-time }
+      by_day:
+        type: array
+        items:
+          $ref: "#/$defs/RecurrenceByDay"
+      by_month_day:
+        type: array
+        items: { type: integer }
+      by_month:
+        type: array
+        items: { type: integer }
+      by_week_no:
+        type: array
+        items: { type: integer }
+      by_year_day:
+        type: array
+        items: { type: integer }
+      by_hour:
+        type: array
+        items: { type: integer }
+      by_minute:
+        type: array
+        items: { type: integer }
+      by_second:
+        type: array
+        items: { type: integer }
+      by_set_pos:
+        type: array
+        items: { type: integer }
+      week_start: { type: string }
+
+  ExtensionAttribute:
+    type: object
+    description: "A key-value pair within a MeetingExtension."
+    additionalProperties: false
+    required: [key, value]
+    properties:
+      key:   { type: string }
+      value: { type: string }
+
+  MeetingExtension:
+    type: object
+    description: "Profile-specific extension."
+    additionalProperties: false
+    properties:
+      profile: { type: string }
+      kind:    { type: string }
+      ref:     { type: string }
+      attributes:
+        type: array
+        items:
+          $ref: "#/$defs/ExtensionAttribute"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  Officer:
+    type: object
+    description: "A person holding a structural role in a Meeting."
+    additionalProperties: false
+    properties:
+      role:        { $ref: "#/$defs/OfficerRole" }
+      person:      { $ref: "#/$defs/Person" }
+      term_start:  { type: string, format: date }
+      term_end:    { type: string, format: date }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  ComponentLocalization:
+    type: object
+    description: "Per-language content for a MeetingComponent."
+    additionalProperties: false
+    required: [language_code]
+    properties:
+      language_code:
+        type: string
+        pattern: "^[a-z]{3}$"
+      script:
+        type: string
+        pattern: "^[A-Z][a-z]{3}$"
+      title:       { type: string }
+      description: { type: string }
+
+  MeetingComponent:
+    type: object
+    description: "Flat sub-event of a Meeting."
+    additionalProperties: false
+    properties:
+      identifier:  { type: string }
+      urn:         { type: string }
+      kind:        { $ref: "#/$defs/ComponentKind" }
+      title:       { type: string }
+      description: { type: string }
+      starts_at:   { type: string, format: date-time }
+      ends_at:     { type: string, format: date-time }
+      venue_refs:
+        type: array
+        items: { type: string }
+      chair:       { $ref: "#/$defs/Person" }
+      agenda_ref:  { type: string }
+      minutes_ref: { type: string }
+      attendance_refs:
+        type: array
+        items: { type: string }
+      localizations:
+        type: array
+        items:
+          $ref: "#/$defs/ComponentLocalization"
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
+
+  MeetingSeries:
+    type: object
+    description: "Parent of recurring Meeting instances."
+    additionalProperties: false
+    properties:
+      identifier:
+        type: array
+        items:
+          $ref: "#/$defs/StructuredIdentifier"
+      urn:           { type: string }
+      name:          { type: string }
+      description:   { type: string }
+      recurrence:    { $ref: "#/$defs/Recurrence" }
+      term:          { type: string }
+      organizer:     { $ref: "#/$defs/Person" }
+      hosts:
+        type: array
+        items:
+          $ref: "#/$defs/HostRef"
+      kind:          { type: string }
+      meeting_refs:
+        type: array
+        items: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   # ====================================================================
   # Meeting side.
@@ -291,12 +529,9 @@ $defs:
     additionalProperties: false
     required: [source, destination, type]
     properties:
-      source:
-        $ref: "#/$defs/StructuredIdentifier"
-      destination:
-        $ref: "#/$defs/StructuredIdentifier"
-      type:
-        $ref: "#/$defs/MeetingRelationType"
+      source:     { $ref: "#/$defs/StructuredIdentifier" }
+      destination: { $ref: "#/$defs/StructuredIdentifier" }
+      type:       { $ref: "#/$defs/MeetingRelationType" }
 
   MeetingLocalization:
     type: object
@@ -325,37 +560,35 @@ $defs:
         minItems: 1
         items:
           $ref: "#/$defs/StructuredIdentifier"
-      urn:        { type: string }
-      ordinal:    { type: integer }
-      type:
-        $ref: "#/$defs/MeetingType"
-      status:
-        $ref: "#/$defs/MeetingStatus"
-      year:       { type: integer }
+      urn:                { type: string }
+      ordinal:            { type: integer }
+      series_ref:         { type: string }
+      type:               { $ref: "#/$defs/MeetingType" }
+      status:             { $ref: "#/$defs/MeetingStatus" }
+      visibility:         { $ref: "#/$defs/Visibility" }
 
-      date_range:
-        $ref: "#/$defs/DateRange"
-
-      committee:       { type: string }
-      committee_group: { type: string }
+      date_range:         { $ref: "#/$defs/DateRange" }
+      recurrence:         { $ref: "#/$defs/Recurrence" }
 
       venues:
         type: array
         items:
-          $ref: "#/$defs/Location"
-      general_area:    { type: string }
+          $ref: "#/$defs/Venue"
+      general_area:       { type: string }
       city:
         type: string
         pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
-        description: "UN/LOCODE of the host city (5-char: 2-letter ISO 3166-1 country + 3-char location, e.g. FRPAR, HKHKG, THCNM)."
       country_code:
         type: string
         pattern: "^[A-Z]{2}$"
-      virtual:         { type: boolean }
 
-      chair:     { $ref: "#/$defs/Person" }
-      secretary: { $ref: "#/$defs/Person" }
-      host:      { type: string }
+      committee:          { type: string }
+      committee_group:    { type: string }
+
+      officers:
+        type: array
+        items:
+          $ref: "#/$defs/Officer"
       hosts:
         type: array
         items:
@@ -365,15 +598,14 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/SourceUrl"
-      landing_url:      { type: string }
-      registration_url: { type: string }
+      landing_url:        { type: string }
+      registration_url:   { type: string }
 
-      agenda:
-        $ref: "#/$defs/Agenda"
-      schedule:
+      agenda:             { $ref: "#/$defs/Agenda" }
+      components:
         type: array
         items:
-          $ref: "#/$defs/ScheduleItem"
+          $ref: "#/$defs/MeetingComponent"
       deadlines:
         type: array
         items:
@@ -382,14 +614,23 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/Attendance"
-      vote_records:
-        type: array
-        items:
-          $ref: "#/$defs/VoteRecord"
       minutes:
         type: array
         items:
           $ref: "#/$defs/Minutes"
+
+      decisions:
+        type: array
+        items:
+          $ref: "#/$defs/StructuredIdentifier"
+      motions:
+        type: array
+        items:
+          $ref: "#/$defs/StructuredIdentifier"
+      votings:
+        type: array
+        items:
+          $ref: "#/$defs/StructuredIdentifier"
 
       localizations:
         type: array
@@ -399,9 +640,10 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/MeetingRelation"
-      resolution_refs:
+      extensions:
         type: array
-        items: { type: string }
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   MeetingCollectionMetadata:
     type: object
@@ -425,14 +667,13 @@ $defs:
           $ref: "#/$defs/Meeting"
 
   # ====================================================================
-  # Enums. Each value-list must equal the matching Edoxen::Enums::*
-  # frozen array; spec/edoxen/schema_meeting_enum_sync_spec.rb enforces.
+  # Enums.
   # ====================================================================
 
   MeetingType:
     type: string
     description: "Edoxen::Enums::MEETING_TYPE."
-    enum: [plenary, working_group, task_group, ad_hoc, joint, conference_session]
+    enum: [plenary, working_group, task_group, ad_hoc, joint, general_assembly, committee, subcommittee, conference, workshop, seminar, webinar, hearing, markup, board_meeting, annual_general_meeting, other]
 
   MeetingStatus:
     type: string
@@ -447,12 +688,12 @@ $defs:
   AgendaItemKind:
     type: string
     description: "Edoxen::Enums::AGENDA_ITEM_KIND."
-    enum: [numbered, unnumbered, header, opening, closing]
+    enum: [numbered, unnumbered, header, opening, closing, aob]
 
   AgendaItemOutcome:
     type: string
     description: "Edoxen::Enums::AGENDA_ITEM_OUTCOME."
-    enum: [discussed, resolved, deferred, adopted, withdrawn]
+    enum: [discussed, resolved, deferred, adopted, withdrawn, carried, negatived]
 
   HostType:
     type: string
@@ -462,19 +703,64 @@ $defs:
   MeetingRelationType:
     type: string
     description: "Edoxen::Enums::MEETING_RELATION_TYPE."
-    enum: [continues_from, continues_to, joint_with, supersedes, superseded_by, rescheduled_from, rescheduled_to]
+    enum: [continues_from, continues_to, joint_with, supersedes, superseded_by, rescheduled_from, rescheduled_to, parent_of, child_of, sibling_of, depends_on, finish_to_start, finish_to_finish, start_to_start, start_to_finish]
 
   SourceUrlKind:
     type: string
     description: "Edoxen::Enums::SOURCE_URL_KIND."
-    enum: [agenda_pdf, minutes_pdf, resolutions_pdf, report_pdf, register_url, landing_page]
+    enum: [agenda_pdf, minutes_pdf, decisions_pdf, report_pdf, register_url, landing_page]
 
   ParticipationStatus:
     type: string
     description: "Edoxen::Enums::PARTICIPATION_STATUS."
     enum: [present, absent, apologies, observer, excused]
 
+  AttendanceRole:
+    type: string
+    description: "Edoxen::Enums::ATTENDANCE_ROLE."
+    enum: [chair, required, optional, non_participant]
+
+  AttendanceResponse:
+    type: string
+    description: "Edoxen::Enums::ATTENDANCE_RESPONSE."
+    enum: [pending, confirmed, declined, tentative, delegated]
+
   VoteType:
     type: string
     description: "Edoxen::Enums::VOTE_TYPE."
     enum: [affirmative, negative, abstain, absent, not_applicable]
+
+  TopicStatus:
+    type: string
+    description: "Edoxen::Enums::TOPIC_STATUS."
+    enum: [open, under_discussion, decided, deferred, withdrawn]
+
+  VenueKind:
+    type: string
+    description: "Edoxen::Enums::VENUE_KIND."
+    enum: [physical, virtual]
+
+  VirtualFeature:
+    type: string
+    description: "Edoxen::Enums::VIRTUAL_FEATURE."
+    enum: [audio, video, chat, phone, screen, feed]
+
+  Visibility:
+    type: string
+    description: "Edoxen::Enums::VISIBILITY."
+    enum: [public, private, confidential]
+
+  ComponentKind:
+    type: string
+    description: "Edoxen::Enums::COMPONENT_KIND."
+    enum: [track, session, debate, breakout, bof, plenary_session, working_group_session, committee_of_the_whole, keynote, address, statement, question_time, opening, closing, break, reception, registration, networking, other]
+
+  OfficerRole:
+    type: string
+    description: "Edoxen::Enums::OFFICER_ROLE."
+    enum: [chair, vice_chair, deputy_chair, secretary, treasurer, parliamentarian, presiding_officer, sergeant_at_arms, other]
+
+  RecurrenceFreq:
+    type: string
+    description: "Edoxen::Enums::RECURRENCE_FREQ."
+    enum: [secondly, minutely, hourly, daily, weekly, monthly, yearly]

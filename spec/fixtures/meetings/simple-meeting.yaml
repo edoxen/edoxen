@@ -6,7 +6,7 @@ identifier:
     number: "1"
 type: plenary
 status: completed
-year: 2024
+visibility: public
 
 date_range:
   start: 2024-01-15
@@ -18,12 +18,16 @@ city: FRPAR
 country_code: FR
 
 venues:
-  - name: Test Venue
+  - kind: physical
+    name: Test Venue
     address: 1 Test Street, Paris
+    country_code: FR
+    unlocode: FRPAR
 
-chair:
-  name: Test Chair
-  role: chair
+officers:
+  - role: chair
+    person:
+      name: Test Chair
 
 agenda:
   status: final
@@ -36,12 +40,6 @@ agenda:
       kind: numbered
       title: Approval of agenda
       outcome: resolved
-
-schedule:
-  - date: 2024-01-15
-    time: "09:00-10:00"
-    event: Opening session
-    room: Main hall
 
 deadlines:
   - date: 2024-01-10

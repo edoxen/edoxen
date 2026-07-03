@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Edoxen::Resolution do
+RSpec.describe Edoxen::Decision do
   describe "language-agnostic admin fields (LUTAML canonical)" do
     it "carries identifier as a collection of StructuredIdentifier" do
       payload = {
@@ -10,7 +10,7 @@ RSpec.describe Edoxen::Resolution do
           { "prefix" => "ISO", "number" => "2019-01" },
           { "prefix" => "TC154", "number" => "WG1" }
         ],
-        "type" => "decision",
+        "kind" => "resolution",
         "localizations" => [
           { "language_code" => "eng", "script" => "Latn", "title" => "T" }
         ]
@@ -19,13 +19,13 @@ RSpec.describe Edoxen::Resolution do
       expect(r.identifier).to be_an(Array)
       expect(r.identifier.size).to eq(2)
       expect(r.identifier.first).to be_a(Edoxen::StructuredIdentifier)
-      expect(r.type).to eq("decision")
+      expect(r.kind).to eq("resolution")
     end
 
-    it "carries LUTAML LutaML ResolutionType values" do
-      Edoxen::Enums::RESOLUTION_TYPE.each do |rt|
-        r = described_class.new(type: rt, identifier: [Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")])
-        expect(r.type).to eq(rt)
+    it "carries LUTAML DecisionKind values" do
+      Edoxen::Enums::DECISION_KIND.each do |k|
+        r = described_class.new(kind: k, identifier: [Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")])
+        expect(r.kind).to eq(k)
       end
     end
 
@@ -54,11 +54,31 @@ RSpec.describe Edoxen::Resolution do
       expect(r.doi).to eq("10.1234/abc")
       expect(r.urn).to eq("urn:x:y")
       expect(r.agenda_item).to eq("11.2")
-      expect(r.dates.first).to be_a(Edoxen::ResolutionDate)
+      expect(r.dates.first).to be_a(Edoxen::DecisionDate)
       expect(r.categories).to eq(["WG 1"])
       expect(r.meeting).to be_a(Edoxen::MeetingIdentifier)
-      expect(r.relations.first).to be_a(Edoxen::ResolutionRelation)
+      expect(r.relations.first).to be_a(Edoxen::DecisionRelation)
       expect(r.urls.first).to be_a(Edoxen::Url)
+    end
+  end
+
+  describe "procedural state machine fields" do
+    it "carries status as a DecisionStatus" do
+      Edoxen::Enums::DECISION_STATUS.each do |s|
+        d = described_class.new(status: s)
+        expect(d.status).to eq(s)
+      end
+    end
+
+    it "links back to its motion and component via URN strings" do
+      d = described_class.new(
+        brought_by_motions: ["urn:edoxen:motion:1"],
+        about_topics: ["urn:edoxen:topic:5"],
+        made_in_component: "urn:edoxen:component:plenary-3"
+      )
+      expect(d.brought_by_motions).to eq(["urn:edoxen:motion:1"])
+      expect(d.about_topics).to eq(["urn:edoxen:topic:5"])
+      expect(d.made_in_component).to eq("urn:edoxen:component:plenary-3")
     end
   end
 
@@ -76,7 +96,7 @@ RSpec.describe Edoxen::Resolution do
     it "exposes those fields via Localization" do
       payload = {
         "identifier" => [{ "prefix" => "X", "number" => "1" }],
-        "type" => "decision",
+        "kind" => "resolution",
         "localizations" => [
           {
             "language_code" => "eng", "script" => "Latn",
@@ -101,14 +121,36 @@ RSpec.describe Edoxen::Resolution do
     end
   end
 
+  describe "#in_language / #primary_localization" do
+    it "returns the matching Localization by code" do
+      d = described_class.new(
+        localizations: [
+          Edoxen::Localization.new(language_code: "fra", title: "Titre"),
+          Edoxen::Localization.new(language_code: "eng", title: "Title")
+        ]
+      )
+      expect(d.in_language("eng").title).to eq("Title")
+      expect(d.in_language("fra").title).to eq("Titre")
+      expect(d.in_language("deu")).to be_nil
+      expect(d.in_language("deu", fallback: true).title).to eq("Titre")
+    end
+
+    it "primary_localization falls back to first when eng is absent" do
+      d = described_class.new(
+        localizations: [Edoxen::Localization.new(language_code: "fra", title: "X")]
+      )
+      expect(d.primary_localization.language_code).to eq("fra")
+    end
+  end
+
   describe "real-world fixtures round-trip" do
     Dir.glob(File.expand_path("../fixtures/*.yaml", __dir__)).each do |fixture|
       it "round-trips #{File.basename(fixture)}" do
-        collection = Edoxen::ResolutionCollection.from_yaml(File.read(fixture))
-        reloaded = Edoxen::ResolutionCollection.from_yaml(collection.to_yaml)
-        expect(reloaded.resolutions.size).to eq(collection.resolutions.size)
-        expect(reloaded.resolutions.first.identifier).to eq(collection.resolutions.first.identifier)
-        expect(reloaded.resolutions.first.localizations).to eq(collection.resolutions.first.localizations)
+        collection = Edoxen::DecisionCollection.from_yaml(File.read(fixture))
+        reloaded = Edoxen::DecisionCollection.from_yaml(collection.to_yaml)
+        expect(reloaded.decisions.size).to eq(collection.decisions.size)
+        expect(reloaded.decisions.first.identifier).to eq(collection.decisions.first.identifier)
+        expect(reloaded.decisions.first.localizations).to eq(collection.decisions.first.localizations)
       end
     end
   end

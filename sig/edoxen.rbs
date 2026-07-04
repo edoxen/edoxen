@@ -358,6 +358,14 @@ module Edoxen
   class ExtensionAttribute < Lutaml::Model::Serializable
     attr_reader key: String?
     attr_reader value: String?
+    attr_reader integer_value: Integer?
+    attr_reader float_value: Float?
+    attr_reader boolean_value: bool?
+    attr_reader date_value: Date?
+    attr_reader date_time_value: untyped
+    attr_reader type: String?
+    def typed_value: -> untyped
+    alias string_value value
   end
 
   class MeetingExtension < Lutaml::Model::Serializable
@@ -365,7 +373,6 @@ module Edoxen
     attr_reader kind: String?
     attr_reader ref: String?
     attr_reader attributes: Array[ExtensionAttribute]?
-    attr_reader extensions: Array[MeetingExtension]?
   end
 
   # Officer.

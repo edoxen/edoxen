@@ -19,8 +19,8 @@ RSpec.describe Edoxen::MeetingExtension do
     payload = {
       "profile" => "ietf",
       "attributes" => [
-        { "key" => "wg_name", "value" => "quic" },
-        { "key" => "draft_name", "value" => "draft-ietf-quic-v2" }
+        { "key" => "wg_name", "type" => "string", "value" => "quic" },
+        { "key" => "draft_name", "type" => "string", "value" => "draft-ietf-quic-v2" }
       ]
     }
     ext = described_class.from_yaml(YAML.dump(payload))
@@ -28,21 +28,71 @@ RSpec.describe Edoxen::MeetingExtension do
     expect(ext.attributes.map(&:key)).to eq(%w[wg_name draft_name])
   end
 
-  it "supports nested extensions (recursive profile mechanism)" do
-    payload = {
-      "profile" => "outer",
-      "extensions" => [{ "profile" => "inner", "kind" => "x" }]
-    }
-    ext = described_class.from_yaml(YAML.dump(payload))
-    expect(ext.extensions.first).to be_a(described_class)
-    expect(ext.extensions.first.profile).to eq("inner")
+  # v2.1 tighten (TODO.refactor/47): the recursive `extensions[]` slot
+  # was removed. Profiles needing nesting use dotted keys in
+  # `attributes[]` instead.
+  it "no longer exposes the recursive `extensions[]` slot" do
+    expect(described_class.new).not_to respond_to(:extensions),
+      "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
   end
 end
 
 RSpec.describe Edoxen::ExtensionAttribute do
-  it "round-trips key + value" do
-    ea = described_class.from_yaml(YAML.dump("key" => "k", "value" => "v"))
+  it "round-trips key + value (v2.0 wire shape, string variant)" do
+    ea = described_class.from_yaml(YAML.dump("key" => "k", "type" => "string", "value" => "v"))
     expect(ea.key).to eq("k")
     expect(ea.value).to eq("v")
+    expect(ea.typed_value).to eq("v")
+  end
+
+  it "round-trips an integer value" do
+    ea = described_class.from_yaml(YAML.dump(
+      "key" => "quorum", "type" => "integer", "intValue" => 7
+    ))
+    expect(ea.integer_value).to eq(7)
+    expect(ea.typed_value).to eq(7)
+  end
+
+  it "round-trips a float value" do
+    ea = described_class.from_yaml(YAML.dump(
+      "key" => "ratio", "type" => "float", "floatValue" => 0.75
+    ))
+    expect(ea.float_value).to eq(0.75)
+    expect(ea.typed_value).to eq(0.75)
+  end
+
+  it "round-trips a boolean value" do
+    ea = described_class.from_yaml(YAML.dump(
+      "key" => "live", "type" => "boolean", "booleanValue" => true
+    ))
+    expect(ea.boolean_value).to eq(true)
+    expect(ea.typed_value).to eq(true)
+  end
+
+  it "round-trips a date value" do
+    ea = described_class.from_yaml(YAML.dump(
+      "key" => "effective", "type" => "date", "dateValue" => "2026-07-04"
+    ))
+    expect(ea.date_value).to eq(Date.new(2026, 7, 4))
+    expect(ea.typed_value).to eq(Date.new(2026, 7, 4))
+  end
+
+  it "round-trips a datetime value" do
+    ea = described_class.from_yaml(YAML.dump(
+      "key" => "start", "type" => "datetime",
+      "dateTimeValue" => "2026-07-04T10:00:00Z"
+    ))
+    expect(ea.date_time_value).to be_a(DateTime)
+    expect(ea.typed_value).to be_a(DateTime)
+  end
+
+  it "exposes value via #string_value alias for back-compat with v2.0 callers" do
+    ea = described_class.from_yaml(YAML.dump("key" => "k", "value" => "v"))
+    expect(ea.string_value).to eq("v")
+    expect(ea.value).to eq("v")
+  end
+
+  it "returns nil from #typed_value when no value field is set" do
+    expect(described_class.new(key: "k").typed_value).to be_nil
   end
 end

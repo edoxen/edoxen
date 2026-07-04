@@ -5,11 +5,21 @@ module Edoxen
   # Every core entity has an `extensions: MeetingExtension[0..*]` slot.
   # Adopters register their own profile namespace (e.g. "legco",
   # "us-congress", "ietf") and define `kind` values within it.
+  #
+  # Field semantics (tightened v2.1, per TODO.refactor/47):
+  #
+  #   profile    — the profile namespace (lowercase, hyphen-separated).
+  #   kind       — discriminator within the profile.
+  #   ref        — URN of the profile document this extension references.
+  #   attributes — typed key/value pairs (ExtensionAttribute).
+  #
+  # Recursion (`extensions: MeetingExtension[0..*]`) was removed in
+  # v2.1 — no documented use case. Profiles needing nesting can encode
+  # it via dotted keys ("vote.count", "vote.method") in `attributes[]`.
   class MeetingExtension < Lutaml::Model::Serializable
     attribute :profile, :string
     attribute :kind, :string
     attribute :ref, :string
     attribute :attributes, ExtensionAttribute, collection: true
-    attribute :extensions, MeetingExtension, collection: true
   end
 end

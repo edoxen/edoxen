@@ -545,16 +545,35 @@ $defs:
 
   ExtensionAttribute:
     type: object
-    description: "A key-value pair within a MeetingExtension."
+    description: |
+      One typed key/value pair within a MeetingExtension. Polymorphic on
+      value type so consumers don't re-parse strings back into Int/Float/
+      Bool/Date (v2.1 tighten, TODO.refactor/47).
     additionalProperties: false
-    required: [key, value]
     properties:
       key:   { type: string }
+      type:  { type: string, enum: [string, integer, float, boolean, date, datetime] }
+
+      # String variant — wire name `value` (v2.0 back-compat).
       value: { type: string }
+
+      # Typed variants (v2.1) — snake_case wire names (the gem uses
+      # snake_case Ruby attr names; lutaml-model emits them as-is).
+      integer_value:    { type: integer }
+      float_value:      { type: number }
+      boolean_value:    { type: boolean }
+      date_value:       { type: string, format: date }
+      date_time_value:  { type: string, format: date-time }
 
   MeetingExtension:
     type: object
-    description: "Profile-specific extension. Adopters register their namespace via `profile`."
+    description: |
+      Profile-specific extension. Adopters register their namespace via
+      `profile` and discriminate via `kind`. Field semantics tightened
+      v2.1 (TODO.refactor/47): `kind` is the in-profile discriminator,
+      `ref` is the URN of an external profile document, and the
+      recursive `extensions[]` slot was removed (YAGNI — use dotted
+      keys in `attributes[]` for nesting).
     additionalProperties: false
     properties:
       profile: { type: string }
@@ -564,10 +583,6 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/ExtensionAttribute"
-      extensions:
-        type: array
-        items:
-          $ref: "#/$defs/MeetingExtension"
 
   # ====================================================================
   # Shared structural types.

@@ -33,9 +33,10 @@ PARSED_FILES = LUTAML_FILES.map do |path|
   # `// Superseded by` is the project's marker for vestigial files kept
   # for traceability (Location, ScheduleItem, ScheduleItemLocalization).
   superseded = source.match?(/\A\s*\/\//) && source.include?("Superseded by")
-  classes = superseded ? [] : Edoxen::LutamlParser.parse(source)
+  classes = superseded ? [] : Edoxen::LutamlParser.parse(source).classes
+  enums   = superseded ? [] : Edoxen::LutamlParser.parse(source).enums
   { path: path, basename: basename, source: source,
-    superseded: superseded, classes: classes }
+    superseded: superseded, classes: classes, enums: enums }
 end.freeze
 
 # Index by class name so the spec can walk the inheritance chain on the
@@ -133,6 +134,45 @@ RSpec.describe "LutaML <-> Ruby sync" do
               "cardinality mismatch: LutaML collection=#{attr.collection}, " \
               "Ruby collection=#{ruby_attr.collection?} (file: #{parsed[:basename]})"
           end
+        end
+      end
+    end
+
+    # Enum sync (TODO 22): for every `enum FooBar { ... }` block, find
+    # the matching `Edoxen::Enums::FOO_BAR` constant and assert value-
+    # for-value equality. Closes the last uncovered link between the
+    # lutaml files and the gem.
+    parsed[:enums].each do |lutaml_enum|
+      describe "#{parsed[:basename]} :: #{lutaml_enum.name} (enum)" do
+        let(:ruby_const_name) { lutaml_enum.ruby_constant.to_sym }
+
+        let(:ruby_values) do
+          raise NameError, "Edoxen::Enums::#{lutaml_enum.ruby_constant} is not defined" \
+            unless Edoxen::Enums.const_defined?(ruby_const_name)
+
+          Edoxen::Enums.const_get(ruby_const_name)
+        end
+
+        it "has a matching Edoxen::Enums constant" do
+          expect(Edoxen::Enums).to be_const_defined(ruby_const_name),
+            "No Edoxen::Enums::#{lutaml_enum.ruby_constant} for LutaML enum " \
+            "#{lutaml_enum.name} (file: #{parsed[:basename]})"
+        end
+
+        it "has matching values (order-independent)" do
+          expect(ruby_values).to match_array(lutaml_enum.values),
+            "LutaML enum #{lutaml_enum.name} (=#{lutaml_enum.values.inspect}) " \
+            "differs from Edoxen::Enums::#{lutaml_enum.ruby_constant} " \
+            "(=#{ruby_values.inspect}); update both in the same commit " \
+            "(file: #{parsed[:basename]})"
+        end
+
+        it "is frozen on the Ruby side" do
+          # Every Edoxen::Enums::* constant should be frozen — the
+          # schema-enum-sync spec asserts this in detail, but a quick
+          # check here catches accidental regressions.
+          expect(ruby_values).to be_frozen,
+            "Edoxen::Enums::#{lutaml_enum.ruby_constant} should be frozen"
         end
       end
     end

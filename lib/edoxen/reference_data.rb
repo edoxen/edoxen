@@ -43,12 +43,27 @@ module Edoxen
       UAIEV USMIA USNYC USORL VNSGN ZACPT
     ].freeze
 
+    # Memoise the registries so we don't re-parse the bundled datasets on
+    # every lookup. Each gem's Registry is immutable after construction.
+    @unlocodes_registry = nil
+    @iata_registry = nil
+
     class << self
+      # @return [Unlocodes::Registry]
+      def unlocodes_registry
+        @unlocodes_registry ||= Unlocodes::Registry.load_default
+      end
+
+      # @return [Iata::Registry]
+      def iata_registry
+        @iata_registry ||= Iata::Registry.load_default
+      end
+
       # Look up a UN/LOCODE entry via the canonical `unlocodes` gem.
       # @param code [String, #to_s] 5-character UN/LOCODE
       # @return [Unlocodes::Entry, nil]
       def find_unlocode(code)
-        Unlocodes.find(code.to_s.upcase)
+        unlocodes_registry.find(code.to_s.upcase)
       end
 
       def unlocode_exists?(code)
@@ -59,7 +74,7 @@ module Edoxen
       # @param code [String, #to_s] 3-character IATA code
       # @return [Iata::Entry, nil]
       def find_iata(code)
-        Iata.find(code.to_s.upcase)
+        iata_registry.find(code.to_s.upcase)
       end
 
       def iata_exists?(code)

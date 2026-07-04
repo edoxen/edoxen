@@ -7,11 +7,11 @@ module Edoxen
   # TODO.meeting-agenda/10-future-enhancements.md).
   #
   # Distinct from Agenda (the business order drafted before the
-  # meeting) and from ResolutionCollection (the formal decisions
+  # meeting) and from DecisionCollection (the formal decisions
   # adopted). The Minutes are the running record.
   #
   # Sections are typically keyed by agenda-item number so consumers
-  # can join Minutes ↔ AgendaItem ↔ Resolution by `number`/`label`.
+  # can join Minutes ↔ AgendaItem ↔ Decision by `number`/`label`.
   class Minutes < Lutaml::Model::Serializable
     attribute :identifier, StructuredIdentifier, collection: true
     attribute :urn, :string

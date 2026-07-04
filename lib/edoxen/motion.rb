@@ -29,7 +29,7 @@ module Edoxen
     end
 
     def pending?
-      %w[introduced seconded debating question_put voting].include?(status)
+      status && !Enums::MOTION_TERMINAL.include?(status)
     end
   end
 end

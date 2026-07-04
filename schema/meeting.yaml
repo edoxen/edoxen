@@ -28,7 +28,7 @@ $defs:
 
   StructuredIdentifier:
     type: object
-    description: "prefix + number identifier. A Meeting carries 1..*."
+    description: "An identifier (prefix + number). A Decision carries 1..* of these."
     additionalProperties: false
     required: [prefix, number]
     properties:
@@ -37,7 +37,7 @@ $defs:
 
   SourceUrl:
     type: object
-    description: "Per-language canonical source URL (PDF, page, register link)."
+    description: "Per-language canonical source URL (e.g. one PDF per language)."
     additionalProperties: false
     required: [ref]
     properties:
@@ -63,7 +63,7 @@ $defs:
 
   Person:
     type: object
-    description: "Identity + role + affiliation + contact + kind."
+    description: "Identity + role + affiliation + contact."
     additionalProperties: false
     properties:
       name:        { type: string }
@@ -80,7 +80,7 @@ $defs:
 
   HostRef:
     type: object
-    description: "Typed reference to an organization that hosts or co-organizes a meeting."
+    description: "Typed reference to a hosting organization."
     additionalProperties: false
     required: [ref]
     properties:
@@ -179,7 +179,7 @@ $defs:
 
   Reference:
     type: object
-    description: "Generic document reference (used by AgendaItem.references)."
+    description: "Generic document reference."
     additionalProperties: false
     properties:
       ref:   { type: string }
@@ -313,7 +313,11 @@ $defs:
 
   Venue:
     type: object
-    description: "Polymorphic place where a Meeting happens. `kind` discriminates physical/virtual."
+    description: |
+      Polymorphic place where a Meeting happens. `kind` discriminates
+      physical vs virtual; all fields from both subtypes live here as
+      optional siblings. Validators (Edoxen::VenueValidator) enforce
+      that fields match `kind`.
     additionalProperties: false
     properties:
       kind:              { $ref: "#/$defs/VenueKind" }
@@ -361,7 +365,7 @@ $defs:
 
   RecurrenceByDay:
     type: object
-    description: "BYDAY part of a recurrence."
+    description: "BYDAY part of a recurrence. `ordinal` is null for 'every', +1 for first, -1 for last."
     additionalProperties: false
     properties:
       ordinal: { type: integer }
@@ -405,6 +409,10 @@ $defs:
         type: array
         items: { type: integer }
       week_start: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   ExtensionAttribute:
     type: object
@@ -417,7 +425,7 @@ $defs:
 
   MeetingExtension:
     type: object
-    description: "Profile-specific extension."
+    description: "Profile-specific extension. Adopters register their namespace via `profile`."
     additionalProperties: false
     properties:
       profile: { type: string }

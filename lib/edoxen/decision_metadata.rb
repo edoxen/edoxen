@@ -16,6 +16,8 @@ module Edoxen
     # URN back-reference to the Meeting that produced this collection.
     attribute :meeting_urn, :string
 
+    attribute :extensions, MeetingExtension, collection: true
+
     def city_entry
       return nil if city.nil? || city.to_s.empty?
 

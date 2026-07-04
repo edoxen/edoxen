@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Meeting do
+  it_behaves_like "extension host", factory: { "identifier" => [{ "prefix" => "X", "number" => "1" }] }
+
   describe "LUTAML MeetingType coverage" do
     Edoxen::Enums::MEETING_TYPE.each do |t|
       it "round-trips type=#{t}" do
@@ -33,7 +35,9 @@ RSpec.describe Edoxen::Meeting do
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",
                                     "ordinal" => 56, "type" => "plenary",
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
-                                    "venues" => [{ "kind" => "physical", "name" => "OIML HQ", "lat" => 48.87, "lon" => 2.34 }],
+                                    "venues" => [{ "kind" => "physical",
+                                                   "name" => "OIML HQ",
+                                                   "lat" => 48.87, "lon" => 2.34 }],
                                     "officers" => [{ "role" => "chair", "person" => { "name" => "Roman Schwartz" } }],
                                     "agenda" => {
                                       "status" => "final",

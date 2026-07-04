@@ -90,11 +90,11 @@ module Edoxen
 
     # All physical venues (polymorphic Venue filter).
     def physical_venues
-      (venues || []).select { |v| v.kind == "physical" }
+      venues_by_kind("physical")
     end
 
     def virtual_venues
-      (venues || []).select { |v| v.kind == "virtual" }
+      venues_by_kind("virtual")
     end
 
     def hybrid?
@@ -107,6 +107,12 @@ module Edoxen
 
     def physical_only?
       !physical_venues.empty? && virtual_venues.empty?
+    end
+
+    private
+
+    def venues_by_kind(kind)
+      (venues || []).select { |v| v.kind == kind }
     end
   end
 end

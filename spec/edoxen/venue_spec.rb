@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Venue do
+  it_behaves_like "extension host", factory: {}
+
   describe "kind discriminator" do
     it "is physical? when kind=physical" do
       v = described_class.new(kind: "physical", name: "Hall")
@@ -43,7 +45,7 @@ RSpec.describe Edoxen::Venue do
       "kind" => "virtual",
       "name" => "Zoom",
       "uri" => "https://zoom.us/j/123",
-      "features" => ["audio", "video"],
+      "features" => %w[audio video],
       "passcode" => "1234",
       "meeting_id" => "987654",
       "waiting_room" => true

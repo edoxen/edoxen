@@ -43,10 +43,6 @@ module Edoxen
       UAIEV USMIA USNYC USORL VNSGN ZACPT
     ].freeze
 
-    # @deprecated Use {UNLOCODES}. Retained for one release to ease
-    # migration; will be removed in the next minor.
-    CITY_CODES = UNLOCODES
-
     class << self
       # Look up a UN/LOCODE entry via the canonical `unlocodes` gem.
       # @param code [String, #to_s] 5-character UN/LOCODE

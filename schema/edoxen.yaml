@@ -182,7 +182,7 @@ $defs:
     type: object
     description: "Per-language canonical source URL (e.g. one PDF per language)."
     additionalProperties: false
-    required: [ref, format, language_code]
+    required: [ref]
     properties:
       ref:           { type: string }
       format:        { type: string }
@@ -275,6 +275,10 @@ $defs:
         type: string
         pattern: "^[A-Z]{2}$"
       meeting_urn:   { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   # ====================================================================
   # Procedural: Motion, Voting, VotingCounts.

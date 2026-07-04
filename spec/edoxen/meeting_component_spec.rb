@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::MeetingComponent do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips all fields" do
     payload = {
       "identifier" => "comp-1",

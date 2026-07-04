@@ -50,12 +50,6 @@ module Edoxen
       adoption drafted discussed proposed decided negatived withdrawn published effective
     ].freeze
 
-    # Legacy aliases kept for traceability — point to the new Decision-side
-    # constants. New code should use DECISION_*.
-    RESOLUTION_TYPE = DECISION_KIND
-    RESOLUTION_RELATION_TYPE = DECISION_RELATION_TYPE
-    RESOLUTION_DATE_TYPE = DECISION_DATE_TYPE
-
     APPROVAL_TYPE = %w[affirmative negative].freeze
 
     APPROVAL_DEGREE = %w[unanimous majority minority].freeze
@@ -124,6 +118,12 @@ module Edoxen
       introduced seconded debating question_put voting
       carried negatived withdrawn lapsed
     ].freeze
+
+    # Terminal MotionStatus values — `Motion#pending?` is the complement.
+    # Kept as a separate constant (not derived) because the partition is
+    # semantic, not lexical; the spec in motion_spec.rb asserts the union
+    # equals MOTION_STATUS and the intersection is empty (MECE).
+    MOTION_TERMINAL = %w[carried negatived withdrawn lapsed].freeze
 
     VOTING_STATUS = %w[called in_progress decided withdrawn deferred].freeze
 

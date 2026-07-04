@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Motion do
+  it_behaves_like "extension host", factory: {}
+
   describe "LUTAML MotionStatus coverage" do
     Edoxen::Enums::MOTION_STATUS.each do |s|
       it "round-trips status=#{s}" do
@@ -51,6 +53,22 @@ RSpec.describe Edoxen::Motion do
 
     it "returns false once terminal" do
       expect(described_class.new(status: "carried")).not_to be_pending
+    end
+
+    it "returns false when status is nil" do
+      expect(described_class.new).not_to be_pending
+    end
+
+    # MECE coverage: MOTION_STATUS partitions cleanly into terminal and
+    # non-terminal. Catches a future enum addition that forgets to update
+    # MOTION_TERMINAL.
+    it "MOTION_TERMINAL ∪ (MOTION_STATUS \\ MOTION_TERMINAL) == MOTION_STATUS" do
+      expect(Edoxen::Enums::MOTION_TERMINAL).to(
+        satisfy { |t| (t & Edoxen::Enums::MOTION_STATUS) == t },
+        "MOTION_TERMINAL must be a subset of MOTION_STATUS"
+      )
+      expect(Edoxen::Enums::MOTION_TERMINAL).not_to be_empty
+      expect(Edoxen::Enums::MOTION_STATUS - Edoxen::Enums::MOTION_TERMINAL).not_to be_empty
     end
   end
 end

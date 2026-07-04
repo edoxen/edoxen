@@ -2,6 +2,8 @@
 
 require "edoxen"
 
+require_relative "support/extension_host_shared_examples"
+
 RSpec.configure do |config|
   # Persist pass/fail status so subsequent runs can target only the failing
   # examples (`bundle exec rspec --only-failures`).

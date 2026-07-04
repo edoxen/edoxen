@@ -5,11 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] — 2026-07-XX
+## [2.0.0] — 2026-07-04
 
 Edoxen v2.0 broadens the model from a standards-body-specific Resolution
 model to a **generic meeting, agenda, motion, voting, and decision
 model** with profile extensions for domain-specific concepts.
+
+### Post-launch drift closures (2026-07-04)
+
+Per the post-v2 model↔gem drift audit (`edoxen-model/TODO.refactor/20-post-v2-gem-drift.md`):
+
+- Added `extensions: MeetingExtension[0..*]` to `DecisionMetadata` —
+  closes the inverse drift where the gem was missing what every other
+  v2 collection-level entity already had.
+
 
 ### Breaking changes
 

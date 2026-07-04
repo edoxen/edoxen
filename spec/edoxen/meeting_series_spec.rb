@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::MeetingSeries do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips series admin + recurrence + members" do
     payload = {
       "identifier" => [{ "prefix" => "ISO/TC154", "number" => "PlenarySeries" }],

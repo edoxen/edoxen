@@ -556,5 +556,22 @@ module Edoxen
   end
 
   class Cli
+    Profile: Struct[untyped]
+    PROFILES: Hash[Symbol, Profile]
+
+    module Batch
+      Result: Struct[untyped]
+      def self?.run: (untyped cli, String pattern, ?header: String, ?summary_extra: Array[[String, untyped]]) { (String file) -> Result } -> void
+      def self?.expand: (String pattern) -> Array[String]
+      def self?.print_summary: (untyped cli, Integer total, Integer ok, Integer bad, Array[[String, untyped]] extra) -> void
+    end
+
+    def initialize: (*untyped args) -> void
+    def validate: (String pattern) -> void
+    def normalize: (String pattern) -> void
+    def validate_meetings: (String pattern) -> void
+    def normalize_meetings: (String pattern) -> void
+    def unlocode: (String code) -> void
+    def iata: (String code) -> void
   end
 end

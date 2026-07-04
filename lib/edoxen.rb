@@ -25,7 +25,7 @@ module Edoxen
   autoload :Enums, "edoxen/enums"
   autoload :ReferenceData, "edoxen/reference_data"
 
-  # --- Decision-side (renamed from Resolution in v2.0) -----------------
+  # --- Decision side ----------------------------------------------------
   autoload :StructuredIdentifier, "edoxen/structured_identifier"
   autoload :MeetingIdentifier, "edoxen/meeting_identifier"
   autoload :DecisionDate, "edoxen/decision_date"
@@ -40,13 +40,10 @@ module Edoxen
   autoload :DecisionMetadata, "edoxen/decision_metadata"
   autoload :DecisionCollection, "edoxen/decision_collection"
 
-  # --- Meeting/Agenda side (existing) ----------------------------------
+  # --- Meeting/Agenda side ----------------------------------------------
   autoload :DateRange, "edoxen/date_range"
-  autoload :Location, "edoxen/location"  # deprecated, kept for traceability
   autoload :Person, "edoxen/person"
   autoload :HostRef, "edoxen/host_ref"
-  autoload :ScheduleItemLocalization, "edoxen/schedule_item_localization"  # deprecated
-  autoload :ScheduleItem, "edoxen/schedule_item"  # deprecated, use MeetingComponent
   autoload :Deadline, "edoxen/deadline"
   autoload :Reference, "edoxen/reference"
   autoload :AgendaItem, "edoxen/agenda_item"
@@ -61,7 +58,7 @@ module Edoxen
   autoload :MeetingCollectionMetadata, "edoxen/meeting_collection_metadata"
   autoload :MeetingCollection, "edoxen/meeting_collection"
 
-  # --- v2.0 broadened-scope entities -----------------------------------
+  # --- v2 broadened-scope entities --------------------------------------
   autoload :ExtensionAttribute, "edoxen/extension_attribute"
   autoload :MeetingExtension, "edoxen/meeting_extension"
   autoload :Venue, "edoxen/venue"
@@ -81,7 +78,7 @@ module Edoxen
   autoload :Officer, "edoxen/officer"
   autoload :VenueValidator, "edoxen/venue_validator"
 
-  # Services.
+  # --- Services ---------------------------------------------------------
   autoload :SchemaValidator, "edoxen/schema_validator"
   autoload :LinkChecker, "edoxen/link_checker"
   autoload :Cli, "edoxen/cli"

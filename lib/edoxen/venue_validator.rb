@@ -16,10 +16,7 @@ module Edoxen
     end
 
     def validate(auto_populate: false)
-      return errors unless venue.is_a?(PhysicalVenue)
-
-      validate_unlocode(auto_populate: auto_populate) if venue.unlocode && !venue.unlocode.to_s.empty?
-      validate_iata_code if venue.iata_code && !venue.iata_code.to_s.empty?
+      validate_physical(auto_populate: auto_populate) if venue.physical?
 
       errors
     end
@@ -30,6 +27,11 @@ module Edoxen
     end
 
     private
+
+    def validate_physical(auto_populate:)
+      validate_unlocode(auto_populate: auto_populate) if venue.unlocode && !venue.unlocode.to_s.empty?
+      validate_iata_code if venue.iata_code && !venue.iata_code.to_s.empty?
+    end
 
     def validate_unlocode(auto_populate:)
       entry = Edoxen::ReferenceData.find_unlocode(venue.unlocode)

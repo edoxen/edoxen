@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Person do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips a full person record" do
     payload = {
       "name" => "Jane Doe", "role" => "chair",

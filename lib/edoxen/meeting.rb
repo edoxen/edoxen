@@ -17,6 +17,10 @@ module Edoxen
     attribute :type, :string, values: Enums::MEETING_TYPE
     attribute :status, :string, values: Enums::MEETING_STATUS
     attribute :visibility, :string, values: Enums::VISIBILITY
+    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
+    # "CIML Meeting", "Plenary", "Board Meeting"). Resolves to a short
+    # canonical value via the parent collection's `body_vocabulary[]`.
+    attribute :body_type, :string
 
     attribute :date_range, DateRange
     attribute :recurrence, Recurrence

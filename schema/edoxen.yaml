@@ -228,6 +228,7 @@ $defs:
         $ref: "#/$defs/DecisionKind"
       status:
         $ref: "#/$defs/DecisionStatus"
+      body_type:          { type: string }
       doi:               { type: string }
       urn:               { type: string }
       agenda_item:       { type: string }
@@ -290,10 +291,30 @@ $defs:
         type: string
         pattern: "^[A-Z]{2}$"
       meeting_urn:   { type: string }
+      body_vocabulary:
+        type: array
+        items:
+          $ref: "#/$defs/BodyVocabularyEntry"
       extensions:
         type: array
         items:
           $ref: "#/$defs/MeetingExtension"
+
+  # ====================================================================
+  # Body vocabulary (v2.1, TODO.refactor/46).
+  # ====================================================================
+
+  BodyVocabularyEntry:
+    type: object
+    description: |
+      One entry in a per-dataset body_vocabulary list. Maps a free-form
+      body_type to a short canonical value. SSOT for body_type ->
+      canonical_type resolution within the declaring collection.
+    additionalProperties: false
+    properties:
+      body_type:      { type: string }
+      canonical_type: { type: string }
+      definition:     { type: string }
 
   # ====================================================================
   # Procedural: Motion, Voting, VotingCounts.
@@ -687,6 +708,7 @@ $defs:
       identifier:  { type: string }
       urn:         { type: string }
       kind:        { $ref: "#/$defs/ComponentKind" }
+      body_type:   { type: string }
       title:       { type: string }
       description: { type: string }
       starts_at:   { type: string, format: date-time }
@@ -823,6 +845,14 @@ $defs:
     description: "Edoxen::Enums::DECISION_KIND."
     enum: [resolution, order, ruling, determination, recommendation, statement, finding, opinion, other]
 
+  DecisionKindCanonical:
+    type: string
+    description: |
+      Edoxen::Enums::DECISION_KIND_CANONICAL — short abstract set (v2.1,
+      TODO.refactor/46). Bodies extend via `body_type` + per-dataset
+      `body_vocabulary[]`.
+    enum: [decision, recommendation, statement, finding, other]
+
   DecisionStatus:
     type: string
     description: "Edoxen::Enums::DECISION_STATUS."
@@ -892,6 +922,13 @@ $defs:
     type: string
     description: "Edoxen::Enums::COMPONENT_KIND."
     enum: [track, session, debate, breakout, bof, plenary_session, working_group_session, committee_of_the_whole, keynote, address, statement, question_time, opening, closing, break, reception, registration, networking, other]
+
+  ComponentKindCanonical:
+    type: string
+    description: |
+      Edoxen::Enums::COMPONENT_KIND_CANONICAL — short abstract set
+      (v2.1, TODO.refactor/46).
+    enum: [deliberative, working, ceremonial, break, other]
 
   OfficerRole:
     type: string

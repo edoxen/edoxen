@@ -62,6 +62,7 @@ module Edoxen
   autoload :ExtensionAttribute, "edoxen/extension_attribute"
   autoload :MeetingExtension, "edoxen/meeting_extension"
   autoload :EntityRef, "edoxen/entity_ref"
+  autoload :BodyVocabularyEntry, "edoxen/body_vocabulary_entry"
   autoload :Venue, "edoxen/venue"
   autoload :PhysicalVenue, "edoxen/physical_venue"
   autoload :VirtualVenue, "edoxen/virtual_venue"

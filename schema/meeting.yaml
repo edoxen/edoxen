@@ -502,6 +502,7 @@ $defs:
       identifier:  { type: string }
       urn:         { type: string }
       kind:        { $ref: "#/$defs/ComponentKind" }
+      body_type:   { type: string }
       title:       { type: string }
       description: { type: string }
       starts_at:   { type: string, format: date-time }
@@ -599,6 +600,7 @@ $defs:
       type:               { $ref: "#/$defs/MeetingType" }
       status:             { $ref: "#/$defs/MeetingStatus" }
       visibility:         { $ref: "#/$defs/Visibility" }
+      body_type:          { type: string }
 
       date_range:         { $ref: "#/$defs/DateRange" }
       recurrence:         { $ref: "#/$defs/Recurrence" }
@@ -685,6 +687,23 @@ $defs:
     properties:
       title:  { type: string }
       source: { type: string }
+      body_vocabulary:
+        type: array
+        items:
+          $ref: "#/$defs/BodyVocabularyEntry"
+
+  BodyVocabularyEntry:
+    type: object
+    description: |
+      One entry in a per-dataset body_vocabulary list (v2.1,
+      TODO.refactor/46). Maps a free-form body_type to a short
+      canonical value. SSOT for body_type -> canonical_type resolution
+      within the declaring collection.
+    additionalProperties: false
+    properties:
+      body_type:      { type: string }
+      canonical_type: { type: string }
+      definition:     { type: string }
 
   MeetingCollection:
     type: object
@@ -707,6 +726,14 @@ $defs:
     type: string
     description: "Edoxen::Enums::MEETING_TYPE."
     enum: [plenary, working_group, task_group, ad_hoc, joint, general_assembly, committee, subcommittee, conference, workshop, seminar, webinar, hearing, markup, board_meeting, annual_general_meeting, other]
+
+  MeetingTypeCanonical:
+    type: string
+    description: |
+      Edoxen::Enums::MEETING_TYPE_CANONICAL — short abstract set (v2.1,
+      TODO.refactor/46). No `other` escape — bodies pick the closest
+      fit and use `body_type` for body-specific terminology.
+    enum: [plenary, governing, working, advisory]
 
   MeetingStatus:
     type: string

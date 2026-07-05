@@ -25,6 +25,10 @@ module Edoxen
     attribute :about_topics, :string, collection: true
     attribute :made_in_component, :string
     attribute :localizations, Localization, collection: true
+    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
+    # "Resolution", "Order", "Ruling"). Resolves to a short canonical
+    # value via the parent collection's `body_vocabulary[]`.
+    attribute :body_type, :string
     attribute :extensions, MeetingExtension, collection: true
 
     def in_language(code, fallback: false)

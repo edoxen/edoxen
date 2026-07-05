@@ -11,6 +11,10 @@ module Edoxen
     attribute :identifier, :string
     attribute :urn, :string
     attribute :kind, :string, values: Enums::COMPONENT_KIND
+    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
+    # "Working Group Session", "Public Bill Committee Stage"). Resolves
+    # to a short canonical value via the parent collection's vocabulary.
+    attribute :body_type, :string
     attribute :title, :string
     attribute :description, :string
     attribute :starts_at, :date_time

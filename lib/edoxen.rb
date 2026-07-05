@@ -42,11 +42,11 @@ module Edoxen
 
   # --- Meeting/Agenda side (existing) ----------------------------------
   autoload :DateRange, "edoxen/date_range"
-  autoload :Location, "edoxen/location"  # deprecated, kept for traceability
+  autoload :Location, "edoxen/location" # deprecated, kept for traceability
   autoload :Person, "edoxen/person"
   autoload :HostRef, "edoxen/host_ref"
-  autoload :ScheduleItemLocalization, "edoxen/schedule_item_localization"  # deprecated
-  autoload :ScheduleItem, "edoxen/schedule_item"  # deprecated, use MeetingComponent
+  autoload :ScheduleItemLocalization, "edoxen/schedule_item_localization" # deprecated
+  autoload :ScheduleItem, "edoxen/schedule_item" # deprecated, use MeetingComponent
   autoload :Deadline, "edoxen/deadline"
   autoload :Reference, "edoxen/reference"
   autoload :AgendaItem, "edoxen/agenda_item"

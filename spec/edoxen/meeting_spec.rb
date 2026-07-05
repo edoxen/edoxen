@@ -33,7 +33,8 @@ RSpec.describe Edoxen::Meeting do
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",
                                     "ordinal" => 56, "type" => "plenary",
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
-                                    "venues" => [{ "kind" => "physical", "name" => "OIML HQ", "lat" => 48.87, "lon" => 2.34 }],
+                                    "venues" => [{ "kind" => "physical", "name" => "OIML HQ", "lat" => 48.87,
+                                                   "lon" => 2.34 }],
                                     "officers" => [{ "role" => "chair", "person" => { "name" => "Roman Schwartz" } }],
                                     "agenda" => {
                                       "status" => "final",

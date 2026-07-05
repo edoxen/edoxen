@@ -46,4 +46,30 @@ RSpec.describe Edoxen::VenueValidator do
       expect(validator).to be_valid
     end
   end
+
+  describe "flat Venue dispatched by kind (not by subclass)" do
+    # Regression for the is_a?(PhysicalVenue) bug: anything parsed from
+    # YAML is a flat Venue regardless of `kind`. The validator must
+    # dispatch on `kind`, not on Ruby subclass, or every venue parsed
+    # from a real meeting file silently skips validation.
+    it "validates a flat Venue with kind=physical and bad UN/LOCODE" do
+      allow(Edoxen::ReferenceData).to receive(:find_unlocode).with("ZZZZZ").and_return(nil)
+      venue = Edoxen::Venue.new(kind: "physical", unlocode: "ZZZZZ")
+      validator = described_class.new(venue)
+      expect(validator).not_to be_valid
+      expect(validator.errors).to include("Unknown UN/LOCODE: ZZZZZ")
+    end
+
+    it "validates a flat Venue with kind=physical and good UN/LOCODE" do
+      entry = Struct.new(:code, :name, :country).new("FRPAR", "Paris", "FR")
+      allow(Edoxen::ReferenceData).to receive(:find_unlocode).with("FRPAR").and_return(entry)
+      venue = Edoxen::Venue.from_yaml(YAML.dump("kind" => "physical", "unlocode" => "FRPAR"))
+      expect(described_class.new(venue)).to be_valid
+    end
+
+    it "skips validation for a flat Venue with kind=virtual" do
+      venue = Edoxen::Venue.new(kind: "virtual", uri: "https://zoom.us/j/1")
+      expect(described_class.new(venue)).to be_valid
+    end
+  end
 end

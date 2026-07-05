@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Venue do
+  it_behaves_like "extension host", factory: {}
+
   describe "kind discriminator" do
     it "is physical? when kind=physical" do
       v = described_class.new(kind: "physical", name: "Hall")

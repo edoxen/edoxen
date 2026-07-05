@@ -7,6 +7,7 @@ require "spec_helper"
 # in schema/meeting.yaml equals the matching Edoxen::Enums::* frozen array.
 MEETING_SCHEMA_ENUM_BINDINGS = {
   "MeetingType" => :MEETING_TYPE,
+  "MeetingTypeCanonical" => :MEETING_TYPE_CANONICAL,
   "MeetingStatus" => :MEETING_STATUS,
   "AgendaStatus" => :AGENDA_STATUS,
   "AgendaItemKind" => :AGENDA_ITEM_KIND,

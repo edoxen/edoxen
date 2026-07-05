@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Officer do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips role + person + term" do
     payload = {
       "role" => "chair",

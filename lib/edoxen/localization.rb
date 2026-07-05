@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # A monolingual rendering of a Resolution. Mirrors the glossarist
+  # A monolingual rendering of a Decision. Mirrors the glossarist
   # LocalizedConcept pattern: language-agnostic fields live on the
-  # parent Resolution; per-language content lives here.
+  # parent Decision; per-language content lives here.
   class Localization < Lutaml::Model::Serializable
     attribute :language_code, :string
     attribute :script, :string

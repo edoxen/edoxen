@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Voting do
+  it_behaves_like "extension host", factory: {}
+
   describe "LUTAML VotingStatus / VotingMethod / VotingOutcome coverage" do
     it "round-trips status, method, result" do
       payload = {

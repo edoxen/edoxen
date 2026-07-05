@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # Top-level container for many Meetings. Parallel to
-  # ResolutionCollection.
+  # Top-level container for many Meetings. Parallel to DecisionCollection.
   class MeetingCollection < Lutaml::Model::Serializable
     attribute :metadata, MeetingCollectionMetadata
     attribute :meetings, Meeting, collection: true

@@ -61,10 +61,6 @@ RSpec.describe Edoxen::ReferenceData do
     end
   end
 
-  it "keeps CITY_CODES as a deprecated alias of UNLOCODES for one release" do
-    expect(described_class::CITY_CODES).to equal(described_class::UNLOCODES)
-  end
-
   describe ".find_unlocode" do
     it "returns an Unlocodes::Entry for a known code" do
       entry = described_class.find_unlocode("FRPAR")

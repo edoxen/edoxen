@@ -18,17 +18,6 @@ module Edoxen
     attribute :notes, :string
     attribute :extensions, MeetingExtension, collection: true
 
-    key_value do
-      map "decision_ref", to: :decision_ref
-      map "voting_ref", to: :voting_ref
-      map "person", to: :person
-      map "affiliation", to: :affiliation
-      map "vote", to: :vote
-      map "role", to: :role
-      map "notes", to: :notes
-      map "extensions", to: :extensions
-    end
-
     def affirmative?
       vote == "affirmative"
     end

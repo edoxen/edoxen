@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Topic do
+  it_behaves_like "extension host", factory: {}
+
   it "carries all admin fields" do
     payload = {
       "identifier" => "topic-1",
@@ -38,6 +40,8 @@ RSpec.describe Edoxen::Topic do
 end
 
 RSpec.describe Edoxen::TopicDocument do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips all fields" do
     payload = {
       "identifier" => "doc-1",
@@ -57,6 +61,8 @@ RSpec.describe Edoxen::TopicDocument do
 end
 
 RSpec.describe Edoxen::TopicAsset do
+  it_behaves_like "extension host", factory: {}
+
   it "round-trips all fields" do
     payload = {
       "identifier" => "img-1",

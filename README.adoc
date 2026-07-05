@@ -162,13 +162,22 @@ Voting                                        ├── localizations: MeetingLo
 
 MeetingExtension (profile mechanism)
 ├── profile (e.g. "legco", "ietf", "us-congress")
-├── kind
-├── ref (URN to external profile record)
-└── attributes: ExtensionAttribute[] {key, value}
+├── kind (in-profile discriminator)
+├── ref (URN to external profile document)
+└── attributes: ExtensionAttribute[]
+     ├── key
+     ├── type (string | integer | float | boolean | date | datetime)
+     └── value / integer_value / float_value / boolean_value /
+         date_value / date_time_value (one of, per `type`)
 ----
 
 Every core entity has an `extensions: MeetingExtension[0..*]` slot.
 Adopters extend the generic core without modifying it.
+
+`ExtensionAttribute` is polymorphic on value type — consumers read the
+typed payload via `#typed_value` without re-parsing strings back into
+Int/Float/Bool/Date. The v2.0 bare `value: String` wire shape still
+parses (routed into the string variant).
 
 === Polymorphic Venue
 
@@ -326,7 +335,18 @@ IATA:       JFK
 
 Every core entity has an `extensions: MeetingExtension[0..*]` slot.
 Adopters register a profile namespace and define extension kinds within
-it.
+it. `MeetingExtension` carries three identity fields plus a typed
+`attributes[]` list:
+
+* `profile` — the namespace (lowercase, hyphen-separated).
+* `kind` — discriminator within the profile.
+* `ref` — URN of an external profile document, when the data lives
+  elsewhere.
+* `attributes[]` — typed key/value pairs (`ExtensionAttribute`).
+
+`ExtensionAttribute` is polymorphic on value type (v2.1+). Set `type`
+to one of `string | integer | float | boolean | date | datetime` and
+populate the matching value field:
 
 [source,yaml]
 ----
@@ -338,10 +358,34 @@ extensions:
     kind: wg_meeting_meta
     attributes:
       - key: wg_name
+        type: string
         value: quic
       - key: draft_name
+        type: string
         value: draft-ietf-quic-v2
+      - key: quorum
+        type: integer
+        integer_value: 7
+      - key: live_stream
+        type: boolean
+        boolean_value: true
+      - key: start
+        type: datetime
+        date_time_value: 2026-07-04T10:00:00Z
 ----
+
+Read the typed payload in Ruby via `#typed_value`:
+
+[source,ruby]
+----
+attr = extension.attributes.find { |a| a.key == "quorum" }
+attr.type            # => "integer"
+attr.integer_value   # => 7
+attr.typed_value     # => 7
+----
+
+The v2.0 bare `value: String` wire shape still parses (routed into
+the string variant; `type` defaults to `string`).
 
 Consumers ignore profile extensions they don't understand. See
 https://github.com/edoxen/edoxen-model/tree/main/references/profiles[the

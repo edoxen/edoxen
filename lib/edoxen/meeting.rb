@@ -17,6 +17,10 @@ module Edoxen
     attribute :type, :string, values: Enums::MEETING_TYPE
     attribute :status, :string, values: Enums::MEETING_STATUS
     attribute :visibility, :string, values: Enums::VISIBILITY
+    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
+    # "CIML Meeting", "Plenary", "Board Meeting"). Resolves to a short
+    # canonical value via the parent collection's `body_vocabulary[]`.
+    attribute :body_type, :string
 
     attribute :date_range, DateRange
     attribute :recurrence, Recurrence
@@ -90,11 +94,11 @@ module Edoxen
 
     # All physical venues (polymorphic Venue filter).
     def physical_venues
-      (venues || []).select { |v| v.kind == "physical" }
+      venues_by_kind("physical")
     end
 
     def virtual_venues
-      (venues || []).select { |v| v.kind == "virtual" }
+      venues_by_kind("virtual")
     end
 
     def hybrid?
@@ -107,6 +111,12 @@ module Edoxen
 
     def physical_only?
       !physical_venues.empty? && virtual_venues.empty?
+    end
+
+    private
+
+    def venues_by_kind(kind)
+      (venues || []).select { |v| v.kind == kind }
     end
   end
 end

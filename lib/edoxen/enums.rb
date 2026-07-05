@@ -36,6 +36,14 @@ module Edoxen
       recommendation statement finding opinion other
     ].freeze
 
+    # DecisionKindCanonical — the short abstract set (v2.1, TODO.refactor/46).
+    # Bodies extend via `body_type: String` + per-dataset `body_vocabulary[]`
+    # on DecisionMetadata. `other` is a temporary escape while the
+    # vocabulary stabilises; v3.0 removes it.
+    #
+    # Cap: 5 canonical values (hard limit per the v2.1 design review).
+    DECISION_KIND_CANONICAL = %w[decision recommendation statement finding other].freeze
+
     # DecisionStatus — lifecycle state machine.
     DECISION_STATUS = %w[
       draft proposed under_consideration
@@ -49,12 +57,6 @@ module Edoxen
     DECISION_DATE_TYPE = %w[
       adoption drafted discussed proposed decided negatived withdrawn published effective
     ].freeze
-
-    # Legacy aliases kept for traceability — point to the new Decision-side
-    # constants. New code should use DECISION_*.
-    RESOLUTION_TYPE = DECISION_KIND
-    RESOLUTION_RELATION_TYPE = DECISION_RELATION_TYPE
-    RESOLUTION_DATE_TYPE = DECISION_DATE_TYPE
 
     APPROVAL_TYPE = %w[affirmative negative].freeze
 
@@ -71,6 +73,13 @@ module Edoxen
       committee subcommittee conference workshop seminar webinar hearing
       markup board_meeting annual_general_meeting other
     ].freeze
+
+    # MeetingTypeCanonical — the short abstract set (v2.1, TODO.refactor/46).
+    # Bodies extend via `body_type: String` + per-dataset `body_vocabulary[]`
+    # on MeetingCollectionMetadata.
+    #
+    # Cap: 4 canonical values (no `other` — bodies pick the closest fit).
+    MEETING_TYPE_CANONICAL = %w[plenary governing working advisory].freeze
 
     MEETING_STATUS = %w[upcoming completed cancelled].freeze
 
@@ -120,10 +129,22 @@ module Edoxen
       opening closing break reception registration networking other
     ].freeze
 
+    # ComponentKindCanonical — the short abstract set (v2.1, TODO.refactor/46).
+    # `other` is a temporary escape while the vocabulary stabilises.
+    #
+    # Cap: 5 canonical values.
+    COMPONENT_KIND_CANONICAL = %w[deliberative working ceremonial break other].freeze
+
     MOTION_STATUS = %w[
       introduced seconded debating question_put voting
       carried negatived withdrawn lapsed
     ].freeze
+
+    # Terminal MotionStatus values — `Motion#pending?` is the complement.
+    # Kept as a separate constant (not derived) because the partition is
+    # semantic, not lexical; the spec in motion_spec.rb asserts the union
+    # equals MOTION_STATUS and the intersection is empty (MECE).
+    MOTION_TERMINAL = %w[carried negatived withdrawn lapsed].freeze
 
     VOTING_STATUS = %w[called in_progress decided withdrawn deferred].freeze
 

@@ -7,7 +7,7 @@ module Edoxen
   # Unified validation failure shape. Produced by both:
   #   * SchemaValidator — JSON-Schema violations and YAML syntax errors
   #     carry source: :schema (or :syntax for Psych::SyntaxError).
-  #   * ResolutionCollection.from_yaml rescues in the CLI — model parse
+  #   * DecisionCollection.from_yaml rescues in the CLI — model parse
   #     failures carry source: :model.
   #
   # One type at the seam means callers (CLI, future renderers, tests)

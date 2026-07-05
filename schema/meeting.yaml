@@ -28,16 +28,31 @@ $defs:
 
   StructuredIdentifier:
     type: object
-    description: "prefix + number identifier. A Meeting carries 1..*."
+    description: "An identifier (prefix + number). A Decision carries 1..* of these."
     additionalProperties: false
     required: [prefix, number]
     properties:
       prefix: { type: string }
       number: { type: string }
 
+  EntityRef:
+    type: object
+    description: |
+      Typed cross-reference between entities (v2.1, TODO.refactor/44).
+      Exactly one of `urn`, `identifier`, or `local_ref` should be set;
+      the gem's `EntityRef#valid?` enforces this in Ruby.
+    additionalProperties: false
+    properties:
+      urn:         { type: string }
+      identifier:  { $ref: "#/$defs/StructuredIdentifier" }
+      local_ref:   { type: string }
+      kind:        { type: string }
+      role:        { type: string }
+      note:        { type: string }
+
   SourceUrl:
     type: object
-    description: "Per-language canonical source URL (PDF, page, register link)."
+    description: "Per-language canonical source URL (e.g. one PDF per language)."
     additionalProperties: false
     required: [ref]
     properties:
@@ -63,7 +78,7 @@ $defs:
 
   Person:
     type: object
-    description: "Identity + role + affiliation + contact + kind."
+    description: "Identity + role + affiliation + contact."
     additionalProperties: false
     properties:
       name:        { type: string }
@@ -80,7 +95,7 @@ $defs:
 
   HostRef:
     type: object
-    description: "Typed reference to an organization that hosts or co-organizes a meeting."
+    description: "Typed reference to a hosting organization."
     additionalProperties: false
     required: [ref]
     properties:
@@ -179,7 +194,7 @@ $defs:
 
   Reference:
     type: object
-    description: "Generic document reference (used by AgendaItem.references)."
+    description: "Generic document reference."
     additionalProperties: false
     properties:
       ref:   { type: string }
@@ -313,7 +328,11 @@ $defs:
 
   Venue:
     type: object
-    description: "Polymorphic place where a Meeting happens. `kind` discriminates physical/virtual."
+    description: |
+      Polymorphic place where a Meeting happens. `kind` discriminates
+      physical vs virtual; all fields from both subtypes live here as
+      optional siblings. Validators (Edoxen::VenueValidator) enforce
+      that fields match `kind`.
     additionalProperties: false
     properties:
       kind:              { $ref: "#/$defs/VenueKind" }
@@ -361,7 +380,7 @@ $defs:
 
   RecurrenceByDay:
     type: object
-    description: "BYDAY part of a recurrence."
+    description: "BYDAY part of a recurrence. `ordinal` is null for 'every', +1 for first, -1 for last."
     additionalProperties: false
     properties:
       ordinal: { type: integer }
@@ -405,19 +424,37 @@ $defs:
         type: array
         items: { type: integer }
       week_start: { type: string }
+      extensions:
+        type: array
+        items:
+          $ref: "#/$defs/MeetingExtension"
 
   ExtensionAttribute:
     type: object
-    description: "A key-value pair within a MeetingExtension."
+    description: |
+      One typed key/value pair within a MeetingExtension. Polymorphic on
+      value type so consumers don't re-parse strings back into Int/Float/
+      Bool/Date (v2.1 tighten, TODO.refactor/47).
     additionalProperties: false
-    required: [key, value]
     properties:
       key:   { type: string }
-      value: { type: string }
+      type:  { type: string, enum: [string, integer, float, boolean, date, datetime] }
+      value:           { type: string }
+      integer_value:    { type: integer }
+      float_value:      { type: number }
+      boolean_value:    { type: boolean }
+      date_value:       { type: string, format: date }
+      date_time_value:  { type: string, format: date-time }
 
   MeetingExtension:
     type: object
-    description: "Profile-specific extension."
+    description: |
+      Profile-specific extension. Adopters register their namespace via
+      `profile` and discriminate via `kind`. Field semantics tightened
+      v2.1 (TODO.refactor/47): `kind` is the in-profile discriminator,
+      `ref` is the URN of an external profile document, and the
+      recursive `extensions[]` slot was removed (YAGNI — use dotted
+      keys in `attributes[]` for nesting).
     additionalProperties: false
     properties:
       profile: { type: string }
@@ -427,10 +464,6 @@ $defs:
         type: array
         items:
           $ref: "#/$defs/ExtensionAttribute"
-      extensions:
-        type: array
-        items:
-          $ref: "#/$defs/MeetingExtension"
 
   Officer:
     type: object
@@ -469,6 +502,7 @@ $defs:
       identifier:  { type: string }
       urn:         { type: string }
       kind:        { $ref: "#/$defs/ComponentKind" }
+      body_type:   { type: string }
       title:       { type: string }
       description: { type: string }
       starts_at:   { type: string, format: date-time }
@@ -566,6 +600,7 @@ $defs:
       type:               { $ref: "#/$defs/MeetingType" }
       status:             { $ref: "#/$defs/MeetingStatus" }
       visibility:         { $ref: "#/$defs/Visibility" }
+      body_type:          { type: string }
 
       date_range:         { $ref: "#/$defs/DateRange" }
       recurrence:         { $ref: "#/$defs/Recurrence" }
@@ -652,6 +687,23 @@ $defs:
     properties:
       title:  { type: string }
       source: { type: string }
+      body_vocabulary:
+        type: array
+        items:
+          $ref: "#/$defs/BodyVocabularyEntry"
+
+  BodyVocabularyEntry:
+    type: object
+    description: |
+      One entry in a per-dataset body_vocabulary list (v2.1,
+      TODO.refactor/46). Maps a free-form body_type to a short
+      canonical value. SSOT for body_type -> canonical_type resolution
+      within the declaring collection.
+    additionalProperties: false
+    properties:
+      body_type:      { type: string }
+      canonical_type: { type: string }
+      definition:     { type: string }
 
   MeetingCollection:
     type: object
@@ -674,6 +726,14 @@ $defs:
     type: string
     description: "Edoxen::Enums::MEETING_TYPE."
     enum: [plenary, working_group, task_group, ad_hoc, joint, general_assembly, committee, subcommittee, conference, workshop, seminar, webinar, hearing, markup, board_meeting, annual_general_meeting, other]
+
+  MeetingTypeCanonical:
+    type: string
+    description: |
+      Edoxen::Enums::MEETING_TYPE_CANONICAL — short abstract set (v2.1,
+      TODO.refactor/46). No `other` escape — bodies pick the closest
+      fit and use `body_type` for body-specific terminology.
+    enum: [plenary, governing, working, advisory]
 
   MeetingStatus:
     type: string

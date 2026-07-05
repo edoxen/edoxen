@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::AgendaItem do
+  it_behaves_like "extension host", factory: {}
+
   describe "LUTAML AgendaItemKind coverage" do
     Edoxen::Enums::AGENDA_ITEM_KIND.each do |k|
       it "round-trips kind=#{k}" do

@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::DecisionMetadata do
+  it_behaves_like "extension host", factory: {}
+
   describe "canonical fields" do
     it "carries title, date, source, source_urls, city, country_code" do
       payload = {

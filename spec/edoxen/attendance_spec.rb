@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Attendance do
+  it_behaves_like "extension host", factory: { "person" => { "name" => "Jane" }, "status" => "present" }
+
   describe "LUTAML ParticipationStatus coverage" do
     Edoxen::Enums::PARTICIPATION_STATUS.each do |status|
       it "round-trips status=#{status}" do

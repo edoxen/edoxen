@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::Recurrence do
+  it_behaves_like "extension host", factory: { "freq" => "monthly" }
+
   it "round-trips all BYxxx parts" do
     payload = {
       "freq" => "monthly",

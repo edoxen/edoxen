@@ -18,17 +18,6 @@ module Edoxen
     attribute :notes, :string
     attribute :extensions, MeetingExtension, collection: true
 
-    key_value do
-      map "person", to: :person
-      map "status", to: :status
-      map "role", to: :role
-      map "response", to: :response
-      map "affiliation", to: :affiliation
-      map "proxy_for", to: :proxy_for
-      map "notes", to: :notes
-      map "extensions", to: :extensions
-    end
-
     def present?
       status == "present"
     end

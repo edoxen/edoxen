@@ -5,11 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] — 2026-07-XX
+## [2.1.0] — 2026-07-05
+
+Edoxen v2.1 is a backwards-compatible minor release that tightens the
+profile mechanism and adds the LutaML↔Ruby regression net.
+
+### Added
+
+- **LutaML ↔ Ruby sync spec** (`spec/edoxen/lutaml_ruby_sync_spec.rb`):
+  walks every `class` block in `edoxen-model/models/*.lutaml` and
+  asserts the matching `Edoxen::*` Ruby class declares the same
+  attribute names + collection flags. Closes the root-cause gap from
+  the v2.0 drift audit.
+- **LutaML enum ↔ Ruby sync** (in the same spec): walks every `enum`
+  block and asserts value-for-value equality with the matching
+  `Edoxen::Enums::*` constant.
+- **Typed ExtensionAttribute variants**: `integer_value`, `float_value`,
+  `boolean_value`, `date_value`, `date_time_value` plus a `type`
+  discriminator. New `#typed_value` reader picks the right variant.
+  String values still use the bare `value:` wire name (v2.0 back-compat).
+
+### Changed
+
+- **MeetingExtension field semantics documented.** `kind` is the
+  in-profile discriminator; `ref` is the URN of an external profile
+  document. Field behavior is unchanged; the docs are now explicit.
+- **LutaML model files** synced to match the gem after the drift audit
+  closed four real drifts (Voting.method, Agenda three drifts, missing
+  url.lutaml, vestigial subject_body.lutaml).
+
+### Removed
+
+- **Recursive `extensions[]` slot on MeetingExtension.** YAGNI — no
+  documented use case. Profiles needing nesting use dotted keys
+  (`vote.count`, `vote.method`) in `attributes[]`.
+
+### Compatibility
+
+v2.0 fixtures continue to parse and round-trip unchanged. The v2.0
+bare `value: String` wire shape on ExtensionAttribute still works;
+the gem routes it into the string variant with `type` defaulted to
+`"string"`.
+
+## [2.0.0] — 2026-07-04
 
 Edoxen v2.0 broadens the model from a standards-body-specific Resolution
 model to a **generic meeting, agenda, motion, voting, and decision
 model** with profile extensions for domain-specific concepts.
+
+### Post-launch drift closures (2026-07-04)
+
+Per the post-v2 model↔gem drift audit (`edoxen-model/TODO.refactor/20-post-v2-gem-drift.md`):
+
+- Added `extensions: MeetingExtension[0..*]` to `DecisionMetadata` —
+  closes the inverse drift where the gem was missing what every other
+  v2 collection-level entity already had.
+
 
 ### Breaking changes
 

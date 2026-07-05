@@ -48,6 +48,21 @@ $defs:
       number:
         type: string
 
+  EntityRef:
+    type: object
+    description: |
+      Typed cross-reference between entities (v2.1, TODO.refactor/44).
+      Exactly one of `urn`, `identifier`, or `local_ref` should be set;
+      the gem's `EntityRef#valid?` enforces this in Ruby.
+    additionalProperties: false
+    properties:
+      urn:         { type: string }
+      identifier:  { $ref: "#/$defs/StructuredIdentifier" }
+      local_ref:   { type: string }
+      kind:        { type: string }
+      role:        { type: string }
+      note:        { type: string }
+
   MeetingIdentifier:
     type: object
     description: "Identifies the meeting a Decision belongs to."
@@ -298,9 +313,12 @@ $defs:
         items:
           $ref: "#/$defs/Person"
       status:              { $ref: "#/$defs/MotionStatus" }
-      introduced_at:       { type: string, format: date-time }
-      proposed_decision:   { type: string }
-      resulting_decision:  { type: string }
+      introduced_at:          { type: string, format: date-time }
+      proposed_decision:      { type: string }
+      resulting_decision:     { type: string }
+      # Pilot EntityRef field (v2.1, TODO.refactor/44). Parallel to
+      # `resulting_decision`. Prefer in new code; bare String removed v3.0.
+      resulting_decision_ref: { $ref: "#/$defs/EntityRef" }
       votings:
         type: array
         items: { type: string }

@@ -35,6 +35,21 @@ $defs:
       prefix: { type: string }
       number: { type: string }
 
+  EntityRef:
+    type: object
+    description: |
+      Typed cross-reference between entities (v2.1, TODO.refactor/44).
+      Exactly one of `urn`, `identifier`, or `local_ref` should be set;
+      the gem's `EntityRef#valid?` enforces this in Ruby.
+    additionalProperties: false
+    properties:
+      urn:         { type: string }
+      identifier:  { $ref: "#/$defs/StructuredIdentifier" }
+      local_ref:   { type: string }
+      kind:        { type: string }
+      role:        { type: string }
+      note:        { type: string }
+
   SourceUrl:
     type: object
     description: "Per-language canonical source URL (e.g. one PDF per language)."

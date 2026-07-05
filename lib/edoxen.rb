@@ -61,6 +61,7 @@ module Edoxen
   # --- v2 broadened-scope entities --------------------------------------
   autoload :ExtensionAttribute, "edoxen/extension_attribute"
   autoload :MeetingExtension, "edoxen/meeting_extension"
+  autoload :EntityRef, "edoxen/entity_ref"
   autoload :Venue, "edoxen/venue"
   autoload :PhysicalVenue, "edoxen/physical_venue"
   autoload :VirtualVenue, "edoxen/virtual_venue"

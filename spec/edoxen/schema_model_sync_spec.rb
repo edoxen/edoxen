@@ -16,6 +16,7 @@ require "spec_helper"
 # Mapping from each Ruby model class to its `$defs` name in the schema.
 SCHEMA_MODEL_BINDINGS = {
   Edoxen::StructuredIdentifier => "StructuredIdentifier",
+  Edoxen::EntityRef => "EntityRef",
   Edoxen::MeetingIdentifier => "MeetingIdentifier",
   Edoxen::DecisionDate => "DecisionDate",
   Edoxen::Action => "Action",

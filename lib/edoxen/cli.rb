@@ -180,7 +180,7 @@ module Edoxen
       say "  Subdiv:    #{entry.subdivision}" if entry.subdivision
       coords = entry.coordinates
       say "  Coords:    #{coords}" if coords
-      funcs = entry.functions.compact.map(&:to_s)
+      funcs = entry.function_codes.compact
       say "  Functions: #{funcs.join(", ")}" unless funcs.empty?
     end
 

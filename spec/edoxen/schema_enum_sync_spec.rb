@@ -6,8 +6,6 @@ require "spec_helper"
 # `lib/edoxen/enums.rb`. Declared outside the describe block so rubocop
 # doesn't flag it as `Lint/ConstantDefinitionInBlock`.
 SCHEMA_ENUM_BINDINGS = {
-  "ActionType" => :ACTION_TYPE,
-  "ConsiderationType" => :CONSIDERATION_TYPE,
   "ApprovalType" => :APPROVAL_TYPE,
   "ApprovalDegree" => :APPROVAL_DEGREE,
   "DecisionKind" => :DECISION_KIND,

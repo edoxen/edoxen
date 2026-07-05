@@ -73,7 +73,7 @@ RSpec.describe Edoxen::SchemaValidator do
       expect(errors.first.message_text).to include("missing required property: localizations")
     end
 
-    it "reports an `enum` violation when an action verb is not in ActionType" do
+    it "accepts a non-canonical action verb (ActionType is permissive)" do
       content = <<~YAML
         ---
         decisions:
@@ -92,8 +92,8 @@ RSpec.describe Edoxen::SchemaValidator do
                     message: x
       YAML
       errors = validator.validate_content(content, "memory")
-      expect(errors).not_to be_empty
-      expect(errors.first.message_text).to include("not one of")
+      expect(errors).to be_empty,
+                        "Expected no errors (ActionType is permissive); got: #{errors.map(&:message_text).inspect}"
     end
 
     it "reports a `pattern` violation for an invalid ISO 639-3 code" do
@@ -121,6 +121,8 @@ RSpec.describe Edoxen::SchemaValidator do
     end
 
     it "uses longest-prefix line lookup (no path-shape hardcoding)" do
+      # ActionType is now permissive (v2.1+), so use a non-canonical
+      # DecisionKind to trigger an enum violation instead.
       content = <<~YAML
         ---
         metadata:
@@ -129,12 +131,13 @@ RSpec.describe Edoxen::SchemaValidator do
           - identifier:
               - prefix: X
                 number: "1"
+            kind: not-a-valid-kind
             localizations:
               - language_code: eng
                 script: Latn
                 title: T
                 actions:
-                  - type: not-a-verb
+                  - type: resolves
                     date_effective:
                       date: 2024-01-15
                       type: adoption
@@ -143,9 +146,9 @@ RSpec.describe Edoxen::SchemaValidator do
       errors = validator.validate_content(content, "memory")
       enum_error = errors.find { |e| e.message_text.include?("not one of") }
       expect(enum_error).not_to be_nil
-      # /decisions/0 is on line 5; /decisions/0/localizations/0/actions/0/type
-      # is on line 13. Longest-prefix match should locate line 13 specifically.
-      expect(enum_error.line).to be >= 12
+      # /decisions/0 is on line 5; /decisions/0/kind is on line 8.
+      # Longest-prefix match should locate line 8 specifically.
+      expect(enum_error.line).to be >= 7
     end
   end
 end

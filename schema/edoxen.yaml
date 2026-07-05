@@ -777,58 +777,22 @@ $defs:
 
   ActionType:
     type: string
-    description: "Edoxen::Enums::ACTION_TYPE."
-    enum:
-      - adopts
-      - thanks
-      - approves
-      - decides
-      - declares
-      - asks
-      - invites
-      - resolves
-      - confirms
-      - welcomes
-      - recommends
-      - requests
-      - congratulates
-      - instructs
-      - urges
-      - appoints
-      - calls-upon
-      - encourages
-      - affirms
-      - elects
-      - authorizes
-      - charges
-      - states
-      - remarks
-      - judges
-      - sanctions
-      - abrogates
-      - empowers
+    description: |
+      Action verb. Edoxen::Enums::ACTION_TYPE lists the canonical set
+      (28 values). The schema is permissive — adopters may use
+      body-specific verbs (e.g. "scopes", "directs", "establishes")
+      outside the canonical set. The canonical set is advisory; the
+      body_vocabulary mechanism (v2.1, TODO.refactor/46) will
+      eventually map body-specific verbs to canonical types.
 
   ConsiderationType:
+  ConsiderationType:
     type: string
-    description: "Edoxen::Enums::CONSIDERATION_TYPE."
-    enum:
-      - having
-      - noting
-      - recognizing
-      - acknowledging
-      - recalling
-      - reaffirming
-      - considering
-      - taking-into-account
-      - pursuant-to
-      - bearing-in-mind
-      - emphasizing
-      - concerned
-      - accepts
-      - observing
-      - referring
-      - acting
-      - empowers
+    description: |
+      Consideration verb. Edoxen::Enums::CONSIDERATION_TYPE lists the
+      canonical set. The schema is permissive — adopters may use
+      body-specific verbs outside the canonical set (same rationale as
+      ActionType).
 
   ApprovalType:
     type: string

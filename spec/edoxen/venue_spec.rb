@@ -43,7 +43,7 @@ RSpec.describe Edoxen::Venue do
       "kind" => "virtual",
       "name" => "Zoom",
       "uri" => "https://zoom.us/j/123",
-      "features" => ["audio", "video"],
+      "features" => %w[audio video],
       "passcode" => "1234",
       "meeting_id" => "987654",
       "waiting_room" => true

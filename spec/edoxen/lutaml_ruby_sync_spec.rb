@@ -16,7 +16,7 @@ require "pathname"
 #     ScheduleItemLocalization — vestigial; gem deleted the Ruby side).
 #   - The `_*.lutaml.deprecated` files (SubjectBody; same reason).
 #   - `enum` blocks (covered by schema_enum_sync_spec transitively).
-#   - The whole suite, with a single pending message, when the
+#   - The whole suite, with a per-example skip message, when the
 #     sibling `edoxen-model/` repo isn't checked out.
 
 # Resolve at load time (plain constants, not `let` — `let` is unavailable
@@ -47,9 +47,12 @@ LUTAML_BY_NAME = PARSED_FILES.flat_map { |f| f[:classes] }
 
 SUPERSEDED_FILES = PARSED_FILES.select { |f| f[:superseded] }.map { |f| f[:basename] }
 
-RSpec.describe "LutaML <-> Ruby sync" do
-  pending "edoxen-model repo not found at #{MODELS_DIR}; skipping LutaML sync" if LUTAML_FILES.empty?
+SKIP_MESSAGE = "edoxen-model repo not checked out at #{MODELS_DIR}; skipping LutaML sync".freeze
 
+# Keyed on directory existence, not glob emptiness: a checkout that IS
+# present but yields no *.lutaml files is a broken path/glob, and the
+# sanity check below must fail loudly rather than be skipped.
+RSpec.describe "LutaML <-> Ruby sync", skip: MODELS_DIR.directory? ? false : SKIP_MESSAGE do
   it "found at least one lutaml file (sanity check)" do
     expect(LUTAML_FILES).not_to be_empty, "expected models/*.lutaml to be non-empty"
   end

@@ -5,10 +5,105 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] — 2026-07-06
+
+Patch release. Bundles the v2.2 OCP refactor (Contact family), the
+post-v2.2 audit cleanup, and the gem↔model canonical-schema sync spec.
+
+### Added
+
+- **Contact family** (v2.2 OCP refactor): `Contact`, `Name`,
+  `ContactMethod`, `ContactIdentifier` classes plus
+  `CONTACT_METHOD_KIND` and `CONTACT_IDENTIFIER_KIND` enums. `Person`
+  now inherits from `Contact`; the hard-coded `email` / `phone` /
+  `orcid` fields are replaced by typed `contact_methods[]` and
+  `identifiers[]` collections. New channel/identifier kinds land via
+  the enum (or `other` + extensions) — no model change (OCP).
+- **BodyVocabularyHost / LocalizationHost / OfficersHost modules.**
+  DRY the `body_vocabulary` + `canonical_type_for` lookup, the
+  `in_language` + `primary_localization` accessors, and the
+  `officers_with_role` + `chair` accessors across the classes that
+  share them.
+- **Behavioral specs for Contact, ContactMethod, ContactIdentifier,
+  Name** — each with the typed ExtensionAttribute round-trip via
+  `it_behaves_like "extension host"`.
+- **MECE parity spec** (`spec/edoxen/mece_parity_spec.rb`) covering
+  all four v2.1 bidirectional pairs (Motion↔Decision, Decision↔
+  Component, Decision↔Topic, Motion↔Voting). Guards the v3.0
+  stored-side removal.
+- **Canonical-enum ≤5 architectural invariant** in
+  `body_vocabulary_spec.rb`.
+- **Body-vocabulary metadata YAML round-trip** on both
+  `DecisionMetadata` and `MeetingCollectionMetadata`.
+- **Cross-schema sync spec** (`spec/edoxen/schema_cross_file_sync_spec.rb`):
+  23 shared `$defs` between `schema/edoxen.yaml` and `schema/meeting.yaml`
+  enforced byte-equal. Discovery spec catches future omissions from
+  `SHARED_NAMES`.
+- **Gem↔model canonical schema sync spec**
+  (`spec/edoxen/schema_model_canonical_sync_spec.rb`, 126 examples):
+  every `$defs` entry in the gem's mirror schemas is enforced
+  byte-equal to the model's canonical `schema/decision-collection.yaml`
+  and `schema/meeting.yaml`. Skips when the model repo isn't checked
+  out.
+
+### Changed
+
+- **EntityRef XOR contract enforced.** `EntityRef#valid?` now returns
+  true only when exactly one of `urn` / `identifier` / `local_ref` is
+  set (was: any number ≥1). New `#multiple_identities?` predicate
+  flags ambiguous data. The wire contract documented in
+  `edoxen-model/TODO.refactor/44-entityref-typed-cross-references.md`
+  is now truthful.
+- **`Motion#pending?` derived from `Edoxen::Enums::MOTION_TERMINAL`.**
+  New constant partitions `MOTION_STATUS` cleanly; a coverage spec
+  asserts the union equals `MOTION_STATUS` (MECE invariant).
+- **CLI refactored to a Profile-based dispatch.** `validate` /
+  `normalize` / `validate-meetings` / `normalize-meetings` collapse to
+  one-line delegations; option parsing and batch scaffolding share a
+  single runner.
+- **VenueValidator dispatches on `kind`, not `is_a?`.** Wire-parsed
+  Venues (always flat `Venue`, never `PhysicalVenue`) now validate
+  correctly.
+- **`LutamlParser.parse` refactored into five small state-handler
+  methods.** Cyclomatic and perceived complexity now within rubocop
+  limits. `LutamlEnum.values` renamed to `.items` to avoid
+  `Struct#values` / `#entries` override.
+- **`Name#display` single-pass reject** (was: two passes).
+- **`annexOf` / `hasAnnex` → `annex_of` / `has_annex`** across gem
+  Ruby, gem schema, model lutaml, and model schema. The camelCase
+  outliers were the only wire-form inconsistency in any enum.
+
+### Removed
+
+- **Dead identity `key_value` blocks** on `EntityRef` and
+  `BodyVocabularyEntry` (lutaml-model auto-emits identity maps).
+- **`respond_to?(:to_s)`** in `EntityRef#identities_set` — replaced
+  with a `case` over `nil` / `String` / else.
+- **Duplicate `canonical_type_for`**, `in_language` /
+  `primary_localization`, and `officers_with_role` / `chair`
+  implementations — moved to the new shared modules.
+
+### Infrastructure
+
+- **`.rubocop.yml` `TargetRubyVersion` 2.6 → 3.1.** `NewCops: enable`.
+  `Metrics/ModuleLength` excluded for the spec-side LutaML parser;
+  `Metrics/BlockLength` excluded for spec files generally.
+- **`edoxen.gemspec` `required_ruby_version` 3.0 → 3.1.** Ruby 3.0
+  reached EOL March 2024. Migrated to `YAML.safe_load_file`.
+- **`TODO.*/` added to `.gitignore`** — local planning notes never
+  committed.
+- **`entry.country` → `entry.country_iso2`** in the `edoxen iata` CLI
+  (was calling a method that didn't exist on `Iata::Entry`).
+
+### Test results
+
+1339 examples, 0 failures. 0 rubocop offenses.
+
 ## [2.1.0] — 2026-07-05
 
 Edoxen v2.1 is a backwards-compatible minor release that tightens the
 profile mechanism and adds the LutaML↔Ruby regression net.
+
 
 ### Added
 

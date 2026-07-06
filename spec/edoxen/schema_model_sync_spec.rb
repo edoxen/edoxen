@@ -42,7 +42,11 @@ SCHEMA_MODEL_BINDINGS = {
   Edoxen::Officer => "Officer",
   Edoxen::ComponentLocalization => "ComponentLocalization",
   Edoxen::MeetingComponent => "MeetingComponent",
-  Edoxen::MeetingSeries => "MeetingSeries"
+  Edoxen::MeetingSeries => "MeetingSeries",
+  Edoxen::ContactMethod => "ContactMethod",
+  Edoxen::ContactIdentifier => "ContactIdentifier",
+  Edoxen::Name => "Name",
+  Edoxen::Contact => "Contact"
 }.freeze
 
 RSpec.describe "Schema <-> Ruby model shape sync" do

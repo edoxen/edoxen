@@ -27,7 +27,7 @@ venues:
 officers:
   - role: chair
     person:
-      name: Test Chair
+      name: { formatted: Test Chair }
 
 agenda:
   status: final

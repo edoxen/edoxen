@@ -33,14 +33,15 @@ venues:
 officers:
   - role: chair
     person:
-      name: Jianfang Zhang
+      name: { formatted: Jianfang Zhang }
       affiliation: SAC (CNIS)
   - role: secretary
     person:
-      name: Jianfang Zhang
+      name: { formatted: Jianfang Zhang }
       affiliation: SAC (CNIS)
-      email: zhangjf@cnis.gov.cn
-      phone: "+86-10-58811613"
+      contact_methods:
+        - { kind: email, value: zhangjf@cnis.gov.cn }
+        - { kind: phone, value: "+86-10-58811613" }
 
 hosts:
   - ref: calconnect

@@ -39,6 +39,8 @@ module Edoxen
     attribute :source_urls, SourceUrl, collection: true
     attribute :landing_url, :string
     attribute :registration_url, :string
+    attribute :note, :string
+    attribute :contact, Contact
 
     attribute :agenda, Agenda
     attribute :components, MeetingComponent, collection: true

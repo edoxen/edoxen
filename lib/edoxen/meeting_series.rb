@@ -12,7 +12,7 @@ module Edoxen
     attribute :description, :string
     attribute :recurrence, Recurrence
     attribute :term, :string
-    attribute :organizer, Person
+    attribute :contact, Contact
     attribute :hosts, HostRef, collection: true
     attribute :kind, :string
     attribute :meeting_refs, :string, collection: true

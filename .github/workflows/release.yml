@@ -28,6 +28,11 @@ jobs:
       - name: Configure RubyGems OIDC Trusted Publishing
         uses: rubygems/configure-rubygems-credentials@v1.0.0
 
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Release
         run: |
           gem install gem-release

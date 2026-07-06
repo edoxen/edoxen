@@ -24,6 +24,20 @@ RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
         %w[deliberative working ceremonial break other]
       )
     end
+
+    # Architectural invariant (TODO.refactor/46): canonical enums cap
+    # at 5. Bodies extend via `body_type: String` + per-dataset
+    # `body_vocabulary[]`, NOT by growing the canonical enum. A future
+    # PR that adds a sixth value silently breaks the design — this
+    # example fails first.
+    it "every *_CANONICAL enum is within the v2.1 cap of 5" do
+      %i[DECISION_KIND_CANONICAL MEETING_TYPE_CANONICAL COMPONENT_KIND_CANONICAL].each do |c|
+        size = Edoxen::Enums.const_get(c).size
+        expect(size).to be <= 5,
+                        "#{c} has #{size} values; the v2.1 canonical cap is 5. " \
+                        "Extend via body_vocabulary instead."
+      end
+    end
   end
 
   describe "body_type field on the three core entities" do
@@ -46,10 +60,10 @@ RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
   describe Edoxen::BodyVocabularyEntry do
     it "round-trips body_type + canonical_type + definition" do
       entry = described_class.from_yaml(YAML.dump(
-        "body_type" => "CIML Meeting",
-        "canonical_type" => "plenary",
-        "definition" => "Annual decision-making meeting of the CIML"
-      ))
+                                          "body_type" => "CIML Meeting",
+                                          "canonical_type" => "plenary",
+                                          "definition" => "Annual decision-making meeting of the CIML"
+                                        ))
       expect(entry.body_type).to eq("CIML Meeting")
       expect(entry.canonical_type).to eq("plenary")
       expect(entry.definition).to eq("Annual decision-making meeting of the CIML")
@@ -104,6 +118,63 @@ RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
 
     it "is permissive on unknown body_types" do
       expect(metadata.canonical_type_for("Mystery Meeting")).to eq("Mystery Meeting")
+    end
+  end
+
+  # End-to-end YAML round-trip: parses a metadata block as it appears
+  # in a real fixture, exercises the lookup via the parsed Ruby object,
+  # then re-serialises and re-parses to confirm shape preservation.
+  describe "DecisionMetadata YAML round-trip with body_vocabulary" do
+    let(:yaml) do
+      YAML.dump(
+        "body_vocabulary" => [
+          { "body_type" => "Resolution", "canonical_type" => "decision",
+            "definition" => "Formal decision adopted by vote" },
+          { "body_type" => "Order", "canonical_type" => "decision" }
+        ]
+      )
+    end
+
+    it "parses body_vocabulary into typed entries" do
+      metadata = Edoxen::DecisionMetadata.from_yaml(yaml)
+      expect(metadata.body_vocabulary).to be_an(Array)
+      expect(metadata.body_vocabulary.size).to eq(2)
+      expect(metadata.body_vocabulary.first).to be_an(Edoxen::BodyVocabularyEntry)
+      expect(metadata.body_vocabulary.first.definition).to eq("Formal decision adopted by vote")
+    end
+
+    it "exercises canonical_type_for on the parsed metadata" do
+      metadata = Edoxen::DecisionMetadata.from_yaml(yaml)
+      expect(metadata.canonical_type_for("Resolution")).to eq("decision")
+      expect(metadata.canonical_type_for("Order")).to eq("decision")
+      expect(metadata.canonical_type_for("Unknown")).to eq("Unknown")
+    end
+
+    it "preserves body_vocabulary through to_yaml + from_yaml" do
+      metadata = Edoxen::DecisionMetadata.from_yaml(yaml)
+      reload = Edoxen::DecisionMetadata.from_yaml(metadata.to_yaml)
+      expect(reload.body_vocabulary.size).to eq(2)
+      expect(reload.canonical_type_for("Resolution")).to eq("decision")
+    end
+  end
+
+  describe "MeetingCollectionMetadata YAML round-trip with body_vocabulary" do
+    let(:yaml) do
+      YAML.dump(
+        "body_vocabulary" => [
+          { "body_type" => "CIML Meeting", "canonical_type" => "plenary" },
+          { "body_type" => "Board Meeting", "canonical_type" => "governing" }
+        ]
+      )
+    end
+
+    it "parses + round-trips + resolves canonical_type_for" do
+      metadata = Edoxen::MeetingCollectionMetadata.from_yaml(yaml)
+      expect(metadata.body_vocabulary.size).to eq(2)
+      expect(metadata.canonical_type_for("CIML Meeting")).to eq("plenary")
+
+      reload = Edoxen::MeetingCollectionMetadata.from_yaml(metadata.to_yaml)
+      expect(reload.canonical_type_for("Board Meeting")).to eq("governing")
     end
   end
 end

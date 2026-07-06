@@ -85,7 +85,9 @@ $defs:
     type: object
     description: |
       One polymorphic communication channel — phone, email, fax, url,
-      mail, etc. OCP: new channel kinds are added via the
+      mail, etc. `kind` discriminates the channel; `value` carries the
+      address/number; `label` is a free-form display hint ("Office",
+      "Front desk"). OCP: new channel kinds are added via the
       ContactMethodKind enum (or `other` + extensions).
     additionalProperties: false
     properties:
@@ -124,7 +126,8 @@ $defs:
     description: |
       Structured personal/organisational name (VCARD RFC 6350
       conventions). `formatted` is the pre-built display string (FN);
-      the structured components (N) are stored separately.
+      the structured components (N) are stored separately for sorting,
+      indexing, or locale-aware rendering.
     additionalProperties: false
     properties:
       formatted:  { type: string }
@@ -805,10 +808,9 @@ $defs:
   BodyVocabularyEntry:
     type: object
     description: |
-      One entry in a per-dataset body_vocabulary list (v2.1,
-      TODO.refactor/46). Maps a free-form body_type to a short
-      canonical value. SSOT for body_type -> canonical_type resolution
-      within the declaring collection.
+      One entry in a per-dataset body_vocabulary list. Maps a free-form
+      body_type to a short canonical value. SSOT for body_type ->
+      canonical_type resolution within the declaring collection.
     additionalProperties: false
     properties:
       body_type:      { type: string }

@@ -72,7 +72,7 @@ module Edoxen
     end
 
     def load_schemer(path)
-      JSONSchemer.schema(YAML.safe_load(File.read(path), permitted_classes: [Date, Time]))
+      JSONSchemer.schema(YAML.safe_load_file(path, permitted_classes: [Date, Time]))
     end
 
     # Coerce Date/Time instances back to ISO strings before handing the
@@ -81,8 +81,7 @@ module Edoxen
     # here keeps the gem OCP-compliant (no json_schemer plugin/tweak).
     def normalize_dates(value)
       case value
-      when Date then value.iso8601
-      when Time then value.iso8601
+      when Date, Time then value.iso8601
       when Hash then value.transform_values { |v| normalize_dates(v) }
       when Array then value.map { |v| normalize_dates(v) }
       else value

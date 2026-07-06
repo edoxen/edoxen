@@ -23,7 +23,7 @@ module Edoxen
     # display string regardless of how the name was authored.
     def display
       formatted || [prefix, given, additional, family, suffix]
-        .reject(&:nil?).reject { |s| s.to_s.empty? }.join(" ")
+        .reject { |s| s.to_s.empty? }.join(" ")
     end
   end
 end

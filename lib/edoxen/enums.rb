@@ -51,7 +51,7 @@ module Edoxen
     ].freeze
 
     DECISION_RELATION_TYPE = %w[
-      annexOf hasAnnex updates refines replaces considers cites
+      annex_of has_annex updates refines replaces considers cites
     ].freeze
 
     DECISION_DATE_TYPE = %w[

@@ -27,7 +27,7 @@ MEETING_SCHEMA_MODEL_BINDINGS = {
 }.freeze
 
 RSpec.describe "Schema <-> Ruby meeting model shape sync" do
-  let(:defs) { YAML.safe_load(File.read("schema/meeting.yaml")).fetch("$defs") }
+  let(:defs) { YAML.safe_load_file("schema/meeting.yaml").fetch("$defs") }
 
   MEETING_SCHEMA_MODEL_BINDINGS.each do |ruby_class, schema_name|
     describe "#{ruby_class.name} <-> $defs/#{schema_name}" do

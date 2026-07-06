@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "strscan"
-
 module Edoxen
   module LutamlParser
     # Lightweight line-based parser for the project's LutaML files.
@@ -42,7 +40,9 @@ module Edoxen
       end
     end
 
-    LutamlEnum = Struct.new(:name, :values, keyword_init: true) do
+    # `items` (not `values` or `entries`) avoids overriding Struct's
+    # built-in `values` and `entries` methods.
+    LutamlEnum = Struct.new(:name, :items, keyword_init: true) do
       # CamelCase enum name → SCREAMING_SNAKE_CASE Ruby constant.
       # Used by the sync spec to resolve the matching `Edoxen::Enums::*`.
       def ruby_constant
@@ -58,6 +58,14 @@ module Edoxen
       end
     end
 
+    # Mutable per-call state. Kept in a Struct (not on the module) so
+    # concurrent parse calls don't share state.
+    ParserState = Struct.new(:state, :current_class, :current_enum, :enum_def_depth, keyword_init: true) do
+      def initialize
+        super(state: :top, current_class: nil, current_enum: nil, enum_def_depth: 0)
+      end
+    end
+
     module_function
 
     # Parse a single .lutaml source string into a ParseResult
@@ -65,63 +73,15 @@ module Edoxen
     # array-of-classes return shape working for callers that haven't
     # been updated.
     def parse(source)
+      ctx = ParserState.new
       classes = []
       enums = []
-      state = :top
-      current_class = nil
-      current_enum = nil
-      # Local depth counter for `{ ... }` blocks under enum values.
-      # Reset when entering :enum_definition; lives on the call frame,
-      # not on the module, so concurrent calls don't share state.
-      enum_def_depth = 0
 
-      source.each_line.with_index(1) do |raw, _lineno|
+      source.each_line do |raw|
         line = raw.strip
-        next if line.empty? || line.start_with?("//") || line.start_with?("#")
-        next if line == "---"
+        next if skip_line?(line)
 
-        case state
-        when :top
-          if (md = line.match(/\Aclass\s+([A-Z]\w*)\s*(?:<\s*([A-Z]\w*))?\s*\{/))
-            current_class = LutamlClass.new(name: md[1], parent: md[2], attrs: [])
-            state = :class_body
-          elsif (md = line.match(/\Aenum\s+([A-Z]\w*)\s*\{/))
-            current_enum = LutamlEnum.new(name: md[1], values: [])
-            state = :enum_body
-          end
-        when :class_body
-          if line.start_with?("}")
-            classes << current_class
-            current_class = nil
-            state = :top
-          elsif (md = line.match(/\A([a-z]\w*):\s*([A-Za-z_]\w*)(\[[^\]]+\])?/))
-            current_class.attrs << LutamlAttr.new(
-              name: md[1],
-              type: md[2],
-              collection: !md[3].nil?
-            )
-          end
-        when :enum_body
-          if line.start_with?("}")
-            enums << current_enum
-            current_enum = nil
-            state = :top
-          elsif (md = line.match(/\A([a-z][\w-]*)\s*\{/))
-            # value with a nested definition block — record the value,
-            # then track depth to skip everything inside the block.
-            current_enum.values << md[1]
-            enum_def_depth = 1
-            state = :enum_definition
-          elsif (md = line.match(/\A([a-z][\w-]*)\z/))
-            current_enum.values << md[1]
-          end
-        when :enum_definition
-          # Inside a `{ ... }` block under an enum value (typically a
-          # `definition { ... }` sub-block). Track brace depth and pop
-          # back to the enum body when balanced.
-          enum_def_depth += line.count("{") - line.count("}")
-          state = :enum_body if enum_def_depth <= 0
-        end
+        handle(line, ctx, classes, enums)
       end
 
       ParseResult.new(classes: classes, enums: enums)
@@ -141,6 +101,66 @@ module Edoxen
         .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
         .gsub(/([a-z\d])([A-Z])/, '\1_\2')
         .downcase
+    end
+
+    # --- Line filtering -------------------------------------------------
+
+    def skip_line?(line)
+      line.empty? || line.start_with?("//") || line.start_with?("#") || line == "---"
+    end
+
+    # --- State dispatch -------------------------------------------------
+
+    def handle(line, ctx, classes, enums)
+      case ctx.state
+      when :top then handle_top(line, ctx)
+      when :class_body then handle_class_body(line, ctx, classes)
+      when :enum_body then handle_enum_body(line, ctx, enums)
+      when :enum_definition then handle_enum_definition(line, ctx)
+      end
+    end
+
+    def handle_top(line, ctx)
+      if (md = line.match(/\Aclass\s+([A-Z]\w*)\s*(?:<\s*([A-Z]\w*))?\s*\{/))
+        ctx.current_class = LutamlClass.new(name: md[1], parent: md[2], attrs: [])
+        ctx.state = :class_body
+      elsif (md = line.match(/\Aenum\s+([A-Z]\w*)\s*\{/))
+        ctx.current_enum = LutamlEnum.new(name: md[1], items: [])
+        ctx.state = :enum_body
+      end
+    end
+
+    def handle_class_body(line, ctx, classes)
+      if line.start_with?("}")
+        classes << ctx.current_class
+        ctx.current_class = nil
+        ctx.state = :top
+      elsif (md = line.match(/\A([a-z]\w*):\s*([A-Za-z_]\w*)(\[[^\]]+\])?/))
+        ctx.current_class.attrs << LutamlAttr.new(
+          name: md[1],
+          type: md[2],
+          collection: !md[3].nil?
+        )
+      end
+    end
+
+    def handle_enum_body(line, ctx, enums)
+      if line.start_with?("}")
+        enums << ctx.current_enum
+        ctx.current_enum = nil
+        ctx.state = :top
+      elsif (md = line.match(/\A([a-z][\w-]*)\s*\{/))
+        ctx.current_enum.items << md[1]
+        ctx.enum_def_depth = 1
+        ctx.state = :enum_definition
+      elsif (md = line.match(/\A([a-z][\w-]*)\z/))
+        ctx.current_enum.items << md[1]
+      end
+    end
+
+    def handle_enum_definition(line, ctx)
+      ctx.enum_def_depth += line.count("{") - line.count("}")
+      ctx.state = :enum_body if ctx.enum_def_depth <= 0
     end
   end
 end

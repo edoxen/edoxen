@@ -31,12 +31,24 @@ RSpec.describe Edoxen::EntityRef do
   end
 
   describe "#resolved_identity precedence" do
-    it "prefers URN over identifier over local_ref" do
+    it "prefers URN over identifier" do
       ref = described_class.new(
         urn: "urn:x:1",
+        identifier: Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")
+      )
+      expect(ref.resolved_identity).to eq("urn:x:1")
+    end
+
+    it "prefers identifier over local_ref" do
+      ref = described_class.new(
         identifier: Edoxen::StructuredIdentifier.new(prefix: "X", number: "1"),
         local_ref: "local-1"
       )
+      expect(ref.resolved_identity).to be_an(Edoxen::StructuredIdentifier)
+    end
+
+    it "prefers URN over local_ref" do
+      ref = described_class.new(urn: "urn:x:1", local_ref: "local-1")
       expect(ref.resolved_identity).to eq("urn:x:1")
     end
 
@@ -45,11 +57,52 @@ RSpec.describe Edoxen::EntityRef do
     end
   end
 
+  describe "XOR contract (TODO.update/13)" do
+    # The wire contract is exactly-one-of (urn | identifier | local_ref).
+    # Multiple identities on the same ref are ambiguous data — the
+    # precedence rule above is a tiebreaker, not a feature.
+    it "is invalid when no identity field is set" do
+      expect(described_class.new).not_to be_valid
+      expect(described_class.new).not_to be_multiple_identities
+    end
+
+    it "is valid when exactly one identity field is set" do
+      expect(described_class.new(urn: "urn:x:1")).to be_valid
+      expect(described_class.new(identifier: Edoxen::StructuredIdentifier.new(prefix: "X", number: "1"))).to be_valid
+      expect(described_class.new(local_ref: "agenda-item-4.2")).to be_valid
+    end
+
+    it "is invalid when two identities are set" do
+      ref = described_class.new(
+        urn: "urn:x:1",
+        identifier: Edoxen::StructuredIdentifier.new(prefix: "X", number: "1")
+      )
+      expect(ref).not_to be_valid
+      expect(ref).to be_multiple_identities
+    end
+
+    it "is invalid when all three identities are set" do
+      ref = described_class.new(
+        urn: "urn:x:1",
+        identifier: Edoxen::StructuredIdentifier.new(prefix: "X", number: "1"),
+        local_ref: "local-1"
+      )
+      expect(ref).not_to be_valid
+      expect(ref).to be_multiple_identities
+    end
+
+    it "treats an empty string identity as unset (still valid if another is set)" do
+      ref = described_class.new(urn: "", local_ref: "agenda-item-4.2")
+      expect(ref).to be_valid
+      expect(ref.resolved_identity).to eq("agenda-item-4.2")
+    end
+  end
+
   describe "round-trip through YAML" do
     it "round-trips a URN-identified ref" do
       ref = described_class.from_yaml(YAML.dump(
-        "urn" => "urn:acme:decision:1", "kind" => "resulting"
-      ))
+                                        "urn" => "urn:acme:decision:1", "kind" => "resulting"
+                                      ))
       expect(ref.urn).to eq("urn:acme:decision:1")
       reload = described_class.from_yaml(ref.to_yaml)
       expect(reload.urn).to eq("urn:acme:decision:1")
@@ -57,8 +110,8 @@ RSpec.describe Edoxen::EntityRef do
 
     it "round-trips a StructuredIdentifier-identified ref" do
       ref = described_class.from_yaml(YAML.dump(
-        "identifier" => { "prefix" => "ACME", "number" => "2026-001" }
-      ))
+                                        "identifier" => { "prefix" => "ACME", "number" => "2026-001" }
+                                      ))
       expect(ref.identifier).to be_a(Edoxen::StructuredIdentifier)
       expect(ref.to_s).to eq("ACME/2026-001")
     end
@@ -67,11 +120,11 @@ RSpec.describe Edoxen::EntityRef do
   describe "Motion.resulting_decision_ref pilot (TODO 44)" do
     it "lets a Motion carry a typed EntityRef parallel to the bare String" do
       motion = Edoxen::Motion.from_yaml(YAML.dump(
-        "identifier" => "motion-1",
-        "status" => "carried",
-        "resulting_decision" => "urn:x:decision:1",
-        "resulting_decision_ref" => { "urn" => "urn:x:decision:1" }
-      ))
+                                          "identifier" => "motion-1",
+                                          "status" => "carried",
+                                          "resulting_decision" => "urn:x:decision:1",
+                                          "resulting_decision_ref" => { "urn" => "urn:x:decision:1" }
+                                        ))
       expect(motion.resulting_decision).to eq("urn:x:decision:1")
       expect(motion.resulting_decision_ref).to be_a(Edoxen::EntityRef)
       expect(motion.resulting_decision_ref.resolved_identity).to eq("urn:x:decision:1")

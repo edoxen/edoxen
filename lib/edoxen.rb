@@ -25,6 +25,11 @@ module Edoxen
   autoload :Enums, "edoxen/enums"
   autoload :ReferenceData, "edoxen/reference_data"
 
+  # --- Shared behaviours (mixed into entity + metadata classes) --------
+  autoload :BodyVocabularyHost, "edoxen/body_vocabulary_host"
+  autoload :LocalizationHost, "edoxen/localization_host"
+  autoload :OfficersHost, "edoxen/officers_host"
+
   # --- Decision side ----------------------------------------------------
   autoload :StructuredIdentifier, "edoxen/structured_identifier"
   autoload :MeetingIdentifier, "edoxen/meeting_identifier"

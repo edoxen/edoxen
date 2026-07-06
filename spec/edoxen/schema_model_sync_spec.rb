@@ -50,7 +50,7 @@ SCHEMA_MODEL_BINDINGS = {
 }.freeze
 
 RSpec.describe "Schema <-> Ruby model shape sync" do
-  let(:defs) { YAML.safe_load(File.read("schema/edoxen.yaml")).fetch("$defs") }
+  let(:defs) { YAML.safe_load_file("schema/edoxen.yaml").fetch("$defs") }
 
   SCHEMA_MODEL_BINDINGS.each do |ruby_class, schema_name|
     describe "#{ruby_class.name} <-> $defs/#{schema_name}" do

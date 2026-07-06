@@ -73,6 +73,6 @@ module Edoxen
     # Back-compat alias — v2.1 introduced `value` as the canonical Ruby
     # attribute; the older `string_value` alias keeps callers that
     # already migrated to that name working.
-    alias_method :string_value, :value
+    alias string_value value
   end
 end

@@ -20,7 +20,7 @@ MEETING_SCHEMA_ENUM_BINDINGS = {
 }.freeze
 
 RSpec.describe "Schema <-> Ruby meeting enum sync" do
-  let(:defs) { YAML.safe_load(File.read("schema/meeting.yaml")).fetch("$defs") }
+  let(:defs) { YAML.safe_load_file("schema/meeting.yaml").fetch("$defs") }
 
   MEETING_SCHEMA_ENUM_BINDINGS.each do |enum_name, ruby_const|
     it "keeps $defs/#{enum_name} equal to Edoxen::Enums::#{ruby_const}" do

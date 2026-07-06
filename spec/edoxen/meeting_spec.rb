@@ -37,7 +37,8 @@ RSpec.describe Edoxen::Meeting do
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
                                     "venues" => [{ "kind" => "physical", "name" => "OIML HQ",
                                                    "lat" => 48.87, "lon" => 2.34 }],
-                                    "officers" => [{ "role" => "chair", "person" => { "name" => { "formatted" => "Roman Schwartz" } } }],
+                                    "officers" => [{ "role" => "chair",
+                                                     "person" => { "name" => { "formatted" => "Roman Schwartz" } } }],
                                     "agenda" => {
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]

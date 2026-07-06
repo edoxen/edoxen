@@ -41,7 +41,7 @@ module Edoxen
     def check
       require "yaml"
 
-      Dir.glob(File.join(@dir, "**", "*.{yaml,yml}")).sort.each do |file|
+      Dir.glob(File.join(@dir, "**", "*.{yaml,yml}")).each do |file|
         data = safe_load_yaml(file)
         next unless data.is_a?(Hash)
 
@@ -69,7 +69,7 @@ module Edoxen
     private
 
     def safe_load_yaml(file)
-      YAML.safe_load(File.read(file))
+      YAML.safe_load_file(file)
     rescue Psych::SyntaxError, ArgumentError
       nil
     end

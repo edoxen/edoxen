@@ -69,7 +69,7 @@ RSpec.shared_examples "extension host" do |factory:|
   it "no longer exposes the recursive `extensions[]` slot on MeetingExtension" do
     entity = subject_with_extensions
     expect(entity.extensions.first).not_to respond_to(:extensions),
-      "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
+                                           "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
   end
 
   it "reads typed values via #typed_value" do
@@ -90,11 +90,11 @@ RSpec.shared_examples "extension host" do |factory:|
 
   it "accepts the v2.0 bare `value:` wire shape for back-compat" do
     legacy = described_class.from_yaml(YAML.dump(factory.merge(
-      "extensions" => [{
-        "profile" => "legco",
-        "attributes" => [{ "key" => "k", "value" => "v" }]
-      }]
-    )))
+                                                   "extensions" => [{
+                                                     "profile" => "legco",
+                                                     "attributes" => [{ "key" => "k", "value" => "v" }]
+                                                   }]
+                                                 )))
     attr = legacy.extensions.first.attributes.first
     expect(attr.string_value).to eq("v")
     expect(attr.typed_value).to eq("v")

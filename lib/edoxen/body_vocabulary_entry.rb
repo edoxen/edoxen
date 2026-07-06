@@ -20,11 +20,5 @@ module Edoxen
     attribute :body_type, :string
     attribute :canonical_type, :string
     attribute :definition, :string
-
-    key_value do
-      map "body_type", to: :body_type
-      map "canonical_type", to: :canonical_type
-      map "definition", to: :definition
-    end
   end
 end

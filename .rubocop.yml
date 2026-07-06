@@ -1,7 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1
+  NewCops: enable
 
 Style/StringLiterals:
   Enabled: true
@@ -13,3 +14,18 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+# The LutaML parser is a self-contained state machine that lives in
+# spec/support/ only. 101 lines for the whole module (struct types +
+# state-machine + helpers) is acceptable; splitting would obscure the
+# design.
+Metrics/ModuleLength:
+  Exclude:
+    - "spec/support/lutaml_parser.rb"
+
+# RSpec top-level describe blocks routinely run past the default
+# threshold; the suite uses focused single-class spec files instead
+# of splitting for size's own sake.
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"

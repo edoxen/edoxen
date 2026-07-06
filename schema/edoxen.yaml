@@ -942,7 +942,7 @@ $defs:
   DecisionRelationType:
     type: string
     description: "Edoxen::Enums::DECISION_RELATION_TYPE."
-    enum: [annexOf, hasAnnex, updates, refines, replaces, considers, cites]
+    enum: [annex_of, has_annex, updates, refines, replaces, considers, cites]
 
   MotionStatus:
     type: string

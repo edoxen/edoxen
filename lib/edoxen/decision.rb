@@ -10,6 +10,8 @@ module Edoxen
   # wrapped inside `localizations[]` (one entry per available language; at
   # least one is required by the schema).
   class Decision < Lutaml::Model::Serializable
+    include LocalizationHost
+
     attribute :identifier, StructuredIdentifier, collection: true
     attribute :kind, :string, values: Enums::DECISION_KIND
     attribute :status, :string, values: Enums::DECISION_STATUS
@@ -30,17 +32,6 @@ module Edoxen
     # value via the parent collection's `body_vocabulary[]`.
     attribute :body_type, :string
     attribute :extensions, MeetingExtension, collection: true
-
-    def in_language(code, fallback: false)
-      match = localizations&.find { |loc| loc.language_code == code.to_s }
-      return match if match
-
-      fallback ? localizations&.first : nil
-    end
-
-    def primary_localization
-      in_language("eng", fallback: true)
-    end
 
     # --- v2.1 derivation accessors (TODO.refactor/45) -------------------
     # These methods compute the reverse direction of relationships whose

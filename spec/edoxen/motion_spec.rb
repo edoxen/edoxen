@@ -62,13 +62,14 @@ RSpec.describe Edoxen::Motion do
     # MECE coverage: MOTION_STATUS partitions cleanly into terminal and
     # non-terminal. Catches a future enum addition that forgets to update
     # MOTION_TERMINAL.
-    it "MOTION_TERMINAL ∪ (MOTION_STATUS \\ MOTION_TERMINAL) == MOTION_STATUS" do
-      expect(Edoxen::Enums::MOTION_TERMINAL).to(
-        satisfy { |t| (t & Edoxen::Enums::MOTION_STATUS) == t },
-        "MOTION_TERMINAL must be a subset of MOTION_STATUS"
-      )
-      expect(Edoxen::Enums::MOTION_TERMINAL).not_to be_empty
-      expect(Edoxen::Enums::MOTION_STATUS - Edoxen::Enums::MOTION_TERMINAL).not_to be_empty
+    it "MOTION_TERMINAL ⊆ MOTION_STATUS, both non-empty" do
+      terminal = Edoxen::Enums::MOTION_TERMINAL
+      status = Edoxen::Enums::MOTION_STATUS
+      extras = terminal - status
+      expect(extras).to be_empty,
+                        "MOTION_TERMINAL must be a subset of MOTION_STATUS (extras: #{extras})"
+      expect(terminal).not_to be_empty
+      expect(status - terminal).not_to be_empty
     end
   end
 end

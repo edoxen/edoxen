@@ -3,7 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Edoxen::VoteRecord do
-  it_behaves_like "extension host", factory: { "person" => { "name" => { "formatted" => "Jane" } }, "vote" => "affirmative" }
+  it_behaves_like "extension host",
+                  factory: { "person" => { "name" => { "formatted" => "Jane" } }, "vote" => "affirmative" }
 
   describe "LUTAML VoteType coverage" do
     Edoxen::Enums::VOTE_TYPE.each do |vote|

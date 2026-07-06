@@ -33,7 +33,7 @@ RSpec.describe Edoxen::MeetingExtension do
   # `attributes[]` instead.
   it "no longer exposes the recursive `extensions[]` slot" do
     expect(described_class.new).not_to respond_to(:extensions),
-      "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
+                                       "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
   end
 end
 
@@ -47,41 +47,41 @@ RSpec.describe Edoxen::ExtensionAttribute do
 
   it "round-trips an integer value" do
     ea = described_class.from_yaml(YAML.dump(
-      "key" => "quorum", "type" => "integer", "intValue" => 7
-    ))
+                                     "key" => "quorum", "type" => "integer", "intValue" => 7
+                                   ))
     expect(ea.integer_value).to eq(7)
     expect(ea.typed_value).to eq(7)
   end
 
   it "round-trips a float value" do
     ea = described_class.from_yaml(YAML.dump(
-      "key" => "ratio", "type" => "float", "floatValue" => 0.75
-    ))
+                                     "key" => "ratio", "type" => "float", "floatValue" => 0.75
+                                   ))
     expect(ea.float_value).to eq(0.75)
     expect(ea.typed_value).to eq(0.75)
   end
 
   it "round-trips a boolean value" do
     ea = described_class.from_yaml(YAML.dump(
-      "key" => "live", "type" => "boolean", "booleanValue" => true
-    ))
+                                     "key" => "live", "type" => "boolean", "booleanValue" => true
+                                   ))
     expect(ea.boolean_value).to eq(true)
     expect(ea.typed_value).to eq(true)
   end
 
   it "round-trips a date value" do
     ea = described_class.from_yaml(YAML.dump(
-      "key" => "effective", "type" => "date", "dateValue" => "2026-07-04"
-    ))
+                                     "key" => "effective", "type" => "date", "dateValue" => "2026-07-04"
+                                   ))
     expect(ea.date_value).to eq(Date.new(2026, 7, 4))
     expect(ea.typed_value).to eq(Date.new(2026, 7, 4))
   end
 
   it "round-trips a datetime value" do
     ea = described_class.from_yaml(YAML.dump(
-      "key" => "start", "type" => "datetime",
-      "dateTimeValue" => "2026-07-04T10:00:00Z"
-    ))
+                                     "key" => "start", "type" => "datetime",
+                                     "dateTimeValue" => "2026-07-04T10:00:00Z"
+                                   ))
     expect(ea.date_time_value).to be_a(DateTime)
     expect(ea.typed_value).to be_a(DateTime)
   end

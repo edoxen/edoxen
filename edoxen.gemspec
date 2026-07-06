@@ -19,11 +19,12 @@ Gem::Specification.new do |spec|
 
   spec.homepage = "https://github.com/metanorma/edoxen"
   spec.license = "BSD-2-Clause"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 3.1.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/metanorma/edoxen"
   spec.metadata["changelog_uri"] = "https://github.com/metanorma/edoxen"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|

@@ -4,13 +4,13 @@ module Edoxen
   # EntityRef — a typed cross-reference between entities (v2.1, TODO.refactor/44).
   #
   # Single identity: exactly one of `urn`, `identifier`, or `local_ref`
-  # should be set. Optional metadata: `kind`, `role`, `note`.
+  # must be set. Optional metadata: `kind`, `role`, `note`.
   #
   # Encapsulation:
   #   - Read the identity via `#resolved_identity` (returns the canonical
   #     form — URN string, StructuredIdentifier, or local key).
-  #   - Validate via `#valid?` (true when at least one identity field is
-  #     set; the schema mirrors this for YAML consumers).
+  #   - Validate via `#valid?` (true when exactly one identity field is
+  #     set; `#multiple_identities?` flags the rare ambiguous case).
   #
   # Pilot: `Motion.resulting_decision_ref` (parallel to the existing
   # `resulting_decision: String`). v3.0 will remove the String form.
@@ -23,19 +23,24 @@ module Edoxen
     attribute :role, :string
     attribute :note, :string
 
-    key_value do
-      map "urn", to: :urn
-      map "identifier", to: :identifier
-      map "local_ref", to: :local_ref
-      map "kind", to: :kind
-      map "role", to: :role
-      map "note", to: :note
-    end
-
+    # True when exactly one identity field is set. The wire contract
+    # (TODO.refactor/44 + JSON-Schema) is XOR: setting 0 or ≥2 identity
+    # fields is a data error.
     def valid?
-      identities_set.any?
+      identities_set.size == 1
     end
 
+    # True when two or more identity fields are set. Useful for
+    # migration tooling that wants to warn on ambiguity without
+    # rejecting outright.
+    def multiple_identities?
+      identities_set.size > 1
+    end
+
+    # Returns the canonical identity (URN > identifier > local_ref
+    # precedence). Callers that need a single value should validate
+    # first via `#valid?`; on a multiple-identity ref the precedence
+    # is still applied but the data is suspect.
     def resolved_identity
       return urn if urn && !urn.to_s.empty?
       return identifier if identifier
@@ -58,7 +63,11 @@ module Edoxen
 
     def identities_set
       [urn, identifier, local_ref].reject do |value|
-        value.nil? || (value.respond_to?(:to_s) && value.to_s.empty?)
+        case value
+        when nil then true
+        when String then value.empty?
+        else false
+        end
       end
     end
   end

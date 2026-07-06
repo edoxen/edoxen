@@ -10,6 +10,9 @@ module Edoxen
   # joined by URN because they have different lifetimes: agendas exist
   # weeks before a meeting; decisions only after adoption.
   class Meeting < Lutaml::Model::Serializable
+    include LocalizationHost
+    include OfficersHost
+
     attribute :identifier, StructuredIdentifier, collection: true
     attribute :urn, :string
     attribute :ordinal, :integer
@@ -58,17 +61,6 @@ module Edoxen
     attribute :relations, MeetingRelation, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    def in_language(code, fallback: false)
-      match = localizations&.find { |loc| loc.language_code == code.to_s }
-      return match if match
-
-      fallback ? localizations&.first : nil
-    end
-
-    def primary_localization
-      in_language("eng", fallback: true)
-    end
-
     def find_agenda_item(label)
       agenda&.find_item(label)
     end
@@ -78,16 +70,6 @@ module Edoxen
       return nil if city.nil? || city.to_s.empty?
 
       Edoxen::ReferenceData.find_unlocode(city)
-    end
-
-    # Officers filtered by role. Returns empty array when no officers
-    # or no matching role.
-    def officers_with_role(role)
-      officers&.select { |o| o.role == role.to_s } || []
-    end
-
-    def chair
-      officers_with_role("chair").first&.person
     end
 
     def secretary

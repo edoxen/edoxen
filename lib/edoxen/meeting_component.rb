@@ -8,6 +8,8 @@ module Edoxen
   #
   # Flat by design (no nesting) per 2026-07 architectural decision.
   class MeetingComponent < Lutaml::Model::Serializable
+    include OfficersHost
+
     attribute :identifier, :string
     attribute :urn, :string
     attribute :kind, :string, values: Enums::COMPONENT_KIND
@@ -34,14 +36,6 @@ module Edoxen
       return nil unless starts_at && ends_at
 
       ends_at.to_time - starts_at.to_time
-    end
-
-    def officers_with_role(role)
-      (officers || []).select { |o| o.role == role.to_s }
-    end
-
-    def chair
-      officers_with_role("chair").first&.person
     end
   end
 end

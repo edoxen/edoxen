@@ -39,7 +39,7 @@ SCHEMA_ENUM_BINDINGS = {
 # value-for-value, with the constants in `Edoxen::Enums`. Adding a value in
 # one without the other is a future-bug; this spec fails at runtime.
 RSpec.describe "Schema <-> Ruby enum sync" do
-  let(:schema) { YAML.safe_load(File.read("schema/edoxen.yaml")) }
+  let(:schema) { YAML.safe_load_file("schema/edoxen.yaml") }
   let(:defs) { schema.fetch("$defs") }
 
   SCHEMA_ENUM_BINDINGS.each do |enum_name, ruby_const|

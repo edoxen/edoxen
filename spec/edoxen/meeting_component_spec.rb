@@ -13,7 +13,7 @@ RSpec.describe Edoxen::MeetingComponent do
       "starts_at" => "2026-03-15T09:00:00Z",
       "ends_at" => "2026-03-15T12:00:00Z",
       "venue_refs" => ["urn:x:venue:1"],
-      "chair" => { "name" => "Jane" },
+      "officers" => [{ "role" => "chair", "person" => { "name" => { "formatted" => "Jane" } } }],
       "agenda_ref" => "urn:x:agenda:1",
       "minutes_ref" => "urn:x:minutes:1",
       "attendance_refs" => ["urn:x:attendance:1"]
@@ -22,7 +22,9 @@ RSpec.describe Edoxen::MeetingComponent do
     expect(c.identifier).to eq("comp-1")
     expect(c.kind).to eq("session")
     expect(c.title).to eq("Morning Session")
+    expect(c.officers.first).to be_a(Edoxen::Officer)
     expect(c.chair).to be_a(Edoxen::Person)
+    expect(c.chair.name.display).to eq("Jane")
     expect(c.venue_refs).to eq(["urn:x:venue:1"])
   end
 

@@ -19,8 +19,11 @@ module Edoxen
     attribute :description, :string
     attribute :starts_at, :date_time
     attribute :ends_at, :date_time
+    # Free-form time display (e.g. "9:00–10:30") for schedules where
+    # exact ISO timestamps aren't available or timezone is unknown.
+    attribute :time_label, :string
     attribute :venue_refs, :string, collection: true
-    attribute :chair, Person
+    attribute :officers, Officer, collection: true
     attribute :agenda_ref, :string
     attribute :minutes_ref, :string
     attribute :attendance_refs, :string, collection: true
@@ -31,6 +34,14 @@ module Edoxen
       return nil unless starts_at && ends_at
 
       ends_at.to_time - starts_at.to_time
+    end
+
+    def officers_with_role(role)
+      (officers || []).select { |o| o.role == role.to_s }
+    end
+
+    def chair
+      officers_with_role("chair").first&.person
     end
   end
 end

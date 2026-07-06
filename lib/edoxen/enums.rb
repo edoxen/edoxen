@@ -165,5 +165,18 @@ module Edoxen
     RECURRENCE_FREQ = %w[
       secondly minutely hourly daily weekly monthly yearly
     ].freeze
+
+    # Polymorphic communication channel. OCP: adding a new kind does
+    # not change the model — only this enum (or use `other` + extensions).
+    CONTACT_METHOD_KIND = %w[
+      phone mobile fax email url mail pager message other
+    ].freeze
+
+    # Polymorphic external identifier for a Contact (ORCID, ISNI,
+    # Wikidata, ROR, etc.). OCP: adding a new scheme only extends this
+    # enum (or use `other` + extensions).
+    CONTACT_IDENTIFIER_KIND = %w[
+      orcid isni wikidata ror ringgold github other
+    ].freeze
   end
 end

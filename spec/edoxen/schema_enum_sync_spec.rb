@@ -30,7 +30,9 @@ SCHEMA_ENUM_BINDINGS = {
   "UrlKind" => :URL_KIND,
   "SourceUrlKind" => :SOURCE_URL_KIND,
   "HostType" => :HOST_TYPE,
-  "VoteType" => :VOTE_TYPE
+  "VoteType" => :VOTE_TYPE,
+  "ContactMethodKind" => :CONTACT_METHOD_KIND,
+  "ContactIdentifierKind" => :CONTACT_IDENTIFIER_KIND
 }.freeze
 
 # Schema <-> Ruby enum sync. The schema in `schema/edoxen.yaml` MUST agree,

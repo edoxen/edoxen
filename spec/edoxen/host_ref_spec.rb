@@ -14,13 +14,17 @@ RSpec.describe Edoxen::HostRef do
     end
   end
 
-  it "carries an optional contact Person" do
+  it "carries an optional contact (Contact shape)" do
     payload = {
       "ref" => "acme", "type" => "organizer",
-      "contact" => { "name" => "Jane", "email" => "jane@acme.org" }
+      "contact" => {
+        "name" => { "formatted" => "Jane" },
+        "contact_methods" => [{ "kind" => "email", "value" => "jane@acme.org" }]
+      }
     }
     h = described_class.from_yaml(YAML.dump(payload))
-    expect(h.contact).to be_a(Edoxen::Person)
-    expect(h.contact.name).to eq("Jane")
+    expect(h.contact).to be_a(Edoxen::Contact)
+    expect(h.contact.name.display).to eq("Jane")
+    expect(h.contact.contact_methods.first.value).to eq("jane@acme.org")
   end
 end

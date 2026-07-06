@@ -37,7 +37,7 @@ RSpec.describe Edoxen::Meeting do
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
                                     "venues" => [{ "kind" => "physical", "name" => "OIML HQ",
                                                    "lat" => 48.87, "lon" => 2.34 }],
-                                    "officers" => [{ "role" => "chair", "person" => { "name" => "Roman Schwartz" } }],
+                                    "officers" => [{ "role" => "chair", "person" => { "name" => { "formatted" => "Roman Schwartz" } } }],
                                     "agenda" => {
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]
@@ -50,7 +50,7 @@ RSpec.describe Edoxen::Meeting do
     expect(m.date_range.start).to eq(Date.new(2021, 10, 18))
     expect(m.venues.first).to be_a(Edoxen::Venue)
     expect(m.officers.first).to be_a(Edoxen::Officer)
-    expect(m.chair.name).to eq("Roman Schwartz")
+    expect(m.chair.name.display).to eq("Roman Schwartz")
     expect(m.agenda).to be_a(Edoxen::Agenda)
     expect(m.deadlines.first).to be_a(Edoxen::Deadline)
     expect(m.localizations.first).to be_a(Edoxen::MeetingLocalization)

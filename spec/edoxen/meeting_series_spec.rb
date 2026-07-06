@@ -12,7 +12,7 @@ RSpec.describe Edoxen::MeetingSeries do
       "name" => "ISO/TC 154 Plenary Series",
       "recurrence" => { "freq" => "yearly", "interval" => 1 },
       "term" => "2024-2026",
-      "organizer" => { "name" => "ISO" },
+      "contact" => { "name" => { "formatted" => "ISO" }, "role" => "organizer" },
       "meeting_refs" => ["urn:iso:tc154:meeting:41", "urn:iso:tc154:meeting:42"]
     }
     s = described_class.from_yaml(YAML.dump(payload))
@@ -21,7 +21,7 @@ RSpec.describe Edoxen::MeetingSeries do
     expect(s.recurrence).to be_a(Edoxen::Recurrence)
     expect(s.recurrence.freq).to eq("yearly")
     expect(s.term).to eq("2024-2026")
-    expect(s.organizer).to be_a(Edoxen::Person)
+    expect(s.contact).to be_a(Edoxen::Contact)
     expect(s.meeting_refs).to eq(["urn:iso:tc154:meeting:41", "urn:iso:tc154:meeting:42"])
   end
 end

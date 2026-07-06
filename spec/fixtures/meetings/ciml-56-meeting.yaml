@@ -22,12 +22,13 @@ country_code: FR
 officers:
   - role: chair
     person:
-      name: Roman Schwartz
+      name: { formatted: Roman Schwartz }
   - role: secretary
     person:
-      name: Anthony Donnellan
+      name: { formatted: Anthony Donnellan }
       affiliation: BIML
-      email: secretary@oiml.org
+      contact_methods:
+        - { kind: email, value: secretary@oiml.org }
 
 venues:
   - kind: physical

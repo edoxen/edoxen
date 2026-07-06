@@ -1,20 +1,10 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # Identity + role + affiliation + contact + kind. Used for meeting officers
-  # (chair, secretary, local contact), host-ref contacts, and meeting
-  # participants.
-  #
-  # `kind` is open for adopter-defined values: member, public_officer,
-  # presiding_officer, clerk, witness, expert, etc.
-  class Person < Lutaml::Model::Serializable
-    attribute :name, :string
-    attribute :kind, :string
-    attribute :role, :string
-    attribute :affiliation, :string
-    attribute :email, :string
-    attribute :phone, :string
-    attribute :orcid, :string
-    attribute :extensions, MeetingExtension, collection: true
+  # A Contact that is specifically an individual human. Inherits all
+  # Contact fields. The old `email`, `phone`, and `orcid` fields are
+  # replaced by entries in `contact_methods` (kind=email / kind=phone)
+  # and `identifiers` (kind=orcid).
+  class Person < Contact
   end
 end

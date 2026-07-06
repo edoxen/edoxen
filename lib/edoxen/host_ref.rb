@@ -9,6 +9,6 @@ module Edoxen
     attribute :ref, :string
     attribute :type, :string, values: Enums::HOST_TYPE
     attribute :role, :string
-    attribute :contact, Person
+    attribute :contact, Contact
   end
 end

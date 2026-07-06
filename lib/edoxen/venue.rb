@@ -23,6 +23,7 @@ module Edoxen
     attribute :description, :string
     attribute :capacity, :integer
     attribute :url, :string
+    attribute :contact_methods, ContactMethod, collection: true
 
     # Physical-venue fields (populated when kind == "physical").
     attribute :unlocode, :string

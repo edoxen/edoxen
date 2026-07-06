@@ -42,6 +42,10 @@ module Edoxen
 
   # --- Meeting/Agenda side ----------------------------------------------
   autoload :DateRange, "edoxen/date_range"
+  autoload :ContactMethod, "edoxen/contact_method"
+  autoload :ContactIdentifier, "edoxen/contact_identifier"
+  autoload :Name, "edoxen/name"
+  autoload :Contact, "edoxen/contact"
   autoload :Person, "edoxen/person"
   autoload :HostRef, "edoxen/host_ref"
   autoload :Deadline, "edoxen/deadline"

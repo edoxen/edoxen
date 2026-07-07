@@ -5,10 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] — 2026-07-07
+
+Patch release. Adds `MeetingSeries` as a valid top-level document in
+`schema/meeting.yaml` so downstream consumers can ship a
+committee-level MeetingSeries fixture as the single source of truth
+for committee metadata (name, description, chair as `contact`,
+secretariat as `hosts[]`, social-media URLs as `extensions[]`).
+Previously MeetingSeries was only reachable as a `$ref` inside other
+documents.
+
+Backwards-compatible: existing Meeting and MeetingCollection root
+documents still validate unchanged.
+
+Mirror change in `edoxen-model/schema/meeting.yaml`.
+
 ## [2.1.1] — 2026-07-06
 
 Patch release. Bundles the v2.2 OCP refactor (Contact family), the
 post-v2.2 audit cleanup, and the gem↔model canonical-schema sync spec.
+
 
 ### Added
 

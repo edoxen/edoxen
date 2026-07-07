@@ -18,6 +18,7 @@ type: object
 oneOf:
   - $ref: "#/$defs/MeetingCollection"
   - $ref: "#/$defs/Meeting"
+  - $ref: "#/$defs/MeetingSeries"
 
 $defs:
 

@@ -547,12 +547,12 @@ $defs:
     properties:
       key:   { type: string }
       type:  { type: string, enum: [string, integer, float, boolean, date, datetime] }
-      value:           { type: string }
-      integer_value:    { type: integer }
-      float_value:      { type: number }
-      boolean_value:    { type: boolean }
-      date_value:       { type: string, format: date }
-      date_time_value:  { type: string, format: date-time }
+      value:         { type: string }
+      intValue:      { type: integer }
+      floatValue:    { type: number }
+      booleanValue:  { type: boolean }
+      dateValue:     { type: string, format: date }
+      dateTimeValue: { type: string, format: date-time }
 
   MeetingExtension:
     type: object

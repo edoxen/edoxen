@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] — 2026-07-07
+
+Patch release. Fixes the `ExtensionAttribute` schema to use the
+camelCase wire names that match the lutaml-model mapping in
+`lib/edoxen/extension_attribute.rb` (`map "intValue", to:
+:integer_value`, etc.).
+
+Before this fix, any YAML fixture using the documented v2.1 typed
+ExtensionAttribute wire form (`intValue`, `floatValue`,
+`booleanValue`, `dateValue`, `dateTimeValue`) failed the schema's
+`additionalProperties: false` check. The schema declared snake_case
+property names that didn't match the camelCase wire names.
+
+Mirror change in `edoxen-model/schema/{decision-collection,meeting}.yaml`.
+
+The schema-model-sync spec gets a small `WIRE_NAME_RENAMES` override
+table for ExtensionAttribute — its attribute-to-property name mapping
+is intentionally lossy (Ruby snake_case ↔ wire camelCase) and that's
+the documented design.
+
 ## [2.1.2] — 2026-07-07
 
 Patch release. Adds `MeetingSeries` as a valid top-level document in

@@ -52,11 +52,28 @@ SCHEMA_MODEL_BINDINGS = {
 RSpec.describe "Schema <-> Ruby model shape sync" do
   let(:defs) { YAML.safe_load_file("schema/edoxen.yaml").fetch("$defs") }
 
+  # ExtensionAttribute uses camelCase wire names (intValue, floatValue,
+  # ...) via lutaml-model's `map "intValue", to: :integer_value`. The
+  # Ruby attribute names are snake_case; the schema property names are
+  # the wire names. Skip the strict name-equality check for this one
+  # class — its attribute-to-property mapping is intentionally lossy
+  # on the name axis.
+  WIRE_NAME_RENAMES = {
+    "Edoxen::ExtensionAttribute" => {
+      "integer_value" => "intValue",
+      "float_value" => "floatValue",
+      "boolean_value" => "booleanValue",
+      "date_value" => "dateValue",
+      "date_time_value" => "dateTimeValue",
+    },
+  }.freeze
+
   SCHEMA_MODEL_BINDINGS.each do |ruby_class, schema_name|
     describe "#{ruby_class.name} <-> $defs/#{schema_name}" do
       let(:schema_def) { defs.fetch(schema_name) }
       let(:schema_props) { schema_def["properties"] || {} }
       let(:schema_required) { schema_def.fetch("required", []) }
+      let(:renames) { WIRE_NAME_RENAMES[ruby_class.name] || {} }
 
       it "declares a $defs/#{schema_name} block" do
         expect(defs).to have_key(schema_name)
@@ -65,8 +82,11 @@ RSpec.describe "Schema <-> Ruby model shape sync" do
       it "has every Ruby attribute present as a schema property or required entry" do
         ruby_attr_names = ruby_class.attributes.keys.map(&:to_s)
         allowed = schema_props.keys + schema_required
+        # Apply wire-name renames so the comparison lands on the
+        # camelCase schema property name where applicable.
+        mapped = ruby_attr_names.map { |n| renames.fetch(n, n) }
 
-        missing = ruby_attr_names - allowed
+        missing = mapped - allowed
         expect(missing).to be_empty,
                            "#{ruby_class} declares #{missing.inspect} with no matching property " \
                            "or required entry in $defs/#{schema_name}"
@@ -76,21 +96,25 @@ RSpec.describe "Schema <-> Ruby model shape sync" do
         ruby_class.attributes.each do |name, attr|
           next unless attr.collection?
 
-          schema_prop = schema_props[name.to_s]
+          wire_name = renames.fetch(name.to_s, name.to_s)
+          schema_prop = schema_props[wire_name]
           next unless schema_prop # absent props are flagged by the previous example
 
           actual = schema_prop["type"]
           expect(actual).to eq("array"),
                             "#{ruby_class}##{name} is collection: true but " \
-                            "$defs/#{schema_name}/#{name} is type=#{actual.inspect}, not 'array'"
+                            "$defs/#{schema_name}/#{wire_name} is type=#{actual.inspect}, not 'array'"
         end
       end
 
       it "has every schema property (or required entry) backed by a Ruby attribute" do
         schema_names = schema_props.keys + schema_required
         ruby_attr_names = ruby_class.attributes.keys.map(&:to_s)
+        # Reverse the rename so the schema name lands on a Ruby attr.
+        reverse_renames = renames.invert
+        mapped = schema_names.map { |n| reverse_renames.fetch(n, n) }
 
-        orphan = schema_names - ruby_attr_names
+        orphan = mapped - ruby_attr_names
         expect(orphan).to be_empty,
                           "$defs/#{schema_name} declares #{orphan.inspect} with no matching attribute on #{ruby_class}"
       end

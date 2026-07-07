@@ -600,13 +600,15 @@ $defs:
       # String variant — wire name `value` (v2.0 back-compat).
       value: { type: string }
 
-      # Typed variants (v2.1) — snake_case wire names (the gem uses
-      # snake_case Ruby attr names; lutaml-model emits them as-is).
-      integer_value:    { type: integer }
-      float_value:      { type: number }
-      boolean_value:    { type: boolean }
-      date_value:       { type: string, format: date }
-      date_time_value:  { type: string, format: date-time }
+      # Typed variants (v2.1) — camelCase wire names matching the
+      # lutaml-model mapping in lib/edoxen/extension_attribute.rb
+      # (map "intValue", to: :integer_value, etc.). The Ruby attribute
+      # names are snake_case; the wire names are camelCase.
+      intValue:        { type: integer }
+      floatValue:      { type: number }
+      booleanValue:    { type: boolean }
+      dateValue:       { type: string, format: date }
+      dateTimeValue:   { type: string, format: date-time }
 
   MeetingExtension:
     type: object

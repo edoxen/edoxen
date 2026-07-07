@@ -900,7 +900,6 @@ $defs:
       eventually map body-specific verbs to canonical types.
 
   ConsiderationType:
-  ConsiderationType:
     type: string
     description: |
       Consideration verb. Edoxen::Enums::CONSIDERATION_TYPE lists the

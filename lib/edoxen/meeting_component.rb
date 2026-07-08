@@ -2,9 +2,9 @@
 
 module Edoxen
   # MeetingComponent — flat sub-event of a Meeting.
-  # Replaces v0.x ScheduleItem.
+  # Replaces legacy ScheduleItem.
   #
-  # v3.0 (per-field localization, ISO 24229):
+  # 1.0 (per-field localization, ISO 24229):
   #   - Removed `localizations[]` collection.
   #   - Per-field LocalizedString for title, description, time_label.
   class MeetingComponent < Lutaml::Model::Serializable

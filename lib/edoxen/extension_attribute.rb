@@ -5,7 +5,7 @@ module Edoxen
   # MeetingExtension. Polymorphic on value type so consumers don't
   # have to re-parse strings back into Int/Float/Bool/Date.
   #
-  # Wire form (v2.1+, per TODO.refactor/47):
+  # Wire form (1.0+, per TODO.refactor/1.0-design):
   #
   #   - key: "quorum"
   #     type: "integer"
@@ -13,7 +13,7 @@ module Edoxen
   #
   #   - key: "name"
   #     type: "string"
-  #     value: "quic"      # string variant uses bare `value` (v2.0 wire)
+  #     value: "quic"      # string variant uses bare `value` (1.0 wire)
   #
   #   - key: "start"
   #     type: "datetime"
@@ -24,16 +24,16 @@ module Edoxen
   # set; the schema enforces this.
   #
   # String values use the bare `value:` wire name for back-compat with
-  # v2.0 fixtures. Typed variants (integer/float/boolean/date/datetime)
+  # 1.0 fixtures. Typed variants (integer/float/boolean/date/datetime)
   # use camelCase wire names. The gem unifies them behind `#typed_value`.
   class ExtensionAttribute < Lutaml::Model::Serializable
     attribute :key, :string
 
     # String variant — Ruby attribute is `value`, wire name is `value`
-    # (matches v2.0; `type: "string"` discriminator added in v2.1).
+    # (matches 1.0; `type: "string"` discriminator added in 1.0).
     attribute :value, :string
 
-    # Typed variants — added in v2.1.
+    # Typed variants — added in 1.0.
     attribute :integer_value, :integer
     attribute :float_value, :float
     attribute :boolean_value, :boolean
@@ -65,12 +65,12 @@ module Edoxen
       when "date"     then date_value
       when "datetime" then date_time_value
       else
-        # Default to string for back-compat with v2.0 (no `type`).
+        # Default to string for back-compat with 1.0 (no `type`).
         value
       end
     end
 
-    # Back-compat alias — v2.1 introduced `value` as the canonical Ruby
+    # Back-compat alias — 1.0 introduced `value` as the canonical Ruby
     # attribute; the older `string_value` alias keeps callers that
     # already migrated to that name working.
     alias string_value value

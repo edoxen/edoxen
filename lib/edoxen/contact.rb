@@ -6,7 +6,7 @@ module Edoxen
   # ("Secretariat"), or any other entity with a name and one or more
   # communication channels.
   #
-  # v3.0 (per-field localization, ISO 24229):
+  # 1.0 (per-field localization, ISO 24229):
   #   - All translatable fields are Localized<String/Name>[0..*]
   #     (one entry per spelling/conversion system code).
   #   - Added: `urn` for registry storage; `ref` for reference-by-URN.

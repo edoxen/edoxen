@@ -2,11 +2,11 @@
 
 module Edoxen
   # A formal Decision — the base type for any outcome adopted by a Meeting.
-  # Was `Resolution` in v0.x; renamed in v2.0 because the same formal concept
+  # Was `Resolution` in legacy; renamed in 1.0 because the same formal concept
   # has many names across bodies (resolution, order, ruling, determination,
   # finding, opinion). `Resolution` is one `kind` value, not a class name.
   #
-  # v3.0 (per-field localization, ISO 24229):
+  # 1.0 (per-field localization, ISO 24229):
   #   - Removed `localizations[]` collection.
   #   - Per-field LocalizedString for title, subject, message, considering.
   class Decision < Lutaml::Model::Serializable
@@ -40,7 +40,7 @@ module Edoxen
       entry&.value
     end
 
-    # --- v2.1 derivation accessors (TODO.refactor/45) -------------------
+    # --- 1.0 derivation accessors (TODO.refactor/1.0-design) -------------------
 
     def brought_by_motions_in(meeting:)
       return [] unless meeting && urn

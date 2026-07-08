@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # EntityRef — a typed cross-reference between entities (v2.1, TODO.refactor/44).
+  # EntityRef — a typed cross-reference between entities (1.0, TODO.refactor/1.0-design).
   #
   # Single identity: exactly one of `urn`, `identifier`, or `local_ref`
   # must be set. Optional metadata: `kind`, `role`, `note`.
@@ -13,7 +13,7 @@ module Edoxen
   #     set; `#multiple_identities?` flags the rare ambiguous case).
   #
   # Pilot: `Motion.resulting_decision_ref` (parallel to the existing
-  # `resulting_decision: String`). v3.0 will remove the String form.
+  # `resulting_decision: String`). 1.0 will remove the String form.
   class EntityRef < Lutaml::Model::Serializable
     attribute :urn, :string
     attribute :identifier, StructuredIdentifier
@@ -24,7 +24,7 @@ module Edoxen
     attribute :note, :string
 
     # True when exactly one identity field is set. The wire contract
-    # (TODO.refactor/44 + JSON-Schema) is XOR: setting 0 or ≥2 identity
+    # (TODO.refactor/1.0-design + JSON-Schema) is XOR: setting 0 or ≥2 identity
     # fields is a data error.
     def valid?
       identities_set.size == 1

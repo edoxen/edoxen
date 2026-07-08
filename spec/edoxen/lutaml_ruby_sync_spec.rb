@@ -8,7 +8,7 @@ require "pathname"
 # Walks every `class` declaration in `edoxen-model/models/*.lutaml` and
 # asserts the matching `Edoxen::*` Ruby class declares the same attribute
 # names (camelCase lutaml ↔ snake_case Ruby) and the same collection
-# flags. Closes the root-cause gap left by the v2.0 drift audit
+# flags. Closes the root-cause gap left by the 1.0 drift audit
 # (`edoxen-model/TODO.refactor/20-post-v2-gem-drift.md`).
 #
 # Skips:

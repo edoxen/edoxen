@@ -21,9 +21,9 @@ module Edoxen
     attribute :introduced_at, :date_time
     attribute :proposed_decision, :string
     attribute :resulting_decision, :string
-    # Pilot EntityRef field (v2.1, TODO.refactor/44). Parallel to
+    # Pilot EntityRef field (1.0, TODO.refactor/1.0-design). Parallel to
     # `resulting_decision` (String). Prefer the typed form in new code;
-    # the bare String form is removed in v3.0.
+    # the bare String form is removed in 1.0.
     attribute :resulting_decision_ref, EntityRef
     attribute :votings, :string, collection: true
     attribute :extensions, MeetingExtension, collection: true
@@ -36,12 +36,12 @@ module Edoxen
       status && !Enums::MOTION_TERMINAL.include?(status)
     end
 
-    # --- v2.1 derivation accessor (TODO.refactor/45) --------------------
+    # --- 1.0 derivation accessor (TODO.refactor/1.0-design) --------------------
     # Storage side: Voting.on_motion (SSOT for the Motion→Voting
     # relationship). This computed method returns the Voting instances
     # in `meeting` whose `on_motion` points at this Motion's URN.
     # The stored `votings[]` field remains on the wire for back-compat
-    # through v2.x; v3.0 removes it and this becomes the only path.
+    # through v2.x; 1.0 removes it and this becomes the only path.
     def votings_in(meeting:)
       return [] unless meeting && urn
 

@@ -26,7 +26,7 @@ RSpec.describe Edoxen::DecisionMetadata do
       expect(m.country_code).to eq("LU")
     end
 
-    it "carries multilingual title[] via per-field Localized (v3.0)" do
+    it "carries multilingual title[] via per-field Localized (1.0)" do
       payload = {
         "title" => [
           { "spelling" => "eng", "value" => "English title" },

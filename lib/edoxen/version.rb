@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Edoxen
-  VERSION = "2.1.3"
+  VERSION = "0.8.0"
 end

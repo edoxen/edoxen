@@ -69,7 +69,7 @@ RSpec.describe Edoxen::SchemaValidator do
                 number: "1"
       YAML
       errors = validator.validate_content(content, "memory")
-      # v3.0: identifier is the only required field on Decision
+      # 1.0: identifier is the only required field on Decision
       expect(errors).to be_empty
     end
 
@@ -125,7 +125,7 @@ RSpec.describe Edoxen::SchemaValidator do
     end
 
     it "uses longest-prefix line lookup (no path-shape hardcoding)" do
-      # ActionType is now permissive (v2.1+), so use a non-canonical
+      # ActionType is now permissive (1.0+), so use a non-canonical
       # DecisionKind to trigger an enum violation instead.
       content = <<~YAML
         ---

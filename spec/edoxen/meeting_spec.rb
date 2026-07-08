@@ -29,7 +29,7 @@ RSpec.describe Edoxen::Meeting do
     end
   end
 
-  it "carries all admin fields with their real types (v3.0 per-field Localized)" do
+  it "carries all admin fields with their real types (1.0 per-field Localized)" do
     m = described_class.from_yaml(YAML.dump(
                                     "identifier" => [{ "prefix" => "CIML", "number" => "56" }],
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",

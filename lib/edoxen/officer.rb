@@ -2,7 +2,7 @@
 
 module Edoxen
   # Officer — a person holding a structural role in a Meeting.
-  # Replaces v0.x Meeting#chair and Meeting#secretary direct shortcuts.
+  # Replaces legacy Meeting#chair and Meeting#secretary direct shortcuts.
   # One list, role discriminates. Open for adopter extension via `other`.
   class Officer < Lutaml::Model::Serializable
     attribute :role, :string, values: Enums::OFFICER_ROLE

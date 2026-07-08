@@ -6,7 +6,7 @@ module Edoxen
   # Adopters register their own profile namespace (e.g. "legco",
   # "us-congress", "ietf") and define `kind` values within it.
   #
-  # Field semantics (tightened v2.1, per TODO.refactor/47):
+  # Field semantics (tightened 1.0, per TODO.refactor/1.0-design):
   #
   #   profile    — the profile namespace (lowercase, hyphen-separated).
   #   kind       — discriminator within the profile.
@@ -14,7 +14,7 @@ module Edoxen
   #   attributes — typed key/value pairs (ExtensionAttribute).
   #
   # Recursion (`extensions: MeetingExtension[0..*]`) was removed in
-  # v2.1 — no documented use case. Profiles needing nesting can encode
+  # 1.0 — no documented use case. Profiles needing nesting can encode
   # it via dotted keys ("vote.count", "vote.method") in `attributes[]`.
   class MeetingExtension < Lutaml::Model::Serializable
     attribute :profile, :string

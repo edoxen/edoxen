@@ -6,7 +6,7 @@ module Edoxen
   # attendance, minutes, and URN links to one or more DecisionCollection
   # documents.
   #
-  # v3.0 (per-field localization, ISO 24229):
+  # 1.0 (per-field localization, ISO 24229):
   #   - Removed `localizations[]` collection.
   #   - Added per-field LocalizedString for title, general_area,
   #     practical_info, note.

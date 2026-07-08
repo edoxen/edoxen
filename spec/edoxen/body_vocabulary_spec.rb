@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
   describe "canonical enum constants" do
-    it "DecisionKindCanonical has 5 values (the v2.1 cap)" do
+    it "DecisionKindCanonical has 5 values (the 1.0 cap)" do
       expect(Edoxen::Enums::DECISION_KIND_CANONICAL.size).to eq(5)
       expect(Edoxen::Enums::DECISION_KIND_CANONICAL).to eq(
         %w[decision recommendation statement finding other]
@@ -25,16 +25,16 @@ RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
       )
     end
 
-    # Architectural invariant (TODO.refactor/46): canonical enums cap
+    # Architectural invariant (TODO.refactor/1.0-design): canonical enums cap
     # at 5. Bodies extend via `body_type: String` + per-dataset
     # `body_vocabulary[]`, NOT by growing the canonical enum. A future
     # PR that adds a sixth value silently breaks the design — this
     # example fails first.
-    it "every *_CANONICAL enum is within the v2.1 cap of 5" do
+    it "every *_CANONICAL enum is within the 1.0 cap of 5" do
       %i[DECISION_KIND_CANONICAL MEETING_TYPE_CANONICAL COMPONENT_KIND_CANONICAL].each do |c|
         size = Edoxen::Enums.const_get(c).size
         expect(size).to be <= 5,
-                        "#{c} has #{size} values; the v2.1 canonical cap is 5. " \
+                        "#{c} has #{size} values; the 1.0 canonical cap is 5. " \
                         "Extend via body_vocabulary instead."
       end
     end

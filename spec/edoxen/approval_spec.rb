@@ -10,13 +10,13 @@ RSpec.describe Edoxen::Approval do
           payload = {
             "type" => approval_type, "degree" => approval_degree,
             "date" => { "date" => "2024-01-15", "type" => "adoption" },
-            "message" => "vote #{approval_type} at #{approval_degree}"
+            "message" => [{ "spelling" => "eng", "value" => "vote #{approval_type} at #{approval_degree}" }]
           }
           a = described_class.from_yaml(YAML.dump(payload))
           expect(a.type).to eq(approval_type)
           expect(a.degree).to eq(approval_degree)
           expect(a.date).to be_a(Edoxen::DecisionDate)
-          expect(a.message).to eq("vote #{approval_type} at #{approval_degree}")
+          expect(a.message.first.value).to eq("vote #{approval_type} at #{approval_degree}")
 
           reload = described_class.from_yaml(a.to_yaml)
           expect(reload.type).to eq(approval_type)

@@ -26,9 +26,8 @@ module Edoxen
   autoload :ReferenceData, "edoxen/reference_data"
 
   # --- Shared behaviours (mixed into entity + metadata classes) --------
-  autoload :BodyVocabularyHost, "edoxen/body_vocabulary_host"
-  autoload :LocalizationHost, "edoxen/localization_host"
   autoload :OfficersHost, "edoxen/officers_host"
+  autoload :BodyVocabularyHost, "edoxen/body_vocabulary_host"
 
   # --- Decision side ----------------------------------------------------
   autoload :StructuredIdentifier, "edoxen/structured_identifier"
@@ -38,7 +37,6 @@ module Edoxen
   autoload :Approval, "edoxen/approval"
   autoload :Consideration, "edoxen/consideration"
   autoload :SourceUrl, "edoxen/source_url"
-  autoload :Localization, "edoxen/localization"
   autoload :Url, "edoxen/url"
   autoload :DecisionRelation, "edoxen/decision_relation"
   autoload :Decision, "edoxen/decision"
@@ -51,6 +49,8 @@ module Edoxen
   autoload :ContactIdentifier, "edoxen/contact_identifier"
   autoload :Name, "edoxen/name"
   autoload :Contact, "edoxen/contact"
+  autoload :LocalizedString, "edoxen/localized_string"
+  autoload :LocalizedName, "edoxen/localized_name"
   autoload :Person, "edoxen/person"
   autoload :HostRef, "edoxen/host_ref"
   autoload :Deadline, "edoxen/deadline"
@@ -62,7 +62,6 @@ module Edoxen
   autoload :MinutesSection, "edoxen/minutes_section"
   autoload :Minutes, "edoxen/minutes"
   autoload :MeetingRelation, "edoxen/meeting_relation"
-  autoload :MeetingLocalization, "edoxen/meeting_localization"
   autoload :Meeting, "edoxen/meeting"
   autoload :MeetingCollectionMetadata, "edoxen/meeting_collection_metadata"
   autoload :MeetingCollection, "edoxen/meeting_collection"
@@ -70,8 +69,8 @@ module Edoxen
   # --- v2 broadened-scope entities --------------------------------------
   autoload :ExtensionAttribute, "edoxen/extension_attribute"
   autoload :MeetingExtension, "edoxen/meeting_extension"
-  autoload :EntityRef, "edoxen/entity_ref"
   autoload :BodyVocabularyEntry, "edoxen/body_vocabulary_entry"
+  autoload :EntityRef, "edoxen/entity_ref"
   autoload :Venue, "edoxen/venue"
   autoload :PhysicalVenue, "edoxen/physical_venue"
   autoload :VirtualVenue, "edoxen/virtual_venue"
@@ -84,10 +83,12 @@ module Edoxen
   autoload :RecurrenceByDay, "edoxen/recurrence_by_day"
   autoload :Recurrence, "edoxen/recurrence"
   autoload :MeetingSeries, "edoxen/meeting_series"
-  autoload :ComponentLocalization, "edoxen/component_localization"
   autoload :MeetingComponent, "edoxen/meeting_component"
   autoload :Officer, "edoxen/officer"
   autoload :VenueValidator, "edoxen/venue_validator"
+  autoload :ContactCollection, "edoxen/contact_collection"
+  autoload :VenueCollection, "edoxen/venue_collection"
+  autoload :Urn, "edoxen/urn"
 
   # --- Services ---------------------------------------------------------
   autoload :SchemaValidator, "edoxen/schema_validator"

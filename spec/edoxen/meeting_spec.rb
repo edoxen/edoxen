@@ -38,7 +38,7 @@ RSpec.describe Edoxen::Meeting do
                                     "venues" => [{ "kind" => "physical", "name" => "OIML HQ",
                                                    "lat" => 48.87, "lon" => 2.34 }],
                                     "officers" => [{ "role" => "chair",
-                                                     "person" => { "name" => { "formatted" => "Roman Schwartz" } } }],
+                                                     "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Roman Schwartz" } }] } }],
                                     "agenda" => {
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]

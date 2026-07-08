@@ -7,7 +7,7 @@ module Edoxen
   class MeetingCollectionMetadata < Lutaml::Model::Serializable
     include BodyVocabularyHost
 
-    attribute :title, :string
+    attribute :title, LocalizedString, collection: true
     attribute :source, :string
   end
 end

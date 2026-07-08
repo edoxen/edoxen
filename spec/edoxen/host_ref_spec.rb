@@ -18,7 +18,7 @@ RSpec.describe Edoxen::HostRef do
     payload = {
       "ref" => "acme", "type" => "organizer",
       "contact" => {
-        "name" => { "formatted" => "Jane" },
+        "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }],
         "contact_methods" => [{ "kind" => "email", "value" => "jane@acme.org" }]
       }
     }

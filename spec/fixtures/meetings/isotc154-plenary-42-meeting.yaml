@@ -1,11 +1,9 @@
 ---
-# ISO/TC 154 42nd plenary meeting week — multi-day, multi-venue, typed hosts.
-# Mirrors the real-world data in isotc154/www.isotc154.org/_data/events/
-# plenary-meeting-42.yml. Trimmed for fixture brevity but representative.
+# ISO/TC 154 42nd plenary meeting week — v3.0 per-field Localized.
 identifier:
   - prefix: ISO/TC 154
     number: "42"
-urn: urn:iso:tc154:meeting:plenary-42
+urn: urn:edoxen:meeting:isotc154:plenary-42
 ordinal: 42
 type: plenary
 status: completed
@@ -17,28 +15,46 @@ date_range:
 
 committee: ISO/TC 154
 committee_group: Plenary
-general_area: Hong Kong, China
 city: HKHKG
 country_code: HK
 
+title:
+  - spelling: eng
+    value: 42nd plenary meeting week
+general_area:
+  - spelling: eng
+    value: Hong Kong, China
+
 venues:
   - kind: physical
-    name: Fairmont House (HKMA)
-    address: |
-      14/F, Fairmont House, 8 Cotton Tree Drive
-      Central, Hong Kong, China
+    name:
+      - spelling: eng
+        value: Fairmont House (HKMA)
+    address:
+      - spelling: eng
+        value: |
+          14/F, Fairmont House, 8 Cotton Tree Drive
+          Central, Hong Kong, China
     country_code: HK
     unlocode: HKHKG
 
 officers:
   - role: chair
     person:
-      name: { formatted: Jianfang Zhang }
-      affiliation: SAC (CNIS)
+      name:
+        - spelling: eng
+          value: { formatted: Jianfang Zhang }
+      affiliation:
+        - spelling: eng
+          value: SAC (CNIS)
   - role: secretary
     person:
-      name: { formatted: Jianfang Zhang }
-      affiliation: SAC (CNIS)
+      name:
+        - spelling: eng
+          value: { formatted: Jianfang Zhang }
+      affiliation:
+        - spelling: eng
+          value: SAC (CNIS)
       contact_methods:
         - { kind: email, value: zhangjf@cnis.gov.cn }
         - { kind: phone, value: "+86-10-58811613" }
@@ -48,53 +64,3 @@ hosts:
     type: liaison
   - ref: itchksar
     type: national_body
-
-source_urls:
-  - ref: https://www.isotc154.org/events/plenary-meeting-42/agenda.pdf
-    format: pdf
-    language_code: eng
-    kind: agenda_pdf
-  - ref: https://www.isotc154.org/events/plenary-meeting-42/minutes.pdf
-    format: pdf
-    language_code: eng
-    kind: minutes_pdf
-landing_url: https://www.isotc154.org/events/plenary-meeting-42/
-registration_url: https://www.iso.org/meeting-platform/42
-
-agenda:
-  status: final
-  items:
-    - label: "1"
-      kind: opening
-      title: Plenary opening
-      outcome: adopted
-      description: Review of ISO/TC 154 work since last plenary meeting
-    - label: "2"
-      kind: numbered
-      title: WG reports
-      outcome: discussed
-      description: WG5, WG6, WG7 reports to plenary
-
-components:
-  - identifier: plenary-opening
-    kind: opening
-    title: Plenary opening
-    starts_at: 2023-10-24T09:00:00+08:00
-    ends_at: 2023-10-24T10:30:00+08:00
-  - identifier: plenary-closing
-    kind: closing
-    title: Plenary closing
-    starts_at: 2023-10-27T14:30:00+08:00
-    ends_at: 2023-10-27T16:30:00+08:00
-
-deadlines:
-  - date: 2023-09-30
-    description: Registration via ISO meeting platform
-  - date: 2023-09-30
-    description: Liaison and national body report submissions
-
-localizations:
-  - language_code: eng
-    script: Latn
-    title: 42nd plenary meeting week
-    general_area: Hong Kong, China

@@ -36,12 +36,8 @@ module Edoxen
       recommendation statement finding opinion other
     ].freeze
 
-    # DecisionKindCanonical — the short abstract set (v2.1, TODO.refactor/46).
-    # Bodies extend via `body_type: String` + per-dataset `body_vocabulary[]`
-    # on DecisionMetadata. `other` is a temporary escape while the
-    # vocabulary stabilises; v3.0 removes it.
-    #
-    # Cap: 5 canonical values (hard limit per the v2.1 design review).
+    # DecisionKindCanonical — short abstract classification of decision
+    # kinds. Cap: 5 canonical values (hard limit per the design review).
     DECISION_KIND_CANONICAL = %w[decision recommendation statement finding other].freeze
 
     # DecisionStatus — lifecycle state machine.
@@ -74,11 +70,8 @@ module Edoxen
       markup board_meeting annual_general_meeting other
     ].freeze
 
-    # MeetingTypeCanonical — the short abstract set (v2.1, TODO.refactor/46).
-    # Bodies extend via `body_type: String` + per-dataset `body_vocabulary[]`
-    # on MeetingCollectionMetadata.
-    #
-    # Cap: 4 canonical values (no `other` — bodies pick the closest fit).
+    # MeetingTypeCanonical — short abstract classification of meeting
+    # types. Cap: 4 canonical values (no `other`).
     MEETING_TYPE_CANONICAL = %w[plenary governing working advisory].freeze
 
     MEETING_STATUS = %w[upcoming completed cancelled].freeze

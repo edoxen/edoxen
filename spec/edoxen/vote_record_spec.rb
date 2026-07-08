@@ -4,14 +4,14 @@ require "spec_helper"
 
 RSpec.describe Edoxen::VoteRecord do
   it_behaves_like "extension host",
-                  factory: { "person" => { "name" => { "formatted" => "Jane" } }, "vote" => "affirmative" }
+                  factory: { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] }, "vote" => "affirmative" }
 
   describe "LUTAML VoteType coverage" do
     Edoxen::Enums::VOTE_TYPE.each do |vote|
       it "round-trips vote=#{vote}" do
         payload = {
           "decision_ref" => "urn:example:decision:1",
-          "person" => { "name" => { "formatted" => "Jane" } },
+          "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
           "vote" => vote
         }
         v = described_class.from_yaml(YAML.dump(payload))
@@ -24,7 +24,7 @@ RSpec.describe Edoxen::VoteRecord do
   it "carries an affiliation and notes" do
     payload = {
       "decision_ref" => "urn:example:decision:1",
-      "person" => { "name" => { "formatted" => "Jane" } },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
       "affiliation" => "NB of France",
       "vote" => "affirmative",
       "notes" => "Endorsed"

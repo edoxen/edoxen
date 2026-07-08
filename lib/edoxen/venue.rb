@@ -6,21 +6,18 @@ module Edoxen
   # The `kind` field discriminates between physical and virtual venues.
   # All possible fields (physical-specific and virtual-specific) live on
   # this one class as optional attributes — only the ones matching the
-  # `kind` are populated. This avoids lutaml-model's polymorphic
-  # recursion pitfalls while keeping the wire format readable.
+  # `kind` are populated.
   #
-  # The PhysicalVenue and VirtualVenue subclasses exist for type-checking
-  # and for carrying type-specific helpers (e.g. `#unlocode_entry`).
-  # Construct them programmatically; the YAML wire format always uses
-  # the flat shape via Venue.
-  #
-  # Replaces v0.x `Location` (physical-only) and `Meeting.virtual: Boolean`
-  # (insufficient — Zoom needs URL+passcode+dial-in).
+  # v3.0 (per-field localization, ISO 24229):
+  #   - All translatable fields are Localized<String>[0..*].
+  #   - Added: `urn` for registry storage; `ref` for reference-by-URN.
   class Venue < Lutaml::Model::Serializable
+    attribute :ref, :string
+    attribute :urn, :string
     attribute :kind, :string, values: Enums::VENUE_KIND
-    attribute :name, :string
-    attribute :label, :string
-    attribute :description, :string
+    attribute :name, LocalizedString, collection: true
+    attribute :label, LocalizedString, collection: true
+    attribute :description, LocalizedString, collection: true
     attribute :capacity, :integer
     attribute :url, :string
     attribute :contact_methods, ContactMethod, collection: true
@@ -28,15 +25,15 @@ module Edoxen
     # Physical-venue fields (populated when kind == "physical").
     attribute :unlocode, :string
     attribute :iata_code, :string
-    attribute :address, :string
+    attribute :address, LocalizedString, collection: true
     attribute :city, :string
     attribute :country_code, :string
     attribute :lat, :float
     attribute :lon, :float
-    attribute :building, :string
-    attribute :floor, :string
-    attribute :room, :string
-    attribute :access_notes, :string
+    attribute :building, LocalizedString, collection: true
+    attribute :floor, LocalizedString, collection: true
+    attribute :room, LocalizedString, collection: true
+    attribute :access_notes, LocalizedString, collection: true
 
     # Virtual-venue fields (populated when kind == "virtual").
     attribute :uri, :string
@@ -49,6 +46,10 @@ module Edoxen
 
     attribute :extensions, MeetingExtension, collection: true
 
+    def reference?
+      !ref.nil? && !ref.to_s.empty?
+    end
+
     def physical?
       kind == "physical"
     end
@@ -57,8 +58,6 @@ module Edoxen
       kind == "virtual"
     end
 
-    # Resolve the UN/LOCODE entry via the canonical `unlocodes` gem.
-    # Returns an Unlocodes::Entry or nil when the code is empty / unknown.
     def unlocode_entry
       return nil if unlocode.nil? || unlocode.to_s.empty?
 
@@ -71,10 +70,10 @@ module Edoxen
       Edoxen::ReferenceData.find_iata(iata_code)
     end
 
-    def features_list
-      return "" if features.nil? || features.empty?
-
-      features.join(", ")
+    def name_in(spelling, fallback: true)
+      entry = name&.find { |n| n.spelling == spelling.to_s }
+      entry ||= name&.first if fallback
+      entry&.value
     end
   end
 end

@@ -1,7 +1,7 @@
 ---
-$schema: "http://json-schema.org/draft-07/schema#"
-$id: "https://github.com/edoxen/edoxen/schema/meeting.yaml"
-title: "Edoxen Meeting Schema"
+"$schema": http://json-schema.org/draft-07/schema#
+"$id": https://github.com/edoxen/edoxen/schema/meeting.yaml
+title: Edoxen Meeting Schema
 description: |
   Schema for validating Edoxen Meeting/Agenda YAML files.
 
@@ -16,26 +16,22 @@ description: |
   `spec/edoxen/schema_meeting_enum_sync_spec.rb`.
 type: object
 oneOf:
-  - $ref: "#/$defs/MeetingCollection"
-  - $ref: "#/$defs/Meeting"
-  - $ref: "#/$defs/MeetingSeries"
-
-$defs:
-
-  # ====================================================================
-  # Reused from schema/edoxen.yaml (re-declared here so this file is
-  # self-contained).
-  # ====================================================================
-
+- "$ref": "#/$defs/MeetingCollection"
+- "$ref": "#/$defs/Meeting"
+- "$ref": "#/$defs/MeetingSeries"
+"$defs":
   StructuredIdentifier:
     type: object
-    description: "An identifier (prefix + number). A Decision carries 1..* of these."
+    description: An identifier (prefix + number). A Decision carries 1..* of these.
     additionalProperties: false
-    required: [prefix, number]
+    required:
+    - prefix
+    - number
     properties:
-      prefix: { type: string }
-      number: { type: string }
-
+      prefix:
+        type: string
+      number:
+        type: string
   EntityRef:
     type: object
     description: |
@@ -44,30 +40,37 @@ $defs:
       the gem's `EntityRef#valid?` enforces this in Ruby.
     additionalProperties: false
     properties:
-      urn:         { type: string }
-      identifier:  { $ref: "#/$defs/StructuredIdentifier" }
-      local_ref:   { type: string }
-      kind:        { type: string }
-      role:        { type: string }
-      note:        { type: string }
-
+      urn:
+        type: string
+      identifier:
+        "$ref": "#/$defs/StructuredIdentifier"
+      local_ref:
+        type: string
+      kind:
+        type: string
+      role:
+        type: string
+      note:
+        type: string
   SourceUrl:
     type: object
-    description: "Per-language canonical source URL (e.g. one PDF per language)."
+    description: Per-spelling canonical source URL (e.g. one PDF per language).
     additionalProperties: false
-    required: [ref]
+    required:
+    - ref
     properties:
-      ref:          { type: string }
-      format:       { type: string }
-      language_code:
+      ref:
         type: string
-        pattern: "^[a-z]{3}$"
+      format:
+        type: string
+      spelling:
+        type: string
+        description: ISO 24229 spelling/conversion system code
       kind:
-        $ref: "#/$defs/SourceUrlKind"
-
+        "$ref": "#/$defs/SourceUrlKind"
   DateRange:
     type: object
-    description: "Start + end date pair for multi-day meetings."
+    description: Start + end date pair for multi-day meetings.
     additionalProperties: false
     properties:
       start:
@@ -76,12 +79,57 @@ $defs:
       end:
         type: string
         format: date
-
   ContactMethodKind:
     type: string
-    description: "Polymorphic communication channel kind."
-    enum: [phone, mobile, fax, email, url, mail, pager, message, other]
-
+    description: Polymorphic communication channel kind.
+    enum:
+    - phone
+    - mobile
+    - fax
+    - email
+    - url
+    - mail
+    - pager
+    - message
+    - other
+  LocalizedString:
+    type: object
+    description: |
+      One language-specific value of a translatable String field.
+      `spelling` is an ISO 24229 spelling/conversion system code.
+      Always verbose — single-language data uses the same
+      `[{ spelling, value }]` shape as multi-language data.
+    additionalProperties: false
+    required:
+    - spelling
+    - value
+    properties:
+      spelling:
+        type: string
+      value:
+        type: string
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  LocalizedName:
+    type: object
+    description: |
+      One language-specific value of a translatable Name field.
+      Mirrors LocalizedString but carries a structured Name.
+    additionalProperties: false
+    required:
+    - spelling
+    - value
+    properties:
+      spelling:
+        type: string
+      value:
+        "$ref": "#/$defs/Name"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
   ContactMethod:
     type: object
     description: |
@@ -92,20 +140,29 @@ $defs:
       ContactMethodKind enum (or `other` + extensions).
     additionalProperties: false
     properties:
-      kind:        { $ref: "#/$defs/ContactMethodKind" }
-      value:       { type: string }
-      label:       { type: string }
-      primary:     { type: boolean }
+      kind:
+        "$ref": "#/$defs/ContactMethodKind"
+      value:
+        type: string
+      label:
+        type: string
+      primary:
+        type: boolean
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   ContactIdentifierKind:
     type: string
-    description: "Polymorphic external identifier scheme for a Contact."
-    enum: [orcid, isni, wikidata, ror, ringgold, github, other]
-
+    description: Polymorphic external identifier scheme for a Contact.
+    enum:
+    - orcid
+    - isni
+    - wikidata
+    - ror
+    - ringgold
+    - github
+    - other
   ContactIdentifier:
     type: object
     description: |
@@ -115,13 +172,14 @@ $defs:
       ContactIdentifierKind enum (or `other` + extensions).
     additionalProperties: false
     properties:
-      kind:        { $ref: "#/$defs/ContactIdentifierKind" }
-      value:       { type: string }
+      kind:
+        "$ref": "#/$defs/ContactIdentifierKind"
+      value:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Name:
     type: object
     description: |
@@ -131,212 +189,291 @@ $defs:
       indexing, or locale-aware rendering.
     additionalProperties: false
     properties:
-      formatted:  { type: string }
-      family:     { type: string }
-      given:      { type: string }
-      additional: { type: string }
-      prefix:     { type: string }
-      suffix:     { type: string }
+      formatted:
+        type: string
+      family:
+        type: string
+      given:
+        type: string
+      additional:
+        type: string
+      prefix:
+        type: string
+      suffix:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Contact:
     type: object
     description: |
-      VCARD-like abstract contact. Generalises Person for cases where
-      the contact may be a person, an organisation, a department, a
-      role ("Secretariat"), or any other entity with a name and one or
-      more communication channels.
+      VCARD-like abstract contact. v3.0: per-field Localized
+      (name, title, affiliation, address). Added `urn` (registry
+      identity) and `ref` (reference-by-URN).
     additionalProperties: false
     properties:
-      name:            { $ref: "#/$defs/Name" }
-      kind:            { type: string }
-      role:            { type: string }
-      title:           { type: string }
-      affiliation:     { type: string }
+      ref:
+        type: string
+        description: URN reference; if set, ignore other fields
+      urn:
+        type: string
+        pattern: "^urn:edoxen:contact:[^:]+:[^:]+$"
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedName"
+      kind:
+        type: string
+      role:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      affiliation:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       contact_methods:
         type: array
         items:
-          $ref: "#/$defs/ContactMethod"
+          "$ref": "#/$defs/ContactMethod"
       identifiers:
         type: array
         items:
-          $ref: "#/$defs/ContactIdentifier"
-      address:         { type: string }
+          "$ref": "#/$defs/ContactIdentifier"
+      address:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Person:
     type: object
     description: |
-      A Contact that is specifically an individual human. Inherits all
-      Contact fields. The old `email`, `phone`, and `orcid` fields are
-      replaced by entries in `contact_methods` (kind=email / kind=phone)
-      and `identifiers` (kind=orcid).
+      A Contact that is specifically an individual human. Schema
+      duplicates Contact's properties because JSON-Schema draft-07
+      doesn't support `extends`. Same shape; semantically a subclass.
     additionalProperties: false
     properties:
-      name:            { $ref: "#/$defs/Name" }
-      kind:            { type: string }
-      role:            { type: string }
-      title:           { type: string }
-      affiliation:     { type: string }
+      ref:
+        type: string
+      urn:
+        type: string
+        pattern: "^urn:edoxen:contact:[^:]+:[^:]+$"
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedName"
+      kind:
+        type: string
+      role:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      affiliation:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       contact_methods:
         type: array
         items:
-          $ref: "#/$defs/ContactMethod"
+          "$ref": "#/$defs/ContactMethod"
       identifiers:
         type: array
         items:
-          $ref: "#/$defs/ContactIdentifier"
-      address:         { type: string }
+          "$ref": "#/$defs/ContactIdentifier"
+      address:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   HostRef:
     type: object
-    description: "Typed reference to a hosting organization."
+    description: Typed reference to a hosting organization.
     additionalProperties: false
-    required: [ref]
+    required:
+    - ref
     properties:
-      ref:     { type: string }
-      type:    { $ref: "#/$defs/HostType" }
-      role:    { type: string }
-      contact: { $ref: "#/$defs/Contact" }
-
+      ref:
+        type: string
+      type:
+        "$ref": "#/$defs/HostType"
+      role:
+        type: string
+      contact:
+        "$ref": "#/$defs/Contact"
   Attendance:
     type: object
-    description: "One attendance record per person at a Meeting."
+    description: One attendance record per person at a Meeting.
     additionalProperties: false
-    required: [person, status]
+    required:
+    - person
+    - status
     properties:
-      person:      { $ref: "#/$defs/Person" }
-      status:      { $ref: "#/$defs/ParticipationStatus" }
-      role:        { $ref: "#/$defs/AttendanceRole" }
-      response:    { $ref: "#/$defs/AttendanceResponse" }
-      affiliation: { type: string }
-      proxy_for:   { $ref: "#/$defs/Person" }
-      notes:       { type: string }
+      person:
+        "$ref": "#/$defs/Person"
+      status:
+        "$ref": "#/$defs/ParticipationStatus"
+      role:
+        "$ref": "#/$defs/AttendanceRole"
+      response:
+        "$ref": "#/$defs/AttendanceResponse"
+      affiliation:
+        type: string
+      proxy_for:
+        "$ref": "#/$defs/Person"
+      notes:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   VoteRecord:
     type: object
-    description: "One vote by one person on one decision/voting."
+    description: One vote by one person on one decision/voting.
     additionalProperties: false
-    required: [person, vote]
+    required:
+    - person
+    - vote
     properties:
-      decision_ref: { type: string }
-      voting_ref:   { type: string }
-      person:       { $ref: "#/$defs/Person" }
-      affiliation:  { type: string }
-      vote:         { $ref: "#/$defs/VoteType" }
-      role:         { type: string }
-      notes:        { type: string }
+      decision_ref:
+        type: string
+      voting_ref:
+        type: string
+      person:
+        "$ref": "#/$defs/Person"
+      affiliation:
+        type: string
+      vote:
+        "$ref": "#/$defs/VoteType"
+      role:
+        type: string
+      notes:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   MinutesSection:
     type: object
-    description: "One section of a Meeting's minutes — typically tied to an agenda item by `number`."
+    description: 'One section of a Meeting''s minutes — typically tied to an agenda item by `number`. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      number:      { type: string }
-      title:       { type: string }
-      narrative:   { type: string }
-      page_start:  { type: integer }
-      page_end:    { type: integer }
+      number:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      narrative:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      page_start:
+        type: integer
+      page_end:
+        type: integer
       references:
         type: array
         items:
-          $ref: "#/$defs/Reference"
-
+          "$ref": "#/$defs/Reference"
   Minutes:
     type: object
     description: |
-      The narrative record of a Meeting — what was said, by whom, in
-      what order, with what outcome. Distinct from Agenda and from
-      DecisionCollection.
+      The narrative record of a Meeting. v3.0: per-document language_code
+      + script replaced by a single `spelling` (ISO 24229).
     additionalProperties: false
     properties:
       identifier:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
-      urn:           { type: string }
-      language_code:
+          "$ref": "#/$defs/StructuredIdentifier"
+      urn:
         type: string
-        pattern: "^[a-z]{3}$"
-      script:
+      spelling:
         type: string
-        pattern: "^[A-Z][a-z]{3}$"
-      source_doc:    { type: string }
-      source_pages:  { type: string }
+        description: ISO 24229 spelling/conversion system code
+      source_doc:
+        type: string
+      source_pages:
+        type: string
       sections:
         type: array
         items:
-          $ref: "#/$defs/MinutesSection"
-
+          "$ref": "#/$defs/MinutesSection"
   Deadline:
     type: object
-    description: "A time-bound requirement (registration, submission, etc.)."
+    description: 'A time-bound requirement. v3.0: per-field Localized.'
     additionalProperties: false
-    required: [date]
+    required:
+    - date
     properties:
       date:
         type: string
         format: date
-      description: { type: string }
-
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
   Reference:
     type: object
-    description: "Generic document reference."
+    description: Generic document reference.
     additionalProperties: false
     properties:
-      ref:   { type: string }
-      kind:  { type: string }
-      title: { type: string }
-
-  # ====================================================================
-  # Agenda side.
-  # ====================================================================
-
+      ref:
+        type: string
+      kind:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
   AgendaItem:
     type: object
-    description: "One entry on an Agenda."
+    description: 'One entry on an Agenda. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      label:       { type: string }
-      kind:        { $ref: "#/$defs/AgendaItemKind" }
-      title:       { type: string }
-      description: { type: string }
+      label:
+        type: string
+      kind:
+        "$ref": "#/$defs/AgendaItemKind"
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       references:
         type: array
         items:
-          $ref: "#/$defs/Reference"
-      outcome:       { $ref: "#/$defs/AgendaItemOutcome" }
-      decision_ref:  { type: string }
+          "$ref": "#/$defs/Reference"
+      outcome:
+        "$ref": "#/$defs/AgendaItemOutcome"
+      decision_ref:
+        type: string
       topics:
         type: array
         items:
-          $ref: "#/$defs/Topic"
+          "$ref": "#/$defs/Topic"
       components:
         type: array
-        items: { type: string }
+        items:
+          type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Agenda:
     type: object
     description: |
@@ -347,196 +484,271 @@ $defs:
       identifier:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
-      status:      { $ref: "#/$defs/AgendaStatus" }
-      source_doc:  { type: string }
+          "$ref": "#/$defs/StructuredIdentifier"
+      status:
+        "$ref": "#/$defs/AgendaStatus"
+      source_doc:
+        type: string
       items:
         type: array
         items:
-          $ref: "#/$defs/AgendaItem"
+          "$ref": "#/$defs/AgendaItem"
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
-  # ====================================================================
-  # Topic, Venue, Recurrence, MeetingExtension (shared with edoxen.yaml).
-  # ====================================================================
-
+          "$ref": "#/$defs/MeetingExtension"
   TopicDocument:
     type: object
-    description: "Text-bearing document about a Topic."
+    description: 'Text-bearing document about a Topic. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      identifier:    { type: string }
-      title:         { type: string }
-      version:       { type: string }
-      status:        { type: string }
-      url:           { type: string }
-      format:        { type: string }
-      language_code:
+      identifier:
         type: string
-        pattern: "^[a-z]{3}$"
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      version:
+        type: string
+      status:
+        type: string
+      url:
+        type: string
+      format:
+        type: string
+      spelling:
+        type: string
+        description: ISO 24229 spelling/conversion system code
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   TopicAsset:
     type: object
-    description: "Non-text resource about a Topic."
+    description: 'Non-text resource about a Topic. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      identifier: { type: string }
-      title:      { type: string }
-      kind:       { type: string }
-      url:        { type: string }
-      format:     { type: string }
+      identifier:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      kind:
+        type: string
+      url:
+        type: string
+      format:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Topic:
     type: object
-    description: "The subject of discussion at a Meeting."
+    description: 'The subject of discussion at a Meeting. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      identifier:     { type: string }
-      urn:            { type: string }
-      title:          { type: string }
-      description:    { type: string }
-      status:         { $ref: "#/$defs/TopicStatus" }
-      resumption_of:  { type: string }
+      identifier:
+        type: string
+      urn:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      status:
+        "$ref": "#/$defs/TopicStatus"
+      resumption_of:
+        type: string
       documents:
         type: array
         items:
-          $ref: "#/$defs/TopicDocument"
+          "$ref": "#/$defs/TopicDocument"
       assets:
         type: array
         items:
-          $ref: "#/$defs/TopicAsset"
+          "$ref": "#/$defs/TopicAsset"
       references:
         type: array
         items:
-          $ref: "#/$defs/Reference"
+          "$ref": "#/$defs/Reference"
       motions:
         type: array
-        items: { type: string }
+        items:
+          type: string
       decisions:
         type: array
-        items: { type: string }
+        items:
+          type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   Venue:
     type: object
     description: |
       Polymorphic place where a Meeting happens. `kind` discriminates
       physical vs virtual; all fields from both subtypes live here as
-      optional siblings. Validators (Edoxen::VenueValidator) enforce
-      that fields match `kind`.
+      optional siblings. v3.0: per-field Localized (name, label,
+      description, address, building, floor, room, access_notes).
+      Added `urn` (registry identity) and `ref` (reference-by-URN).
     additionalProperties: false
     properties:
-      kind:              { $ref: "#/$defs/VenueKind" }
-      name:              { type: string }
-      label:             { type: string }
-      description:       { type: string }
-      capacity:          { type: integer }
-      url:               { type: string }
+      ref:
+        type: string
+        description: URN reference; if set, ignore other fields
+      urn:
+        type: string
+        pattern: "^urn:edoxen:venue:[^:]+:[^:]+$"
+      kind:
+        "$ref": "#/$defs/VenueKind"
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      label:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      capacity:
+        type: integer
+      url:
+        type: string
       contact_methods:
         type: array
         items:
-          $ref: "#/$defs/ContactMethod"
+          "$ref": "#/$defs/ContactMethod"
       unlocode:
         type: string
         pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
       iata_code:
         type: string
         pattern: "^[A-Z]{3}$"
-      address:           { type: string }
-      city:              { type: string }
+      address:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      city:
+        type: string
       country_code:
         type: string
         pattern: "^[A-Z]{2}$"
-      lat:               { type: number }
-      lon:               { type: number }
-      building:          { type: string }
-      floor:             { type: string }
-      room:              { type: string }
-      access_notes:      { type: string }
-
-      uri:               { type: string }
+      lat:
+        type: number
+      lon:
+        type: number
+      building:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      floor:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      room:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      access_notes:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      uri:
+        type: string
       features:
         type: array
         items:
-          $ref: "#/$defs/VirtualFeature"
-      passcode:                 { type: string }
-      meeting_id:               { type: string }
+          "$ref": "#/$defs/VirtualFeature"
+      passcode:
+        type: string
+      meeting_id:
+        type: string
       dial_in_numbers:
         type: array
-        items: { type: string }
-      waiting_room:             { type: boolean }
-      registration_required:    { type: boolean }
-
+        items:
+          type: string
+      waiting_room:
+        type: boolean
+      registration_required:
+        type: boolean
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   RecurrenceByDay:
     type: object
-    description: "BYDAY part of a recurrence. `ordinal` is null for 'every', +1 for first, -1 for last."
+    description: BYDAY part of a recurrence. `ordinal` is null for 'every', +1 for first, -1 for last.
     additionalProperties: false
     properties:
-      ordinal: { type: integer }
-      weekday: { type: string }
-
+      ordinal:
+        type: integer
+      weekday:
+        type: string
   Recurrence:
     type: object
-    description: "Structured ISO 8601-2 §13 recurrence."
+    description: Structured ISO 8601-2 §13 recurrence.
     additionalProperties: false
     properties:
-      freq:        { $ref: "#/$defs/RecurrenceFreq" }
-      interval:    { type: integer }
-      count:       { type: integer }
-      until:       { type: string, format: date-time }
+      freq:
+        "$ref": "#/$defs/RecurrenceFreq"
+      interval:
+        type: integer
+      count:
+        type: integer
+      until:
+        type: string
+        format: date-time
       by_day:
         type: array
         items:
-          $ref: "#/$defs/RecurrenceByDay"
+          "$ref": "#/$defs/RecurrenceByDay"
       by_month_day:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_month:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_week_no:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_year_day:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_hour:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_minute:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_second:
         type: array
-        items: { type: integer }
+        items:
+          type: integer
       by_set_pos:
         type: array
-        items: { type: integer }
-      week_start: { type: string }
+        items:
+          type: integer
+      week_start:
+        type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   ExtensionAttribute:
     type: object
     description: |
@@ -545,15 +757,31 @@ $defs:
       Bool/Date (v2.1 tighten, TODO.refactor/47).
     additionalProperties: false
     properties:
-      key:   { type: string }
-      type:  { type: string, enum: [string, integer, float, boolean, date, datetime] }
-      value:         { type: string }
-      intValue:      { type: integer }
-      floatValue:    { type: number }
-      booleanValue:  { type: boolean }
-      dateValue:     { type: string, format: date }
-      dateTimeValue: { type: string, format: date-time }
-
+      key:
+        type: string
+      type:
+        type: string
+        enum:
+        - string
+        - integer
+        - float
+        - boolean
+        - date
+        - datetime
+      value:
+        type: string
+      intValue:
+        type: integer
+      floatValue:
+        type: number
+      booleanValue:
+        type: boolean
+      dateValue:
+        type: string
+        format: date
+      dateTimeValue:
+        type: string
+        format: date-time
   MeetingExtension:
     type: object
     description: |
@@ -565,247 +793,274 @@ $defs:
       keys in `attributes[]` for nesting).
     additionalProperties: false
     properties:
-      profile: { type: string }
-      kind:    { type: string }
-      ref:     { type: string }
+      profile:
+        type: string
+      kind:
+        type: string
+      ref:
+        type: string
       attributes:
         type: array
         items:
-          $ref: "#/$defs/ExtensionAttribute"
-
+          "$ref": "#/$defs/ExtensionAttribute"
   Officer:
     type: object
-    description: "A person holding a structural role in a Meeting."
+    description: A person holding a structural role in a Meeting.
     additionalProperties: false
     properties:
-      role:        { $ref: "#/$defs/OfficerRole" }
-      person:      { $ref: "#/$defs/Person" }
-      term_start:  { type: string, format: date }
-      term_end:    { type: string, format: date }
+      role:
+        "$ref": "#/$defs/OfficerRole"
+      person:
+        "$ref": "#/$defs/Person"
+      term_start:
+        type: string
+        format: date
+      term_end:
+        type: string
+        format: date
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
-  ComponentLocalization:
-    type: object
-    description: "Per-language content for a MeetingComponent."
-    additionalProperties: false
-    required: [language_code]
-    properties:
-      language_code:
-        type: string
-        pattern: "^[a-z]{3}$"
-      script:
-        type: string
-        pattern: "^[A-Z][a-z]{3}$"
-      title:       { type: string }
-      description: { type: string }
-
+          "$ref": "#/$defs/MeetingExtension"
   MeetingComponent:
     type: object
-    description: "Flat sub-event of a Meeting."
+    description: 'Flat sub-event of a Meeting. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      identifier:  { type: string }
-      urn:         { type: string }
-      kind:        { $ref: "#/$defs/ComponentKind" }
-      body_type:   { type: string }
-      title:       { type: string }
-      description: { type: string }
-      starts_at:   { type: string, format: date-time }
-      ends_at:     { type: string, format: date-time }
-      time_label:  { type: string }
+      identifier:
+        type: string
+      urn:
+        type: string
+      kind:
+        "$ref": "#/$defs/ComponentKind"
+      body_type:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      starts_at:
+        type: string
+        format: date-time
+      ends_at:
+        type: string
+        format: date-time
+      time_label:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       venue_refs:
         type: array
-        items: { type: string }
+        items:
+          type: string
       officers:
         type: array
         items:
-          $ref: "#/$defs/Officer"
-      agenda_ref:  { type: string }
-      minutes_ref: { type: string }
+          "$ref": "#/$defs/Officer"
+      agenda_ref:
+        type: string
+      minutes_ref:
+        type: string
       attendance_refs:
         type: array
-        items: { type: string }
-      localizations:
-        type: array
         items:
-          $ref: "#/$defs/ComponentLocalization"
+          type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   MeetingSeries:
     type: object
-    description: "Parent of recurring Meeting instances."
+    description: 'Parent of recurring Meeting instances. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
-      urn:           { type: string }
-      name:          { type: string }
-      description:   { type: string }
-      recurrence:    { $ref: "#/$defs/Recurrence" }
-      term:          { type: string }
-      contact:       { $ref: "#/$defs/Contact" }
+          "$ref": "#/$defs/StructuredIdentifier"
+      urn:
+        type: string
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      recurrence:
+        "$ref": "#/$defs/Recurrence"
+      term:
+        type: string
+      contact:
+        "$ref": "#/$defs/Contact"
       hosts:
         type: array
         items:
-          $ref: "#/$defs/HostRef"
-      kind:          { type: string }
+          "$ref": "#/$defs/HostRef"
+      kind:
+        type: string
       meeting_refs:
         type: array
-        items: { type: string }
+        items:
+          type: string
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
-  # ====================================================================
-  # Meeting side.
-  # ====================================================================
-
+          "$ref": "#/$defs/MeetingExtension"
+      body_type:
+        type: string
   MeetingRelation:
     type: object
-    description: "Directed link between two meetings."
+    description: Directed link between two meetings.
     additionalProperties: false
-    required: [source, destination, type]
+    required:
+    - source
+    - destination
+    - type
     properties:
-      source:     { $ref: "#/$defs/StructuredIdentifier" }
-      destination: { $ref: "#/$defs/StructuredIdentifier" }
-      type:       { $ref: "#/$defs/MeetingRelationType" }
-
-  MeetingLocalization:
-    type: object
-    description: "Per-language content for a Meeting."
-    additionalProperties: false
-    required: [language_code]
-    properties:
-      language_code:
-        type: string
-        pattern: "^[a-z]{3}$"
-      script:
-        type: string
-        pattern: "^[A-Z][a-z]{3}$"
-      title:          { type: string }
-      general_area:   { type: string }
-      practical_info: { type: string }
-
+      source:
+        "$ref": "#/$defs/StructuredIdentifier"
+      destination:
+        "$ref": "#/$defs/StructuredIdentifier"
+      type:
+        "$ref": "#/$defs/MeetingRelationType"
   Meeting:
     type: object
-    description: "A single Meeting (event)."
+    description: 'A single Meeting (event). v3.0: per-field Localized.'
     additionalProperties: false
-    required: [identifier, type]
+    required:
+    - identifier
+    - type
     properties:
       identifier:
         type: array
         minItems: 1
         items:
-          $ref: "#/$defs/StructuredIdentifier"
-      urn:                { type: string }
-      ordinal:            { type: integer }
-      series_ref:         { type: string }
-      type:               { $ref: "#/$defs/MeetingType" }
-      status:             { $ref: "#/$defs/MeetingStatus" }
-      visibility:         { $ref: "#/$defs/Visibility" }
-      body_type:          { type: string }
-
-      date_range:         { $ref: "#/$defs/DateRange" }
-      recurrence:         { $ref: "#/$defs/Recurrence" }
-
+          "$ref": "#/$defs/StructuredIdentifier"
+      urn:
+        type: string
+      ordinal:
+        type: integer
+      series_ref:
+        type: string
+      type:
+        "$ref": "#/$defs/MeetingType"
+      status:
+        "$ref": "#/$defs/MeetingStatus"
+      visibility:
+        "$ref": "#/$defs/Visibility"
+      body_type:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      date_range:
+        "$ref": "#/$defs/DateRange"
+      recurrence:
+        "$ref": "#/$defs/Recurrence"
       venues:
         type: array
         items:
-          $ref: "#/$defs/Venue"
-      general_area:       { type: string }
+          "$ref": "#/$defs/Venue"
+      general_area:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      practical_info:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
       city:
         type: string
         pattern: "^[A-Z]{2}[A-Z0-9]{3}$"
       country_code:
         type: string
         pattern: "^[A-Z]{2}$"
-
-      committee:          { type: string }
-      committee_group:    { type: string }
-
+      committee:
+        type: string
+      committee_group:
+        type: string
       officers:
         type: array
         items:
-          $ref: "#/$defs/Officer"
+          "$ref": "#/$defs/Officer"
       hosts:
         type: array
         items:
-          $ref: "#/$defs/HostRef"
-
+          "$ref": "#/$defs/HostRef"
       source_urls:
         type: array
         items:
-          $ref: "#/$defs/SourceUrl"
-      landing_url:        { type: string }
-      registration_url:   { type: string }
-      note:               { type: string }
-      contact:            { $ref: "#/$defs/Contact" }
-
-      agenda:             { $ref: "#/$defs/Agenda" }
+          "$ref": "#/$defs/SourceUrl"
+      landing_url:
+        type: string
+      registration_url:
+        type: string
+      note:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      contact:
+        "$ref": "#/$defs/Contact"
+      agenda:
+        "$ref": "#/$defs/Agenda"
       components:
         type: array
         items:
-          $ref: "#/$defs/MeetingComponent"
+          "$ref": "#/$defs/MeetingComponent"
       deadlines:
         type: array
         items:
-          $ref: "#/$defs/Deadline"
+          "$ref": "#/$defs/Deadline"
       attendance:
         type: array
         items:
-          $ref: "#/$defs/Attendance"
+          "$ref": "#/$defs/Attendance"
       minutes:
         type: array
         items:
-          $ref: "#/$defs/Minutes"
-
+          "$ref": "#/$defs/Minutes"
       decisions:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
+          "$ref": "#/$defs/StructuredIdentifier"
       motions:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
+          "$ref": "#/$defs/StructuredIdentifier"
       votings:
         type: array
         items:
-          $ref: "#/$defs/StructuredIdentifier"
-
-      localizations:
-        type: array
-        items:
-          $ref: "#/$defs/MeetingLocalization"
+          "$ref": "#/$defs/StructuredIdentifier"
       relations:
         type: array
         items:
-          $ref: "#/$defs/MeetingRelation"
+          "$ref": "#/$defs/MeetingRelation"
       extensions:
         type: array
         items:
-          $ref: "#/$defs/MeetingExtension"
-
+          "$ref": "#/$defs/MeetingExtension"
   MeetingCollectionMetadata:
     type: object
-    description: "Display-level metadata for a MeetingCollection."
+    description: 'Display-level metadata for a MeetingCollection. v3.0: per-field Localized.'
     additionalProperties: false
     properties:
-      title:  { type: string }
-      source: { type: string }
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      source:
+        type: string
       body_vocabulary:
         type: array
         items:
-          $ref: "#/$defs/BodyVocabularyEntry"
-
+          "$ref": "#/$defs/BodyVocabularyEntry"
   BodyVocabularyEntry:
     type: object
     description: |
@@ -814,126 +1069,242 @@ $defs:
       canonical_type resolution within the declaring collection.
     additionalProperties: false
     properties:
-      body_type:      { type: string }
-      canonical_type: { type: string }
-      definition:     { type: string }
-
+      body_type:
+        type: string
+      canonical_type:
+        type: string
+      definition:
+        type: string
   MeetingCollection:
     type: object
-    description: "Top-level wrapper for many Meetings in one file."
+    description: Top-level wrapper for many Meetings in one file.
     additionalProperties: false
-    required: [meetings]
+    required:
+    - meetings
     properties:
       metadata:
-        $ref: "#/$defs/MeetingCollectionMetadata"
+        "$ref": "#/$defs/MeetingCollectionMetadata"
       meetings:
         type: array
         items:
-          $ref: "#/$defs/Meeting"
-
-  # ====================================================================
-  # Enums.
-  # ====================================================================
-
+          "$ref": "#/$defs/Meeting"
   MeetingType:
     type: string
-    description: "Edoxen::Enums::MEETING_TYPE."
-    enum: [plenary, working_group, task_group, ad_hoc, joint, general_assembly, committee, subcommittee, conference, workshop, seminar, webinar, hearing, markup, board_meeting, annual_general_meeting, other]
-
+    description: Edoxen::Enums::MEETING_TYPE.
+    enum:
+    - plenary
+    - working_group
+    - task_group
+    - ad_hoc
+    - joint
+    - general_assembly
+    - committee
+    - subcommittee
+    - conference
+    - workshop
+    - seminar
+    - webinar
+    - hearing
+    - markup
+    - board_meeting
+    - annual_general_meeting
+    - other
   MeetingTypeCanonical:
     type: string
     description: |
       Edoxen::Enums::MEETING_TYPE_CANONICAL — short abstract set (v2.1,
       TODO.refactor/46). No `other` escape — bodies pick the closest
       fit and use `body_type` for body-specific terminology.
-    enum: [plenary, governing, working, advisory]
-
+    enum:
+    - plenary
+    - governing
+    - working
+    - advisory
   MeetingStatus:
     type: string
-    description: "Edoxen::Enums::MEETING_STATUS."
-    enum: [upcoming, completed, cancelled]
-
+    description: Edoxen::Enums::MEETING_STATUS.
+    enum:
+    - upcoming
+    - completed
+    - cancelled
   AgendaStatus:
     type: string
-    description: "Edoxen::Enums::AGENDA_STATUS."
-    enum: [draft, final, amended, cancelled, superseded]
-
+    description: Edoxen::Enums::AGENDA_STATUS.
+    enum:
+    - draft
+    - final
+    - amended
+    - cancelled
+    - superseded
   AgendaItemKind:
     type: string
-    description: "Edoxen::Enums::AGENDA_ITEM_KIND."
-    enum: [numbered, unnumbered, header, opening, closing, aob]
-
+    description: Edoxen::Enums::AGENDA_ITEM_KIND.
+    enum:
+    - numbered
+    - unnumbered
+    - header
+    - opening
+    - closing
+    - aob
   AgendaItemOutcome:
     type: string
-    description: "Edoxen::Enums::AGENDA_ITEM_OUTCOME."
-    enum: [discussed, resolved, deferred, adopted, withdrawn, carried, negatived]
-
+    description: Edoxen::Enums::AGENDA_ITEM_OUTCOME.
+    enum:
+    - discussed
+    - resolved
+    - deferred
+    - adopted
+    - withdrawn
+    - carried
+    - negatived
   HostType:
     type: string
-    description: "Edoxen::Enums::HOST_TYPE."
-    enum: [national_body, liaison, associate, organizer]
-
+    description: Edoxen::Enums::HOST_TYPE.
+    enum:
+    - national_body
+    - liaison
+    - associate
+    - organizer
   MeetingRelationType:
     type: string
-    description: "Edoxen::Enums::MEETING_RELATION_TYPE."
-    enum: [continues_from, continues_to, joint_with, supersedes, superseded_by, rescheduled_from, rescheduled_to, parent_of, child_of, sibling_of, depends_on, finish_to_start, finish_to_finish, start_to_start, start_to_finish]
-
+    description: Edoxen::Enums::MEETING_RELATION_TYPE.
+    enum:
+    - continues_from
+    - continues_to
+    - joint_with
+    - supersedes
+    - superseded_by
+    - rescheduled_from
+    - rescheduled_to
+    - parent_of
+    - child_of
+    - sibling_of
+    - depends_on
+    - finish_to_start
+    - finish_to_finish
+    - start_to_start
+    - start_to_finish
   SourceUrlKind:
     type: string
-    description: "Edoxen::Enums::SOURCE_URL_KIND."
-    enum: [agenda_pdf, minutes_pdf, decisions_pdf, report_pdf, register_url, landing_page]
-
+    description: Edoxen::Enums::SOURCE_URL_KIND.
+    enum:
+    - agenda_pdf
+    - minutes_pdf
+    - decisions_pdf
+    - report_pdf
+    - register_url
+    - landing_page
   ParticipationStatus:
     type: string
-    description: "Edoxen::Enums::PARTICIPATION_STATUS."
-    enum: [present, absent, apologies, observer, excused]
-
+    description: Edoxen::Enums::PARTICIPATION_STATUS.
+    enum:
+    - present
+    - absent
+    - apologies
+    - observer
+    - excused
   AttendanceRole:
     type: string
-    description: "Edoxen::Enums::ATTENDANCE_ROLE."
-    enum: [chair, required, optional, non_participant]
-
+    description: Edoxen::Enums::ATTENDANCE_ROLE.
+    enum:
+    - chair
+    - required
+    - optional
+    - non_participant
   AttendanceResponse:
     type: string
-    description: "Edoxen::Enums::ATTENDANCE_RESPONSE."
-    enum: [pending, confirmed, declined, tentative, delegated]
-
+    description: Edoxen::Enums::ATTENDANCE_RESPONSE.
+    enum:
+    - pending
+    - confirmed
+    - declined
+    - tentative
+    - delegated
   VoteType:
     type: string
-    description: "Edoxen::Enums::VOTE_TYPE."
-    enum: [affirmative, negative, abstain, absent, not_applicable]
-
+    description: Edoxen::Enums::VOTE_TYPE.
+    enum:
+    - affirmative
+    - negative
+    - abstain
+    - absent
+    - not_applicable
   TopicStatus:
     type: string
-    description: "Edoxen::Enums::TOPIC_STATUS."
-    enum: [open, under_discussion, decided, deferred, withdrawn]
-
+    description: Edoxen::Enums::TOPIC_STATUS.
+    enum:
+    - open
+    - under_discussion
+    - decided
+    - deferred
+    - withdrawn
   VenueKind:
     type: string
-    description: "Edoxen::Enums::VENUE_KIND."
-    enum: [physical, virtual]
-
+    description: Edoxen::Enums::VENUE_KIND.
+    enum:
+    - physical
+    - virtual
   VirtualFeature:
     type: string
-    description: "Edoxen::Enums::VIRTUAL_FEATURE."
-    enum: [audio, video, chat, phone, screen, feed]
-
+    description: Edoxen::Enums::VIRTUAL_FEATURE.
+    enum:
+    - audio
+    - video
+    - chat
+    - phone
+    - screen
+    - feed
   Visibility:
     type: string
-    description: "Edoxen::Enums::VISIBILITY."
-    enum: [public, private, confidential]
-
+    description: Edoxen::Enums::VISIBILITY.
+    enum:
+    - public
+    - private
+    - confidential
   ComponentKind:
     type: string
-    description: "Edoxen::Enums::COMPONENT_KIND."
-    enum: [track, session, debate, breakout, bof, plenary_session, working_group_session, committee_of_the_whole, keynote, address, statement, question_time, opening, closing, break, reception, registration, networking, other]
-
+    description: Edoxen::Enums::COMPONENT_KIND.
+    enum:
+    - track
+    - session
+    - debate
+    - breakout
+    - bof
+    - plenary_session
+    - working_group_session
+    - committee_of_the_whole
+    - keynote
+    - address
+    - statement
+    - question_time
+    - opening
+    - closing
+    - break
+    - reception
+    - registration
+    - networking
+    - other
   OfficerRole:
     type: string
-    description: "Edoxen::Enums::OFFICER_ROLE."
-    enum: [chair, vice_chair, deputy_chair, secretary, treasurer, parliamentarian, presiding_officer, sergeant_at_arms, other]
-
+    description: Edoxen::Enums::OFFICER_ROLE.
+    enum:
+    - chair
+    - vice_chair
+    - deputy_chair
+    - secretary
+    - treasurer
+    - parliamentarian
+    - presiding_officer
+    - sergeant_at_arms
+    - other
   RecurrenceFreq:
     type: string
-    description: "Edoxen::Enums::RECURRENCE_FREQ."
-    enum: [secondly, minutely, hourly, daily, weekly, monthly, yearly]
+    description: Edoxen::Enums::RECURRENCE_FREQ.
+    enum:
+    - secondly
+    - minutely
+    - hourly
+    - daily
+    - weekly
+    - monthly
+    - yearly

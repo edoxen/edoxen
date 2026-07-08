@@ -15,8 +15,8 @@ module Edoxen
   # Removed 2026-07-05.
   class MinutesSection < Lutaml::Model::Serializable
     attribute :number, :string
-    attribute :title, :string
-    attribute :narrative, :string
+    attribute :title, LocalizedString, collection: true
+    attribute :narrative, LocalizedString, collection: true
     attribute :page_start, :integer
     attribute :page_end, :integer
     attribute :references, Reference, collection: true

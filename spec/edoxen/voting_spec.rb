@@ -26,12 +26,12 @@ RSpec.describe Edoxen::Voting do
     payload = {
       "counts" => { "ayes" => 5, "noes" => 3 },
       "casting_vote" => {
-        "person" => { "name" => { "formatted" => "Chair" } },
+        "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Chair" } }] },
         "vote" => "affirmative"
       },
       "vote_records" => [
-        { "person" => { "name" => { "formatted" => "A" } }, "vote" => "affirmative" },
-        { "person" => { "name" => { "formatted" => "B" } }, "vote" => "negative" }
+        { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "A" } }] }, "vote" => "affirmative" },
+        { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "B" } }] }, "vote" => "negative" }
       ]
     }
     v = described_class.from_yaml(YAML.dump(payload))

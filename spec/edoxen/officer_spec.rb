@@ -8,7 +8,7 @@ RSpec.describe Edoxen::Officer do
   it "round-trips role + person + term" do
     payload = {
       "role" => "chair",
-      "person" => { "name" => { "formatted" => "Jane" } },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
       "term_start" => "2024-01-01",
       "term_end" => "2025-12-31"
     }

@@ -7,9 +7,14 @@ module Edoxen
   # a list of member Meeting URNs.
   class MeetingSeries < Lutaml::Model::Serializable
     attribute :identifier, StructuredIdentifier, collection: true
+    # Identifier of the body this series represents (e.g. 'ciml').
+    # Meetings and Decisions belonging to this series inherit the body
+    # via the series_ref join. Optional; most consumers have a single
+    # body and leave this unset.
+    attribute :body_type, :string
     attribute :urn, :string
-    attribute :name, :string
-    attribute :description, :string
+    attribute :name, LocalizedString, collection: true
+    attribute :description, LocalizedString, collection: true
     attribute :recurrence, Recurrence
     attribute :term, :string
     attribute :contact, Contact

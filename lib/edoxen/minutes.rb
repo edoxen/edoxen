@@ -15,8 +15,7 @@ module Edoxen
   class Minutes < Lutaml::Model::Serializable
     attribute :identifier, StructuredIdentifier, collection: true
     attribute :urn, :string
-    attribute :language_code, :string
-    attribute :script, :string
+    attribute :spelling, :string
     attribute :source_doc, :string
     attribute :source_pages, :string
     attribute :sections, MinutesSection, collection: true

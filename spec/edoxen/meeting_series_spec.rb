@@ -12,7 +12,7 @@ RSpec.describe Edoxen::MeetingSeries do
       "name" => "ISO/TC 154 Plenary Series",
       "recurrence" => { "freq" => "yearly", "interval" => 1 },
       "term" => "2024-2026",
-      "contact" => { "name" => { "formatted" => "ISO" }, "role" => "organizer" },
+      "contact" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "ISO" } }], "role" => "organizer" },
       "meeting_refs" => ["urn:iso:tc154:meeting:41", "urn:iso:tc154:meeting:42"]
     }
     s = described_class.from_yaml(YAML.dump(payload))

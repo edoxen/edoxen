@@ -4,13 +4,13 @@ require "spec_helper"
 
 RSpec.describe Edoxen::Attendance do
   it_behaves_like "extension host",
-                  factory: { "person" => { "name" => { "formatted" => "Jane" } }, "status" => "present" }
+                  factory: { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] }, "status" => "present" }
 
   describe "LUTAML ParticipationStatus coverage" do
     Edoxen::Enums::PARTICIPATION_STATUS.each do |status|
       it "round-trips status=#{status}" do
         payload = {
-          "person" => { "name" => { "formatted" => "Jane" } },
+          "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
           "status" => status,
           "affiliation" => "Acme"
         }
@@ -24,9 +24,9 @@ RSpec.describe Edoxen::Attendance do
 
   it "carries an optional proxy_for Person" do
     payload = {
-      "person" => { "name" => { "formatted" => "Substitute" } },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Substitute" } }] },
       "status" => "present",
-      "proxy_for" => { "name" => { "formatted" => "Original" } }
+      "proxy_for" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Original" } }] }
     }
     a = described_class.from_yaml(YAML.dump(payload))
     expect(a.proxy_for).to be_a(Edoxen::Person)
@@ -35,7 +35,7 @@ RSpec.describe Edoxen::Attendance do
 
   it "round-trips through YAML" do
     payload = {
-      "person" => { "name" => { "formatted" => "Jane" }, "affiliation" => "ISO" },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }], "affiliation" => "ISO" },
       "status" => "present",
       "notes" => "Arrived late"
     }

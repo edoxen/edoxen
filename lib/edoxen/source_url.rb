@@ -10,7 +10,7 @@ module Edoxen
   class SourceUrl < Lutaml::Model::Serializable
     attribute :ref, :string
     attribute :format, :string
-    attribute :language_code, :string
+    attribute :spelling, :string
     attribute :kind, :string, values: Enums::SOURCE_URL_KIND
   end
 end

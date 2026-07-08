@@ -14,7 +14,7 @@ module Edoxen
   class Motion < Lutaml::Model::Serializable
     attribute :identifier, :string
     attribute :urn, :string
-    attribute :text, :string
+    attribute :text, LocalizedString, collection: true
     attribute :mover, Person
     attribute :seconders, Person, collection: true
     attribute :status, :string, values: Enums::MOTION_STATUS

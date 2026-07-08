@@ -2,7 +2,7 @@
 
 module Edoxen
   # Mixed into metadata classes that carry a per-dataset
-  # `body_vocabulary[]` collection (v2.1, TODO.refactor/46). Provides
+  # `body_vocabulary[]` collection (1.0, TODO.refactor/1.0-design). Provides
   # the attribute declaration and the `canonical_type_for` lookup in
   # one place so DecisionMetadata and MeetingCollectionMetadata share
   # a single implementation.

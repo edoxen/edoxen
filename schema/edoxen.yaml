@@ -44,7 +44,7 @@ required:
   EntityRef:
     type: object
     description: |
-      Typed cross-reference between entities (v2.1, TODO.refactor/44).
+      Typed cross-reference between entities (1.0, TODO.refactor/1.0-design).
       Exactly one of `urn`, `identifier`, or `local_ref` should be set;
       the gem's `EntityRef#valid?` enforces this in Ruby.
     additionalProperties: false
@@ -223,7 +223,7 @@ required:
   Decision:
     type: object
     description: |
-      A formal Decision. v3.0: per-field Localized (every translatable
+      A formal Decision. 1.0: per-field Localized (every translatable
       field carries its own spelling tag). Removed `localizations[]`.
     additionalProperties: false
     required:
@@ -444,7 +444,7 @@ required:
           "$ref": "#/$defs/MeetingExtension"
   TopicDocument:
     type: object
-    description: 'Text-bearing document about a Topic. v3.0: per-field Localized.'
+    description: 'Text-bearing document about a Topic. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -470,7 +470,7 @@ required:
           "$ref": "#/$defs/MeetingExtension"
   TopicAsset:
     type: object
-    description: 'Non-text resource about a Topic. v3.0: per-field Localized.'
+    description: 'Non-text resource about a Topic. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -491,7 +491,7 @@ required:
           "$ref": "#/$defs/MeetingExtension"
   Topic:
     type: object
-    description: 'The subject of discussion at a Meeting. v3.0: per-field Localized.'
+    description: 'The subject of discussion at a Meeting. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -539,7 +539,7 @@ required:
     description: |
       Polymorphic place where a Meeting happens. `kind` discriminates
       physical vs virtual; all fields from both subtypes live here as
-      optional siblings. v3.0: per-field Localized (name, label,
+      optional siblings. 1.0: per-field Localized (name, label,
       description, address, building, floor, room, access_notes).
       Added `urn` (registry identity) and `ref` (reference-by-URN).
     additionalProperties: false
@@ -707,7 +707,7 @@ required:
     description: |
       One typed key/value pair within a MeetingExtension. Polymorphic on
       value type so consumers don't re-parse strings back into Int/Float/
-      Bool/Date (v2.1 tighten, TODO.refactor/47).
+      Bool/Date (1.0 tighten, TODO.refactor/1.0-design).
     additionalProperties: false
     properties:
       key:
@@ -740,7 +740,7 @@ required:
     description: |
       Profile-specific extension. Adopters register their namespace via
       `profile` and discriminate via `kind`. Field semantics tightened
-      v2.1 (TODO.refactor/47): `kind` is the in-profile discriminator,
+      1.0 (TODO.refactor/1.0-design): `kind` is the in-profile discriminator,
       `ref` is the URN of an external profile document, and the
       recursive `extensions[]` slot was removed (YAGNI — use dotted
       keys in `attributes[]` for nesting).
@@ -847,7 +847,7 @@ required:
   Contact:
     type: object
     description: |
-      VCARD-like abstract contact. v3.0: per-field Localized
+      VCARD-like abstract contact. 1.0: per-field Localized
       (name, title, affiliation, address). Added `urn` (registry
       identity) and `ref` (reference-by-URN).
     additionalProperties: false
@@ -995,7 +995,7 @@ required:
           "$ref": "#/$defs/MeetingExtension"
   MeetingComponent:
     type: object
-    description: 'Flat sub-event of a Meeting. v3.0: per-field Localized.'
+    description: 'Flat sub-event of a Meeting. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -1046,7 +1046,7 @@ required:
           "$ref": "#/$defs/MeetingExtension"
   MeetingSeries:
     type: object
-    description: 'Parent of recurring Meeting instances. v3.0: per-field Localized.'
+    description: 'Parent of recurring Meeting instances. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -1150,7 +1150,7 @@ required:
       (28 values). The schema is permissive — adopters may use
       body-specific verbs (e.g. "scopes", "directs", "establishes")
       outside the canonical set. The canonical set is advisory; the
-      body_vocabulary mechanism (v2.1, TODO.refactor/46) will
+      body_vocabulary mechanism (1.0, TODO.refactor/1.0-design) will
       eventually map body-specific verbs to canonical types.
   ConsiderationType:
     type: string
@@ -1188,8 +1188,8 @@ required:
   DecisionKindCanonical:
     type: string
     description: |
-      Edoxen::Enums::DECISION_KIND_CANONICAL — short abstract set (v2.1,
-      TODO.refactor/46). Bodies extend via `body_type` + per-dataset
+      Edoxen::Enums::DECISION_KIND_CANONICAL — short abstract set (1.0,
+      TODO.refactor/1.0-design). Bodies extend via `body_type` + per-dataset
       `body_vocabulary[]`.
     enum:
     - decision
@@ -1350,7 +1350,7 @@ required:
     type: string
     description: |
       Edoxen::Enums::COMPONENT_KIND_CANONICAL — short abstract set
-      (v2.1, TODO.refactor/46).
+      (1.0, TODO.refactor/1.0-design).
     enum:
     - deliberative
     - working

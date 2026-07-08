@@ -28,17 +28,17 @@ RSpec.describe Edoxen::MeetingExtension do
     expect(ext.attributes.map(&:key)).to eq(%w[wg_name draft_name])
   end
 
-  # v2.1 tighten (TODO.refactor/47): the recursive `extensions[]` slot
+  # 1.0 tighten (TODO.refactor/1.0-design): the recursive `extensions[]` slot
   # was removed. Profiles needing nesting use dotted keys in
   # `attributes[]` instead.
   it "no longer exposes the recursive `extensions[]` slot" do
     expect(described_class.new).not_to respond_to(:extensions),
-                                       "MeetingExtension should not have a nested extensions[] slot (v2.1 tighten)"
+                                       "MeetingExtension should not have a nested extensions[] slot (1.0 tighten)"
   end
 end
 
 RSpec.describe Edoxen::ExtensionAttribute do
-  it "round-trips key + value (v2.0 wire shape, string variant)" do
+  it "round-trips key + value (1.0 wire shape, string variant)" do
     ea = described_class.from_yaml(YAML.dump("key" => "k", "type" => "string", "value" => "v"))
     expect(ea.key).to eq("k")
     expect(ea.value).to eq("v")
@@ -86,7 +86,7 @@ RSpec.describe Edoxen::ExtensionAttribute do
     expect(ea.typed_value).to be_a(DateTime)
   end
 
-  it "exposes value via #string_value alias for back-compat with v2.0 callers" do
+  it "exposes value via #string_value alias for back-compat with 1.0 callers" do
     ea = described_class.from_yaml(YAML.dump("key" => "k", "value" => "v"))
     expect(ea.string_value).to eq("v")
     expect(ea.value).to eq("v")

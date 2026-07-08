@@ -35,7 +35,7 @@ oneOf:
   EntityRef:
     type: object
     description: |
-      Typed cross-reference between entities (v2.1, TODO.refactor/44).
+      Typed cross-reference between entities (1.0, TODO.refactor/1.0-design).
       Exactly one of `urn`, `identifier`, or `local_ref` should be set;
       the gem's `EntityRef#valid?` enforces this in Ruby.
     additionalProperties: false
@@ -208,7 +208,7 @@ oneOf:
   Contact:
     type: object
     description: |
-      VCARD-like abstract contact. v3.0: per-field Localized
+      VCARD-like abstract contact. 1.0: per-field Localized
       (name, title, affiliation, address). Added `urn` (registry
       identity) and `ref` (reference-by-URN).
     additionalProperties: false
@@ -365,7 +365,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   MinutesSection:
     type: object
-    description: 'One section of a Meeting''s minutes — typically tied to an agenda item by `number`. v3.0: per-field Localized.'
+    description: 'One section of a Meeting''s minutes — typically tied to an agenda item by `number`. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       number:
@@ -389,7 +389,7 @@ oneOf:
   Minutes:
     type: object
     description: |
-      The narrative record of a Meeting. v3.0: per-document language_code
+      The narrative record of a Meeting. 1.0: per-document language_code
       + script replaced by a single `spelling` (ISO 24229).
     additionalProperties: false
     properties:
@@ -412,7 +412,7 @@ oneOf:
           "$ref": "#/$defs/MinutesSection"
   Deadline:
     type: object
-    description: 'A time-bound requirement. v3.0: per-field Localized.'
+    description: 'A time-bound requirement. 1.0: per-field Localized.'
     additionalProperties: false
     required:
     - date
@@ -439,7 +439,7 @@ oneOf:
           "$ref": "#/$defs/LocalizedString"
   AgendaItem:
     type: object
-    description: 'One entry on an Agenda. v3.0: per-field Localized.'
+    description: 'One entry on an Agenda. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       label:
@@ -499,7 +499,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   TopicDocument:
     type: object
-    description: 'Text-bearing document about a Topic. v3.0: per-field Localized.'
+    description: 'Text-bearing document about a Topic. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -525,7 +525,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   TopicAsset:
     type: object
-    description: 'Non-text resource about a Topic. v3.0: per-field Localized.'
+    description: 'Non-text resource about a Topic. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -546,7 +546,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   Topic:
     type: object
-    description: 'The subject of discussion at a Meeting. v3.0: per-field Localized.'
+    description: 'The subject of discussion at a Meeting. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -594,7 +594,7 @@ oneOf:
     description: |
       Polymorphic place where a Meeting happens. `kind` discriminates
       physical vs virtual; all fields from both subtypes live here as
-      optional siblings. v3.0: per-field Localized (name, label,
+      optional siblings. 1.0: per-field Localized (name, label,
       description, address, building, floor, room, access_notes).
       Added `urn` (registry identity) and `ref` (reference-by-URN).
     additionalProperties: false
@@ -754,7 +754,7 @@ oneOf:
     description: |
       One typed key/value pair within a MeetingExtension. Polymorphic on
       value type so consumers don't re-parse strings back into Int/Float/
-      Bool/Date (v2.1 tighten, TODO.refactor/47).
+      Bool/Date (1.0 tighten, TODO.refactor/1.0-design).
     additionalProperties: false
     properties:
       key:
@@ -787,7 +787,7 @@ oneOf:
     description: |
       Profile-specific extension. Adopters register their namespace via
       `profile` and discriminate via `kind`. Field semantics tightened
-      v2.1 (TODO.refactor/47): `kind` is the in-profile discriminator,
+      1.0 (TODO.refactor/1.0-design): `kind` is the in-profile discriminator,
       `ref` is the URN of an external profile document, and the
       recursive `extensions[]` slot was removed (YAGNI — use dotted
       keys in `attributes[]` for nesting).
@@ -824,7 +824,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   MeetingComponent:
     type: object
-    description: 'Flat sub-event of a Meeting. v3.0: per-field Localized.'
+    description: 'Flat sub-event of a Meeting. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -875,7 +875,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   MeetingSeries:
     type: object
-    description: 'Parent of recurring Meeting instances. v3.0: per-field Localized.'
+    description: 'Parent of recurring Meeting instances. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       identifier:
@@ -931,7 +931,7 @@ oneOf:
         "$ref": "#/$defs/MeetingRelationType"
   Meeting:
     type: object
-    description: 'A single Meeting (event). v3.0: per-field Localized.'
+    description: 'A single Meeting (event). 1.0: per-field Localized.'
     additionalProperties: false
     required:
     - identifier
@@ -1048,7 +1048,7 @@ oneOf:
           "$ref": "#/$defs/MeetingExtension"
   MeetingCollectionMetadata:
     type: object
-    description: 'Display-level metadata for a MeetingCollection. v3.0: per-field Localized.'
+    description: 'Display-level metadata for a MeetingCollection. 1.0: per-field Localized.'
     additionalProperties: false
     properties:
       title:
@@ -1112,8 +1112,8 @@ oneOf:
   MeetingTypeCanonical:
     type: string
     description: |
-      Edoxen::Enums::MEETING_TYPE_CANONICAL — short abstract set (v2.1,
-      TODO.refactor/46). No `other` escape — bodies pick the closest
+      Edoxen::Enums::MEETING_TYPE_CANONICAL — short abstract set (1.0,
+      TODO.refactor/1.0-design). No `other` escape — bodies pick the closest
       fit and use `body_type` for body-specific terminology.
     enum:
     - plenary

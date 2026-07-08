@@ -8,7 +8,7 @@ module Edoxen
   # this one class as optional attributes — only the ones matching the
   # `kind` are populated.
   #
-  # v3.0 (per-field localization, ISO 24229):
+  # 1.0 (per-field localization, ISO 24229):
   #   - All translatable fields are Localized<String>[0..*].
   #   - Added: `urn` for registry storage; `ref` for reference-by-URN.
   class Venue < Lutaml::Model::Serializable

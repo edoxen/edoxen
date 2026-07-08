@@ -86,7 +86,7 @@ RSpec.describe Edoxen::Decision do
     end
   end
 
-  describe "v3.0 per-field Localized fields" do
+  describe "1.0 per-field Localized fields" do
     it "exposes title, subject, message, considering as Localized<String>[]" do
       d = described_class.new
       expect(d).to respond_to(:title)

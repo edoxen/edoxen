@@ -100,7 +100,7 @@ module Edoxen
       affirmative negative abstain absent not_applicable
     ].freeze
 
-    # --- New in v2.0 (broadened scope) -----------------------------------
+    # --- New in 1.0 (broadened scope) -----------------------------------
 
     VENUE_KIND = %w[physical virtual].freeze
 
@@ -122,7 +122,7 @@ module Edoxen
       opening closing break reception registration networking other
     ].freeze
 
-    # ComponentKindCanonical — the short abstract set (v2.1, TODO.refactor/46).
+    # ComponentKindCanonical — the short abstract set (1.0, TODO.refactor/1.0-design).
     # `other` is a temporary escape while the vocabulary stabilises.
     #
     # Cap: 5 canonical values.

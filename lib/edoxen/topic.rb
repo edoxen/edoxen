@@ -21,13 +21,13 @@ module Edoxen
     attribute :decisions, :string, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    # --- v2.1 derivation accessor (TODO.refactor/45) --------------------
+    # --- 1.0 derivation accessor (TODO.refactor/1.0-design) --------------------
     # Returns the Decisions in `collection` whose `about_topics` includes
     # this Topic's URN.
     #
     # Storage side: Decision.aboutTopics (SSOT for the relationship).
     # The stored `decisions[]` field remains on the wire for back-compat
-    # through v2.x; v3.0 removes it and this becomes the only path.
+    # through v2.x; 1.0 removes it and this becomes the only path.
     def decisions_in(collection:)
       return [] unless collection && urn
 

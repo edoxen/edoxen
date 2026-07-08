@@ -30,12 +30,12 @@ RSpec.describe Edoxen::Attendance do
     }
     a = described_class.from_yaml(YAML.dump(payload))
     expect(a.proxy_for).to be_a(Edoxen::Person)
-    expect(a.proxy_for.name.display).to eq("Original")
+    expect(a.proxy_for.name.first.value.display).to eq("Original")
   end
 
   it "round-trips through YAML" do
     payload = {
-      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }], "affiliation" => "ISO" },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }], "affiliation" => [{ "spelling" => "eng", "value" => "ISO" }] },
       "status" => "present",
       "notes" => "Arrived late"
     }
@@ -43,6 +43,6 @@ RSpec.describe Edoxen::Attendance do
     reload = described_class.from_yaml(a.to_yaml)
     expect(reload.status).to eq("present")
     expect(reload.notes).to eq("Arrived late")
-    expect(reload.person.name.display).to eq("Jane")
+    expect(reload.person.name.first.value.display).to eq("Jane")
   end
 end

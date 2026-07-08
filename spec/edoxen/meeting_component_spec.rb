@@ -9,7 +9,7 @@ RSpec.describe Edoxen::MeetingComponent do
     payload = {
       "identifier" => "comp-1",
       "kind" => "session",
-      "title" => "Morning Session",
+      "title" => [{ "spelling" => "eng", "value" => "Morning Session" }],
       "starts_at" => "2026-03-15T09:00:00Z",
       "ends_at" => "2026-03-15T12:00:00Z",
       "venue_refs" => ["urn:x:venue:1"],
@@ -21,10 +21,10 @@ RSpec.describe Edoxen::MeetingComponent do
     c = described_class.from_yaml(YAML.dump(payload))
     expect(c.identifier).to eq("comp-1")
     expect(c.kind).to eq("session")
-    expect(c.title).to eq("Morning Session")
+    expect(c.title.first.value).to eq("Morning Session")
     expect(c.officers.first).to be_a(Edoxen::Officer)
     expect(c.chair).to be_a(Edoxen::Person)
-    expect(c.chair.name.display).to eq("Jane")
+    expect(c.chair.name.first.value.display).to eq("Jane")
     expect(c.venue_refs).to eq(["urn:x:venue:1"])
   end
 

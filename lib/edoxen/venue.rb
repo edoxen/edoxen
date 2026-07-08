@@ -75,5 +75,11 @@ module Edoxen
       entry ||= name&.first if fallback
       entry&.value
     end
+
+    def features_list
+      return "" if features.nil? || features.empty?
+
+      features.join(", ")
+    end
   end
 end

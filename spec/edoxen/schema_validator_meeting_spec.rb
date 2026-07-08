@@ -48,11 +48,11 @@ RSpec.describe Edoxen::SchemaValidator do
         .to be(true)
     end
 
-    it "reports a pattern violation for an invalid language_code" do
+    it "reports a pattern violation for an invalid scoped URN on Contact" do
       content = YAML.dump(
         "identifier" => [{ "prefix" => "X", "number" => "1" }],
         "type" => "plenary",
-        "localizations" => [{ "language_code" => "english", "title" => "T" }]
+        "contact" => { "urn" => "not-a-valid-urn" }
       )
       errors = validator.validate_content(content, "memory")
       expect(errors).not_to be_empty

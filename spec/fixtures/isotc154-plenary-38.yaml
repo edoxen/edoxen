@@ -1,6 +1,8 @@
 ---
 metadata:
-  title: Resolutions of the 38th plenary meeting of ISO/TC 154
+  title:
+  - spelling: eng
+    value: Resolutions of the 38th plenary meeting of ISO/TC 154
   date: 2019-10-17
   source: ISO/TC 154 Secretariat
   city: LULUX
@@ -8,116 +10,132 @@ metadata:
   source_urls:
   - ref: https://www.iso.org/committee/45318/x/category.html
     format: html
-    language_code: eng
+    spelling: eng
 decisions:
-  - identifier:
-    - prefix: ISO
-      number: "2019-01"
-    kind: resolution
-    status: decided
-    categories:
-      - Resolutions related to JWG 1
-    dates:
-      - date: 2019-10-17
-        type: discussed
-    agenda_item: "11.2"
-    meeting:
-      venue: University of Luxembourg
+- identifier:
+  - prefix: ISO
+    number: 2019-01
+  kind: resolution
+  status: decided
+  categories:
+  - Resolutions related to JWG 1
+  dates:
+  - date: 2019-10-17
+    type: discussed
+  agenda_item: '11.2'
+  meeting:
+    venue: University of Luxembourg
+    date: 2019-10-17
+  title:
+  - spelling: eng
+    value: Adoption of NWIP ballot for ISO/PWI 9735-11
+  subject:
+  - spelling: eng
+    value: ISO/TC 154 Processes, data elements and documents in commerce, industry
+      and administration
+  considerations:
+  - type: considering
+    date_effective:
       date: 2019-10-17
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Adoption of NWIP ballot for ISO/PWI 9735-11
-        subject: ISO/TC 154 Processes, data elements and documents in commerce,
-          industry and administration
-        considerations:
-          - type: considering
-            date_effective:
-              date: 2019-10-17
-              type: adoption
-            message: considering the voting result of NWIP (6 of 7 voting
-              P-members approved the proposal and 1 of 7 voting P-members rejected
-              the proposal and only 3 P-members approving the proposal nominated
-              experts)
-          - type: considering
-            date_effective:
-              date: 2019-10-17
-              type: adoption
-            message: considering the importance of interoperability between the
-              version 3 and version 4 of ISO 9735
-        approvals:
-          - type: affirmative
-            degree: unanimous
-            date:
-              date: 2019-10-17
-              type: adoption
-            message: The resolution was taken by unanimity.
-        actions:
-          - type: resolves
-            date_effective:
-              date: 2019-10-17
-              type: adoption
-            message: resolves to submit ISO 9735-11 for NWIP ballot again by end
-              of this year.
-  - identifier:
-    - prefix: ISO
-      number: "2019-20"
-    kind: resolution
-    status: decided
-    categories:
-      - General Resolutions
-    dates:
-      - date: 2019-10-17
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Approval of the Business Plan
-        subject: ISO/TC 154 Processes, data elements and documents in commerce,
-          industry and administration
-        approvals:
-          - type: affirmative
-            degree: unanimous
-            date:
-              date: 2019-10-17
-              type: adoption
-            message: The resolution was taken by unanimity.
-        actions:
-          - type: approves
-            date_effective:
-              date: 2019-10-17
-              type: adoption
-            message: TC 154 approves the revised business plan.
-  - identifier:
-    - prefix: ISO
-      number: "2019-22"
-    kind: resolution
-    status: decided
-    categories:
-      - General Resolutions
-    dates:
-      - date: 2019-10-18
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Appreciation of the meeting host and all participants
-        subject: ISO/TC 154 Processes, data elements and documents in commerce,
-          industry and administration
-        approvals:
-          - type: affirmative
-            degree: unanimous
-            date:
-              date: 2019-10-17
-              type: adoption
-            message: The resolution was taken by unanimity.
-        actions:
-          - type: thanks
-            date_effective:
-              date: 2019-10-17
-              type: adoption
-            message: warmly thanks Prof Peter Plapper, Mr. Jeff Mangers, and in
-              particular thanks our hosts University of Luxembourg and ILNAS for
-              their kind hospitality and hosting of a successful week of Working
-              Groups meetings and the 38th plenary meeting and for organizing
-              social events.
+      type: adoption
+    message:
+    - spelling: eng
+      value: considering the voting result of NWIP (6 of 7 voting P-members approved
+        the proposal and 1 of 7 voting P-members rejected the proposal and only 3
+        P-members approving the proposal nominated experts)
+  - type: considering
+    date_effective:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: considering the importance of interoperability between the version 3
+        and version 4 of ISO 9735
+  approvals:
+  - type: affirmative
+    degree: unanimous
+    date:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: The resolution was taken by unanimity.
+  actions:
+  - type: resolves
+    date_effective:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: resolves to submit ISO 9735-11 for NWIP ballot again by end of this year.
+- identifier:
+  - prefix: ISO
+    number: 2019-20
+  kind: resolution
+  status: decided
+  categories:
+  - General Resolutions
+  dates:
+  - date: 2019-10-17
+    type: discussed
+  title:
+  - spelling: eng
+    value: Approval of the Business Plan
+  subject:
+  - spelling: eng
+    value: ISO/TC 154 Processes, data elements and documents in commerce, industry
+      and administration
+  approvals:
+  - type: affirmative
+    degree: unanimous
+    date:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: The resolution was taken by unanimity.
+  actions:
+  - type: approves
+    date_effective:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: TC 154 approves the revised business plan.
+- identifier:
+  - prefix: ISO
+    number: 2019-22
+  kind: resolution
+  status: decided
+  categories:
+  - General Resolutions
+  dates:
+  - date: 2019-10-18
+    type: discussed
+  title:
+  - spelling: eng
+    value: Appreciation of the meeting host and all participants
+  subject:
+  - spelling: eng
+    value: ISO/TC 154 Processes, data elements and documents in commerce, industry
+      and administration
+  approvals:
+  - type: affirmative
+    degree: unanimous
+    date:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: The resolution was taken by unanimity.
+  actions:
+  - type: thanks
+    date_effective:
+      date: 2019-10-17
+      type: adoption
+    message:
+    - spelling: eng
+      value: warmly thanks Prof Peter Plapper, Mr. Jeff Mangers, and in particular
+        thanks our hosts University of Luxembourg and ILNAS for their kind hospitality
+        and hosting of a successful week of Working Groups meetings and the 38th plenary
+        meeting and for organizing social events.

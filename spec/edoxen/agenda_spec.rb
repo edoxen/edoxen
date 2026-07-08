@@ -18,8 +18,8 @@ RSpec.describe Edoxen::Agenda do
     payload = {
       "status" => "final",
       "items" => [
-        { "label" => "1", "title" => "Opening", "kind" => "opening" },
-        { "label" => "2", "title" => "Approval of agenda", "kind" => "numbered" }
+        { "label" => "1", "title" => [{ "spelling" => "eng", "value" => "Opening" }], "kind" => "opening" },
+        { "label" => "2", "title" => [{ "spelling" => "eng", "value" => "Approval of agenda" }], "kind" => "numbered" }
       ]
     }
     a = described_class.from_yaml(YAML.dump(payload))
@@ -31,14 +31,14 @@ RSpec.describe Edoxen::Agenda do
     let(:agenda) do
       described_class.from_yaml(YAML.dump(
                                   "items" => [
-                                    { "label" => "1", "title" => "First" },
-                                    { "label" => "5.2", "title" => "Sub-item" }
+                                    { "label" => "1", "title" => [{ "spelling" => "eng", "value" => "First" }] },
+                                    { "label" => "5.2", "title" => [{ "spelling" => "eng", "value" => "Sub-item" }] }
                                   ]
                                 ))
     end
 
     it "finds by exact label" do
-      expect(agenda.find_item("5.2").title).to eq("Sub-item")
+      expect(agenda.find_item("5.2").title.first.value).to eq("Sub-item")
     end
 
     it "returns nil when no label matches" do
@@ -46,7 +46,7 @@ RSpec.describe Edoxen::Agenda do
     end
 
     it "accepts non-string labels (coerces to_s)" do
-      expect(agenda.find_item(1).title).to eq("First")
+      expect(agenda.find_item(1).title.first.value).to eq("First")
     end
   end
 end

@@ -76,7 +76,7 @@ RSpec.describe "edoxen CLI meeting subcommands" do
       original = Edoxen::Meeting.from_yaml(File.read("#{meetings_dir}/ciml-56-meeting.yaml"))
       normalized = Edoxen::Meeting.from_yaml(File.read(out))
       expect(normalized.identifier).to eq(original.identifier)
-      expect(normalized.localizations.size).to eq(original.localizations.size)
+      expect(normalized.title.size).to eq(original.title.size)
     end
 
     it "errors when neither --output nor --inplace is given" do

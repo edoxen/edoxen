@@ -12,8 +12,8 @@ module Edoxen
   class AgendaItem < Lutaml::Model::Serializable
     attribute :label, :string
     attribute :kind, :string, values: Enums::AGENDA_ITEM_KIND
-    attribute :title, :string
-    attribute :description, :string
+    attribute :title, LocalizedString, collection: true
+    attribute :description, LocalizedString, collection: true
     attribute :references, Reference, collection: true
     attribute :outcome, :string, values: Enums::AGENDA_ITEM_OUTCOME
     attribute :decision_ref, :string

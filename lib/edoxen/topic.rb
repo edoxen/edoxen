@@ -10,8 +10,8 @@ module Edoxen
   class Topic < Lutaml::Model::Serializable
     attribute :identifier, :string
     attribute :urn, :string
-    attribute :title, :string
-    attribute :description, :string
+    attribute :title, LocalizedString, collection: true
+    attribute :description, LocalizedString, collection: true
     attribute :status, :string, values: Enums::TOPIC_STATUS
     attribute :resumption_of, :string
     attribute :documents, TopicDocument, collection: true

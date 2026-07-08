@@ -8,7 +8,7 @@ RSpec.describe Edoxen::Contact do
   describe "LUTAML field coverage" do
     it "round-trips every admin + identity field" do
       payload = {
-        "name" => { "formatted" => "ACME Secretariat" },
+        "name" => [{ "spelling" => "eng", "value" => { "formatted" => "ACME Secretariat" } }],
         "kind" => "organisation",
         "role" => "secretariat",
         "title" => "Mr",

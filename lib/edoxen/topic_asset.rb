@@ -5,7 +5,7 @@ module Edoxen
   # Examples: image, dataset, model, video.
   class TopicAsset < Lutaml::Model::Serializable
     attribute :identifier, :string
-    attribute :title, :string
+    attribute :title, LocalizedString, collection: true
     attribute :kind, :string
     attribute :url, :string
     attribute :format, :string

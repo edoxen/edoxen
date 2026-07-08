@@ -13,7 +13,7 @@ RSpec.describe Edoxen::MeetingComponent do
       "starts_at" => "2026-03-15T09:00:00Z",
       "ends_at" => "2026-03-15T12:00:00Z",
       "venue_refs" => ["urn:x:venue:1"],
-      "officers" => [{ "role" => "chair", "person" => { "name" => { "formatted" => "Jane" } } }],
+      "officers" => [{ "role" => "chair", "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] } }],
       "agenda_ref" => "urn:x:agenda:1",
       "minutes_ref" => "urn:x:minutes:1",
       "attendance_refs" => ["urn:x:attendance:1"]
@@ -40,19 +40,5 @@ RSpec.describe Edoxen::MeetingComponent do
     it "returns nil when either is missing" do
       expect(described_class.new.duration_seconds).to be_nil
     end
-  end
-end
-
-RSpec.describe Edoxen::ComponentLocalization do
-  it "round-trips per-language content" do
-    payload = {
-      "language_code" => "eng",
-      "script" => "Latn",
-      "title" => "Opening",
-      "description" => "Welcome remarks"
-    }
-    cl = described_class.from_yaml(YAML.dump(payload))
-    expect(cl.language_code).to eq("eng")
-    expect(cl.title).to eq("Opening")
   end
 end

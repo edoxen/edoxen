@@ -6,6 +6,6 @@ module Edoxen
   class Action < Lutaml::Model::Serializable
     attribute :type, :string, values: Enums::ACTION_TYPE
     attribute :date_effective, DecisionDate
-    attribute :message, :string
+    attribute :message, LocalizedString, collection: true
   end
 end

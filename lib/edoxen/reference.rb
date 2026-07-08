@@ -8,6 +8,6 @@ module Edoxen
   class Reference < Lutaml::Model::Serializable
     attribute :ref, :string
     attribute :kind, :string
-    attribute :title, :string
+    attribute :title, LocalizedString, collection: true
   end
 end

@@ -6,12 +6,10 @@ module Edoxen
   # has many names across bodies (resolution, order, ruling, determination,
   # finding, opinion). `Resolution` is one `kind` value, not a class name.
   #
-  # Language-agnostic admin fields live here; every translatable field is
-  # wrapped inside `localizations[]` (one entry per available language; at
-  # least one is required by the schema).
+  # v3.0 (per-field localization, ISO 24229):
+  #   - Removed `localizations[]` collection.
+  #   - Per-field LocalizedString for title, subject, message, considering.
   class Decision < Lutaml::Model::Serializable
-    include LocalizationHost
-
     attribute :identifier, StructuredIdentifier, collection: true
     attribute :kind, :string, values: Enums::DECISION_KIND
     attribute :status, :string, values: Enums::DECISION_STATUS
@@ -26,24 +24,24 @@ module Edoxen
     attribute :brought_by_motions, :string, collection: true
     attribute :about_topics, :string, collection: true
     attribute :made_in_component, :string
-    attribute :localizations, Localization, collection: true
-    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
-    # "Resolution", "Order", "Ruling"). Resolves to a short canonical
-    # value via the parent collection's `body_vocabulary[]`.
     attribute :body_type, :string
+    attribute :title, LocalizedString, collection: true
+    attribute :subject, LocalizedString, collection: true
+    attribute :message, LocalizedString, collection: true
+    attribute :considering, LocalizedString, collection: true
+    attribute :considerations, Consideration, collection: true
+    attribute :approvals, Approval, collection: true
+    attribute :actions, Action, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    # --- v2.1 derivation accessors (TODO.refactor/45) -------------------
-    # These methods compute the reverse direction of relationships whose
-    # canonical storage lives elsewhere. They are additive — the stored
-    # `brought_by_motions[]`, `about_topics[]`, and `made_in_component`
-    # fields remain on the wire for back-compat through v2.x; v3.0
-    # removes them and these methods become the only path.
+    def title_in(spelling, fallback: true)
+      entry = title&.find { |l| l.spelling == spelling.to_s }
+      entry ||= title&.first if fallback
+      entry&.value
+    end
 
-    # Returns the Motions in `meeting` whose `resulting_decision` (or
-    # `resulting_decision_ref`) points at this Decision's URN.
-    #
-    # Storage side: Motion.resultingDecision (SSOT for the relationship).
+    # --- v2.1 derivation accessors (TODO.refactor/45) -------------------
+
     def brought_by_motions_in(meeting:)
       return [] unless meeting && urn
 
@@ -53,10 +51,6 @@ module Edoxen
       end
     end
 
-    # Returns the MeetingComponent in `meeting` whose key matches
-    # `made_in_component`.
-    #
-    # Storage side: Decision.madeInComponent (SSOT for the relationship).
     def component_in(meeting:)
       return nil unless meeting && made_in_component
 

@@ -7,6 +7,6 @@ module Edoxen
     attribute :type, :string, values: Enums::APPROVAL_TYPE
     attribute :degree, :string, values: Enums::APPROVAL_DEGREE
     attribute :date, DecisionDate
-    attribute :message, :string
+    attribute :message, LocalizedString, collection: true
   end
 end

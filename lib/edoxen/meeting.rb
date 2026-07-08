@@ -6,11 +6,11 @@ module Edoxen
   # attendance, minutes, and URN links to one or more DecisionCollection
   # documents.
   #
-  # Meetings and DecisionCollections are kept as separate documents and
-  # joined by URN because they have different lifetimes: agendas exist
-  # weeks before a meeting; decisions only after adoption.
+  # v3.0 (per-field localization, ISO 24229):
+  #   - Removed `localizations[]` collection.
+  #   - Added per-field LocalizedString for title, general_area,
+  #     practical_info, note.
   class Meeting < Lutaml::Model::Serializable
-    include LocalizationHost
     include OfficersHost
 
     attribute :identifier, StructuredIdentifier, collection: true
@@ -20,16 +20,15 @@ module Edoxen
     attribute :type, :string, values: Enums::MEETING_TYPE
     attribute :status, :string, values: Enums::MEETING_STATUS
     attribute :visibility, :string, values: Enums::VISIBILITY
-    # v2.1 (TODO.refactor/46): free-form body-specific label (e.g.
-    # "CIML Meeting", "Plenary", "Board Meeting"). Resolves to a short
-    # canonical value via the parent collection's `body_vocabulary[]`.
     attribute :body_type, :string
 
+    attribute :title, LocalizedString, collection: true
     attribute :date_range, DateRange
     attribute :recurrence, Recurrence
 
     attribute :venues, Venue, collection: true
-    attribute :general_area, :string
+    attribute :general_area, LocalizedString, collection: true
+    attribute :practical_info, LocalizedString, collection: true
     attribute :city, :string
     attribute :country_code, :string
 
@@ -42,7 +41,7 @@ module Edoxen
     attribute :source_urls, SourceUrl, collection: true
     attribute :landing_url, :string
     attribute :registration_url, :string
-    attribute :note, :string
+    attribute :note, LocalizedString, collection: true
     attribute :contact, Contact
 
     attribute :agenda, Agenda
@@ -57,50 +56,23 @@ module Edoxen
     attribute :motions, Motion, collection: true
     attribute :votings, Voting, collection: true
 
-    attribute :localizations, MeetingLocalization, collection: true
     attribute :relations, MeetingRelation, collection: true
     attribute :extensions, MeetingExtension, collection: true
+
+    def title_in(spelling, fallback: true)
+      entry = title&.find { |l| l.spelling == spelling.to_s }
+      entry ||= title&.first if fallback
+      entry&.value
+    end
 
     def find_agenda_item(label)
       agenda&.find_item(label)
     end
 
-    # Resolve the meeting's UN/LOCODE via the canonical `unlocode` gem.
     def city_entry
       return nil if city.nil? || city.to_s.empty?
 
       Edoxen::ReferenceData.find_unlocode(city)
-    end
-
-    def secretary
-      officers_with_role("secretary").first&.person
-    end
-
-    # All physical venues (polymorphic Venue filter).
-    def physical_venues
-      venues_by_kind("physical")
-    end
-
-    def virtual_venues
-      venues_by_kind("virtual")
-    end
-
-    def hybrid?
-      !physical_venues.empty? && !virtual_venues.empty?
-    end
-
-    def virtual_only?
-      !virtual_venues.empty? && physical_venues.empty?
-    end
-
-    def physical_only?
-      !physical_venues.empty? && virtual_venues.empty?
-    end
-
-    private
-
-    def venues_by_kind(kind)
-      (venues || []).select { |v| v.kind == kind }
     end
   end
 end

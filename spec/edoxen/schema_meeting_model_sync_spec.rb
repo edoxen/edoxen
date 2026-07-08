@@ -20,7 +20,6 @@ MEETING_SCHEMA_MODEL_BINDINGS = {
   Edoxen::MinutesSection => "MinutesSection",
   Edoxen::Minutes => "Minutes",
   Edoxen::MeetingRelation => "MeetingRelation",
-  Edoxen::MeetingLocalization => "MeetingLocalization",
   Edoxen::Meeting => "Meeting",
   Edoxen::MeetingCollectionMetadata => "MeetingCollectionMetadata",
   Edoxen::MeetingCollection => "MeetingCollection"

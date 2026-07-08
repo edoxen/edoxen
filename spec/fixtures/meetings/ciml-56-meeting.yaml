@@ -1,10 +1,9 @@
 ---
-# CIML 56th meeting (OIML) — bilingual EN/FR, links to a DecisionCollection.
-# Mirrors the canonical shape in edoxen/edoxen-model README.
+# CIML 56th meeting (OIML) — bilingual EN/FR, v3.0 per-field Localized.
 identifier:
   - prefix: CIML
     number: "56"
-urn: urn:oiml:ciml:meeting:ciml-56
+urn: urn:edoxen:meeting:oiml:ciml-56
 ordinal: 56
 type: plenary
 status: completed
@@ -15,36 +14,56 @@ date_range:
   end: 2021-10-22
 
 committee: CIML
-general_area: Paris
 city: FRPAR
 country_code: FR
+
+title:
+  - spelling: eng
+    value: 56th CIML Meeting
+  - spelling: fra
+    value: 56e réunion du CIML
+general_area:
+  - spelling: eng
+    value: Paris, France
+  - spelling: fra
+    value: Paris, France
 
 officers:
   - role: chair
     person:
-      name: { formatted: Roman Schwartz }
+      name:
+        - spelling: eng
+          value: { formatted: Roman Schwartz }
   - role: secretary
     person:
-      name: { formatted: Anthony Donnellan }
-      affiliation: BIML
+      name:
+        - spelling: eng
+          value: { formatted: Anthony Donnellan }
+      affiliation:
+        - spelling: eng
+          value: BIML
       contact_methods:
         - { kind: email, value: secretary@oiml.org }
 
 venues:
   - kind: physical
-    name: OIML Headquarters
-    address: 11 Rue Turgot, 75009 Paris, France
+    name:
+      - spelling: eng
+        value: OIML Headquarters
+    address:
+      - spelling: eng
+        value: 11 Rue Turgot, 75009 Paris, France
     country_code: FR
     unlocode: FRPAR
 
 source_urls:
   - ref: https://www.oiml.org/en/structure/ciml/pdf/56-ciml-decisions-english.pdf
     format: pdf
-    language_code: eng
+    spelling: eng
     kind: decisions_pdf
   - ref: https://www.oiml.org/fr/structure/ciml/pdf/56-ciml-decisions-french.pdf
     format: pdf
-    language_code: fra
+    spelling: fra
     kind: decisions_pdf
 
 agenda:
@@ -53,29 +72,27 @@ agenda:
   items:
     - label: "1"
       kind: opening
-      title: Opening of the meeting
+      title:
+        - spelling: eng
+          value: Opening of the meeting
       outcome: adopted
     - label: "2"
       kind: numbered
-      title: Approval of the agenda
+      title:
+        - spelling: eng
+          value: Approval of the agenda
       outcome: resolved
-      decision_ref: urn:oiml:doc:ciml:decision:2021-01
+      decision_ref: urn:edoxen:decision:oiml:ciml-56-2021-01
     - label: "3"
       kind: numbered
-      title: Approval of the minutes of the 55th CIML Meeting
+      title:
+        - spelling: eng
+          value: Approval of the minutes of the 55th CIML Meeting
       outcome: resolved
-      decision_ref: urn:oiml:doc:ciml:decision:2021-02
+      decision_ref: urn:edoxen:decision:oiml:ciml-56-2021-02
 
 deadlines:
   - date: 2021-09-30
-    description: Registration via OIML meeting platform
-
-localizations:
-  - language_code: eng
-    script: Latn
-    title: 56th CIML Meeting
-    general_area: Paris, France
-  - language_code: fra
-    script: Latn
-    title: 56e réunion du CIML
-    general_area: Paris, France
+    description:
+      - spelling: eng
+        value: Registration via OIML meeting platform

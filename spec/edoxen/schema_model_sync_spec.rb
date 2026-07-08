@@ -22,7 +22,8 @@ SCHEMA_MODEL_BINDINGS = {
   Edoxen::Action => "Action",
   Edoxen::Approval => "Approval",
   Edoxen::Consideration => "Consideration",
-  Edoxen::Localization => "Localization",
+  Edoxen::LocalizedString => "LocalizedString",
+  Edoxen::LocalizedName => "LocalizedName",
   Edoxen::SourceUrl => "SourceUrl",
   Edoxen::Url => "Url",
   Edoxen::DecisionRelation => "DecisionRelation",
@@ -40,13 +41,14 @@ SCHEMA_MODEL_BINDINGS = {
   Edoxen::RecurrenceByDay => "RecurrenceByDay",
   Edoxen::Recurrence => "Recurrence",
   Edoxen::Officer => "Officer",
-  Edoxen::ComponentLocalization => "ComponentLocalization",
   Edoxen::MeetingComponent => "MeetingComponent",
   Edoxen::MeetingSeries => "MeetingSeries",
   Edoxen::ContactMethod => "ContactMethod",
   Edoxen::ContactIdentifier => "ContactIdentifier",
   Edoxen::Name => "Name",
-  Edoxen::Contact => "Contact"
+  Edoxen::Contact => "Contact",
+  Edoxen::ContactCollection => "ContactCollection",
+  Edoxen::VenueCollection => "VenueCollection"
 }.freeze
 
 RSpec.describe "Schema <-> Ruby model shape sync" do

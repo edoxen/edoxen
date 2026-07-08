@@ -1,6 +1,5 @@
 ---
-# Minimal Meeting fixture — exercises the core shape without the full
-# real-world decoration. Used by spec/edoxen/meeting_spec.rb.
+# Minimal Meeting fixture — v3.0 per-field Localized shape.
 identifier:
   - prefix: TEST
     number: "1"
@@ -13,40 +12,52 @@ date_range:
   end: 2024-01-16
 
 committee: Test Committee
-general_area: Test City
 city: FRPAR
 country_code: FR
 
+title:
+  - spelling: eng
+    value: Test Meeting
+general_area:
+  - spelling: eng
+    value: Test City
+
 venues:
   - kind: physical
-    name: Test Venue
-    address: 1 Test Street, Paris
+    name:
+      - spelling: eng
+        value: Test Venue
+    address:
+      - spelling: eng
+        value: 1 Test Street, Paris
     country_code: FR
     unlocode: FRPAR
 
 officers:
   - role: chair
     person:
-      name: { formatted: Test Chair }
+      name:
+        - spelling: eng
+          value: { formatted: Test Chair }
 
 agenda:
   status: final
   items:
     - label: "1"
       kind: opening
-      title: Opening
+      title:
+        - spelling: eng
+          value: Opening
       outcome: adopted
     - label: "2"
       kind: numbered
-      title: Approval of agenda
+      title:
+        - spelling: eng
+          value: Approval of agenda
       outcome: resolved
 
 deadlines:
   - date: 2024-01-10
-    description: Registration
-
-localizations:
-  - language_code: eng
-    script: Latn
-    title: Test Meeting
-    general_area: Test City
+    description:
+      - spelling: eng
+        value: Registration

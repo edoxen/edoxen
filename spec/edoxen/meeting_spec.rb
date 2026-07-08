@@ -29,13 +29,14 @@ RSpec.describe Edoxen::Meeting do
     end
   end
 
-  it "carries all admin fields with their real types" do
+  it "carries all admin fields with their real types (v3.0 per-field Localized)" do
     m = described_class.from_yaml(YAML.dump(
                                     "identifier" => [{ "prefix" => "CIML", "number" => "56" }],
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",
                                     "ordinal" => 56, "type" => "plenary",
                                     "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
-                                    "venues" => [{ "kind" => "physical", "name" => "OIML HQ",
+                                    "venues" => [{ "kind" => "physical",
+                                                   "name" => [{ "spelling" => "eng", "value" => "OIML HQ" }],
                                                    "lat" => 48.87, "lon" => 2.34 }],
                                     "officers" => [{ "role" => "chair",
                                                      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Roman Schwartz" } }] } }],
@@ -43,18 +44,20 @@ RSpec.describe Edoxen::Meeting do
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]
                                     },
-                                    "deadlines" => [{ "date" => "2021-09-30", "description" => "Reg" }],
-                                    "localizations" => [{ "language_code" => "eng", "title" => "56th" }]
+                                    "deadlines" => [{ "date" => "2021-09-30",
+                                                      "description" => [{ "spelling" => "eng", "value" => "Reg" }] }],
+                                    "title" => [{ "spelling" => "eng", "value" => "56th" }]
                                   ))
     expect(m.identifier.first).to be_a(Edoxen::StructuredIdentifier)
     expect(m.date_range).to be_a(Edoxen::DateRange)
     expect(m.date_range.start).to eq(Date.new(2021, 10, 18))
     expect(m.venues.first).to be_a(Edoxen::Venue)
     expect(m.officers.first).to be_a(Edoxen::Officer)
-    expect(m.chair.name.display).to eq("Roman Schwartz")
+    expect(m.chair.name.first.value.display).to eq("Roman Schwartz")
     expect(m.agenda).to be_a(Edoxen::Agenda)
     expect(m.deadlines.first).to be_a(Edoxen::Deadline)
-    expect(m.localizations.first).to be_a(Edoxen::MeetingLocalization)
+    expect(m.title.first).to be_a(Edoxen::LocalizedString)
+    expect(m.title.first.value).to eq("56th")
   end
 
   describe "real-world fixtures round-trip" do
@@ -66,7 +69,7 @@ RSpec.describe Edoxen::Meeting do
         reload = described_class.from_yaml(m.to_yaml)
         expect(reload.identifier).to eq(m.identifier)
         expect(reload.type).to eq(m.type)
-        expect(reload.localizations.size).to eq(m.localizations.size)
+        expect(reload.title.size).to eq(m.title.size)
       end
     end
   end

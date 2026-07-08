@@ -9,7 +9,7 @@ RSpec.describe Edoxen::MeetingSeries do
     payload = {
       "identifier" => [{ "prefix" => "ISO/TC154", "number" => "PlenarySeries" }],
       "urn" => "urn:iso:tc154:series:plenary",
-      "name" => "ISO/TC 154 Plenary Series",
+      "name" => [{ "spelling" => "eng", "value" => "ISO/TC 154 Plenary Series" }],
       "recurrence" => { "freq" => "yearly", "interval" => 1 },
       "term" => "2024-2026",
       "contact" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "ISO" } }], "role" => "organizer" },

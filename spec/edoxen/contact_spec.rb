@@ -11,9 +11,9 @@ RSpec.describe Edoxen::Contact do
         "name" => [{ "spelling" => "eng", "value" => { "formatted" => "ACME Secretariat" } }],
         "kind" => "organisation",
         "role" => "secretariat",
-        "title" => "Mr",
-        "affiliation" => "ACME Inc.",
-        "address" => "1 Acme Plaza",
+        "title" => [{ "spelling" => "eng", "value" => "Mr" }],
+        "affiliation" => [{ "spelling" => "eng", "value" => "ACME Inc." }],
+        "address" => [{ "spelling" => "eng", "value" => "1 Acme Plaza" }],
         "contact_methods" => [
           { "kind" => "email", "value" => "sec@acme.org", "primary" => true }
         ],
@@ -22,13 +22,13 @@ RSpec.describe Edoxen::Contact do
         ]
       }
       c = described_class.from_yaml(YAML.dump(payload))
-      expect(c.name).to be_an(Edoxen::Name)
-      expect(c.name.formatted).to eq("ACME Secretariat")
+      expect(c.name.first).to be_an(Edoxen::LocalizedName)
+      expect(c.name.first.value.formatted).to eq("ACME Secretariat")
       expect(c.kind).to eq("organisation")
       expect(c.role).to eq("secretariat")
-      expect(c.title).to eq("Mr")
-      expect(c.affiliation).to eq("ACME Inc.")
-      expect(c.address).to eq("1 Acme Plaza")
+      expect(c.title.first.value).to eq("Mr")
+      expect(c.affiliation.first.value).to eq("ACME Inc.")
+      expect(c.address.first.value).to eq("1 Acme Plaza")
       expect(c.contact_methods.first).to be_an(Edoxen::ContactMethod)
       expect(c.identifiers.first).to be_an(Edoxen::ContactIdentifier)
     end
@@ -41,10 +41,11 @@ RSpec.describe Edoxen::Contact do
 
     it "carries the same attributes as Contact via inheritance" do
       person = Edoxen::Person.new(
-        name: Edoxen::Name.new(formatted: "Jane Doe"),
+        name: [Edoxen::LocalizedName.new(spelling: "eng",
+                                          value: Edoxen::Name.new(formatted: "Jane Doe"))],
         contact_methods: [Edoxen::ContactMethod.new(kind: "email", value: "jane@x.org")]
       )
-      expect(person.name.formatted).to eq("Jane Doe")
+      expect(person.name.first.value.formatted).to eq("Jane Doe")
       expect(person.contact_methods.first.value).to eq("jane@x.org")
     end
   end

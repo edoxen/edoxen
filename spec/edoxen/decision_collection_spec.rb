@@ -23,9 +23,9 @@ RSpec.describe Edoxen::DecisionCollection do
 
   describe "empty / partial inputs" do
     it "is constructible with only metadata" do
-      c = described_class.new(metadata: Edoxen::DecisionMetadata.new(title: "X"))
+      c = described_class.new(metadata: Edoxen::DecisionMetadata.new(title: [Edoxen::LocalizedString.new(spelling: "eng", value: "X")]))
       expect(c.decisions).to be_nil
-      expect(c.metadata.title).to eq("X")
+      expect(c.metadata.title.first.value).to eq("X")
     end
 
     it "is constructible with an empty decisions array" do

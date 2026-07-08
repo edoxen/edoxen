@@ -1,58 +1,59 @@
 ---
 metadata:
-  title: 56th CIML meeting (2025) - Resolution 44 (multilingual)
+  title:
+  - spelling: eng
+    value: 56th CIML meeting (2025) — Resolutions
+  - spelling: fra
+    value: 56e réunion du CIML (2025) — Résolutions
   date: 2025-10-13
   source: BIML Secretariat
   city: CNSHA
   country_code: DE
-  title_localized:
-    - language_code: eng
-      script: Latn
-      title: 56th CIML meeting (2025) — Resolutions
-    - language_code: fra
-      script: Latn
-      title: 56e réunion du CIML (2025) — Résolutions
   source_urls:
-    - ref: https://www.oiml.org/en/resolutions/ciml56-en.pdf
-      format: pdf
-      language_code: eng
-    - ref: https://www.oiml.org/fr/resolutions/ciml56-fr.pdf
-      format: pdf
-      language_code: fra
+  - ref: https://www.oiml.org/en/resolutions/ciml56-en.pdf
+    format: pdf
+    spelling: eng
+  - ref: https://www.oiml.org/fr/resolutions/ciml56-fr.pdf
+    format: pdf
+    spelling: fra
 decisions:
-  - identifier:
-    - prefix: CIML
-      number: "2025-44"
-    kind: resolution
-    status: decided
-    doi: 10.63493/resolutions/ciml202544
-    urn: urn:oiml:doc:ciml:resolution:2025-44
-    agenda_item: "16.2"
-    dates:
-      - date: 2025-10-13
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Decision on the renewal of the contract of Mr Anthony Donnellan
-        subject: CIML
-        actions:
-          - type: decides
-            date_effective:
-              date: 2025-10-13
-              type: adoption
-            message: |
-              The Committee decides to renew the contract of
-              Mr Anthony Donnellan as BIML Director.
-      - language_code: fra
-        script: Latn
-        title: Décision sur le renouvellement du contrat de M. Anthony Donnellan
-        subject: CIML
-        actions:
-          - type: decides
-            date_effective:
-              date: 2025-10-13
-              type: adoption
-            message: |
-              Le Comité décide de renouveler le contrat de
-              M. Anthony Donnellan en tant que Directeur du BIML.
+- identifier:
+  - prefix: CIML
+    number: 2025-44
+  kind: resolution
+  status: decided
+  doi: 10.63493/resolutions/ciml202544
+  urn: urn:oiml:doc:ciml:resolution:2025-44
+  agenda_item: '16.2'
+  dates:
+  - date: 2025-10-13
+    type: discussed
+  title:
+  - spelling: eng
+    value: Decision on the renewal of the contract of Mr Anthony Donnellan
+  - spelling: fra
+    value: Décision sur le renouvellement du contrat de M. Anthony Donnellan
+  subject:
+  - spelling: eng
+    value: CIML
+  - spelling: fra
+    value: CIML
+  actions:
+  - type: decides
+    date_effective:
+      date: 2025-10-13
+      type: adoption
+    message:
+    - spelling: eng
+      value: |
+        The Committee decides to renew the contract of
+        Mr Anthony Donnellan as BIML Director.
+  - type: decides
+    date_effective:
+      date: 2025-10-13
+      type: adoption
+    message:
+    - spelling: fra
+      value: |
+        Le Comité décide de renouveler le contrat de
+        M. Anthony Donnellan en tant que Directeur du BIML.

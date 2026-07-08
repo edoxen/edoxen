@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe Edoxen::Decision do
   it_behaves_like "extension host",
                   factory: { "identifier" => [{ "prefix" => "X", "number" => "1" }],
-                             "localizations" => [{ "language_code" => "eng", "title" => "T" }] }
+                             "localizations" => [{ "language_code" => "eng", "title" => [{ "spelling" => "eng", "value" => "T" }] }] }
 
   describe "language-agnostic admin fields (LUTAML canonical)" do
     it "carries identifier as a collection of StructuredIdentifier" do
@@ -16,7 +16,7 @@ RSpec.describe Edoxen::Decision do
         ],
         "kind" => "resolution",
         "localizations" => [
-          { "language_code" => "eng", "script" => "Latn", "title" => "T" }
+          { "language_code" => "eng", "script" => "Latn", "title" => [{ "spelling" => "eng", "value" => "T" }] }
         ]
       }
       r = described_class.from_yaml(YAML.dump(payload))
@@ -51,7 +51,7 @@ RSpec.describe Edoxen::Decision do
         ],
         "urls" => [{ "kind" => "access", "ref" => "https://example.com", "format" => "html" }],
         "localizations" => [
-          { "language_code" => "eng", "script" => "Latn", "title" => "T" }
+          { "language_code" => "eng", "script" => "Latn", "title" => [{ "spelling" => "eng", "value" => "T" }] }
         ]
       }
       r = described_class.from_yaml(YAML.dump(payload))
@@ -86,64 +86,36 @@ RSpec.describe Edoxen::Decision do
     end
   end
 
-  describe "translatable fields live ONLY inside localizations[]" do
-    it "no longer has flat #title / #subject / #considerations / #approvals / #actions" do
-      expect(described_class.new).not_to respond_to(:title)
-      expect(described_class.new).not_to respond_to(:subject)
-      expect(described_class.new).not_to respond_to(:message)
-      expect(described_class.new).not_to respond_to(:considering)
-      expect(described_class.new).not_to respond_to(:considerations)
-      expect(described_class.new).not_to respond_to(:approvals)
-      expect(described_class.new).not_to respond_to(:actions)
+  describe "v3.0 per-field Localized fields" do
+    it "exposes title, subject, message, considering as Localized<String>[]" do
+      d = described_class.new
+      expect(d).to respond_to(:title)
+      expect(d).to respond_to(:subject)
+      expect(d).to respond_to(:message)
+      expect(d).to respond_to(:considering)
+      expect(d).to respond_to(:considerations)
+      expect(d).to respond_to(:approvals)
+      expect(d).to respond_to(:actions)
     end
 
-    it "exposes those fields via Localization" do
+    it "round-trips per-field Localized content" do
       payload = {
         "identifier" => [{ "prefix" => "X", "number" => "1" }],
         "kind" => "resolution",
-        "localizations" => [
+        "title" => [{ "spelling" => "eng", "value" => "Title" }],
+        "subject" => [{ "spelling" => "eng", "value" => "Subject" }],
+        "actions" => [
           {
-            "language_code" => "eng", "script" => "Latn",
-            "title" => "Title", "subject" => "Subject",
-            "considerations" => [],
-            "approvals" => [],
-            "actions" => [
-              {
-                "type" => "approves",
-                "date_effective" => { "date" => "2024-01-15", "type" => "adoption" },
-                "message" => "approves"
-              }
-            ]
+            "type" => "approves",
+            "date_effective" => { "date" => "2024-01-15", "type" => "adoption" },
+            "message" => [{ "spelling" => "eng", "value" => "approves" }]
           }
         ]
       }
       r = described_class.from_yaml(YAML.dump(payload))
-      eng = r.localizations.first
-      expect(eng.title).to eq("Title")
-      expect(eng.subject).to eq("Subject")
-      expect(eng.actions.first).to be_a(Edoxen::Action)
-    end
-  end
-
-  describe "#in_language / #primary_localization" do
-    it "returns the matching Localization by code" do
-      d = described_class.new(
-        localizations: [
-          Edoxen::Localization.new(language_code: "fra", title: "Titre"),
-          Edoxen::Localization.new(language_code: "eng", title: "Title")
-        ]
-      )
-      expect(d.in_language("eng").title).to eq("Title")
-      expect(d.in_language("fra").title).to eq("Titre")
-      expect(d.in_language("deu")).to be_nil
-      expect(d.in_language("deu", fallback: true).title).to eq("Titre")
-    end
-
-    it "primary_localization falls back to first when eng is absent" do
-      d = described_class.new(
-        localizations: [Edoxen::Localization.new(language_code: "fra", title: "X")]
-      )
-      expect(d.primary_localization.language_code).to eq("fra")
+      expect(r.title.first.value).to eq("Title")
+      expect(r.subject.first.value).to eq("Subject")
+      expect(r.actions.first).to be_a(Edoxen::Action)
     end
   end
 
@@ -154,7 +126,6 @@ RSpec.describe Edoxen::Decision do
         reloaded = Edoxen::DecisionCollection.from_yaml(collection.to_yaml)
         expect(reloaded.decisions.size).to eq(collection.decisions.size)
         expect(reloaded.decisions.first.identifier).to eq(collection.decisions.first.identifier)
-        expect(reloaded.decisions.first.localizations).to eq(collection.decisions.first.localizations)
       end
     end
   end

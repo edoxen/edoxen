@@ -22,16 +22,16 @@ RSpec.describe Edoxen::Venue do
   it "carries physical-venue fields" do
     payload = {
       "kind" => "physical",
-      "name" => "Acme HQ",
+      "name" => [{ "spelling" => "eng", "value" => "Acme HQ" }],
       "unlocode" => "USNYC",
       "iata_code" => "JFK",
-      "address" => "1 Acme Plaza",
+      "address" => [{ "spelling" => "eng", "value" => "1 Acme Plaza" }],
       "country_code" => "US",
       "lat" => 40.7128,
       "lon" => -74.0060,
-      "building" => "Tower",
-      "floor" => "10",
-      "room" => "A"
+      "building" => [{ "spelling" => "eng", "value" => "Tower" }],
+      "floor" => [{ "spelling" => "eng", "value" => "10" }],
+      "room" => [{ "spelling" => "eng", "value" => "A" }]
     }
     v = described_class.from_yaml(YAML.dump(payload))
     expect(v.unlocode).to eq("USNYC")
@@ -43,7 +43,7 @@ RSpec.describe Edoxen::Venue do
   it "carries virtual-venue fields" do
     payload = {
       "kind" => "virtual",
-      "name" => "Zoom",
+      "name" => [{ "spelling" => "eng", "value" => "Zoom" }],
       "uri" => "https://zoom.us/j/123",
       "features" => %w[audio video],
       "passcode" => "1234",

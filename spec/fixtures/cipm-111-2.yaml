@@ -1,6 +1,8 @@
 ---
 metadata:
-  title: 111th meeting of the CIPM (second session)
+  title:
+  - spelling: eng
+    value: 111th meeting of the CIPM (second session)
   date: 2022-06-23
   source: BIPM - Pavillon de Breteuil
   city: FRPAR
@@ -8,92 +10,104 @@ metadata:
   source_urls:
   - ref: https://www.bipm.org/en/committees/ci/cipm/111-_2-2022
     format: html
-    language_code: eng
+    spelling: eng
 decisions:
-  - identifier:
-    - prefix: CIPM
-      number: "111-1"
-    kind: resolution
-    status: decided
-    categories:
-      - Meetings
-    dates:
-      - date: 2022-06-23
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Decision CIPM/111-1 (2022)
-        subject: CIPM
-        actions:
-          - type: approves
-            date_effective:
-              date: 2022-06-23
-              type: adoption
-            message: approved the minutes of the second session of the 110th
-              meeting of the CIPM as a true record.
-  - identifier:
-    - prefix: CIPM
-      number: "111-2"
-    kind: resolution
-    status: decided
-    categories:
-      - SI
-      - Finance
-      - "Member States and Associates"
-    dates:
-      - date: 2022-06-23
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Decision CIPM/111-2 (2022)
-        subject: CIPM
-        considerations:
-          - type: noting
-            date_effective:
-              date: 2022-06-23
-              type: adoption
-            message: noting the decision taken by correspondence on 21 December
-              2021 to approve the text of seven Draft Resolutions for the CGPM
-              at its 27th meeting in November 2022.
-        actions:
-          - type: states
-            date_effective:
-              date: 2022-06-23
-              type: adoption
-            message: |
-              stated the seven Draft Resolutions for the CGPM 27th meeting
-              covering digital transformation, SI prefix extension, UTC,
-              the second redefinition, universal adherence to the Metre
-              Convention, and the BIPM dotation for 2024-2027.
-  - identifier:
-    - prefix: CIPM
-      number: "111-12"
-    kind: resolution
-    status: decided
-    categories:
-      - General
-    dates:
-      - date: 2022-06-23
-        type: discussed
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Decision CIPM/111-12 (2022)
-        subject: CIPM
-        approvals:
-          - type: affirmative
-            degree: unanimous
-            date:
-              date: 2022-06-23
-              type: adoption
-            message: Decision taken by unanimity.
-        actions:
-          - type: decides
-            date_effective:
-              date: 2022-06-23
-              type: adoption
-            message: decided to re-nominate Dr Martin Milton as BIPM Director
-              and to renew his appointment for a further term from 1 January
-              2023.
+- identifier:
+  - prefix: CIPM
+    number: 111-1
+  kind: resolution
+  status: decided
+  categories:
+  - Meetings
+  dates:
+  - date: 2022-06-23
+    type: discussed
+  title:
+  - spelling: eng
+    value: Decision CIPM/111-1 (2022)
+  subject:
+  - spelling: eng
+    value: CIPM
+  actions:
+  - type: approves
+    date_effective:
+      date: 2022-06-23
+      type: adoption
+    message:
+    - spelling: eng
+      value: approved the minutes of the second session of the 110th meeting of the
+        CIPM as a true record.
+- identifier:
+  - prefix: CIPM
+    number: 111-2
+  kind: resolution
+  status: decided
+  categories:
+  - SI
+  - Finance
+  - Member States and Associates
+  dates:
+  - date: 2022-06-23
+    type: discussed
+  title:
+  - spelling: eng
+    value: Decision CIPM/111-2 (2022)
+  subject:
+  - spelling: eng
+    value: CIPM
+  considerations:
+  - type: noting
+    date_effective:
+      date: 2022-06-23
+      type: adoption
+    message:
+    - spelling: eng
+      value: noting the decision taken by correspondence on 21 December 2021 to approve
+        the text of seven Draft Resolutions for the CGPM at its 27th meeting in November
+        2022.
+  actions:
+  - type: states
+    date_effective:
+      date: 2022-06-23
+      type: adoption
+    message:
+    - spelling: eng
+      value: |
+        stated the seven Draft Resolutions for the CGPM 27th meeting
+        covering digital transformation, SI prefix extension, UTC,
+        the second redefinition, universal adherence to the Metre
+        Convention, and the BIPM dotation for 2024-2027.
+- identifier:
+  - prefix: CIPM
+    number: 111-12
+  kind: resolution
+  status: decided
+  categories:
+  - General
+  dates:
+  - date: 2022-06-23
+    type: discussed
+  title:
+  - spelling: eng
+    value: Decision CIPM/111-12 (2022)
+  subject:
+  - spelling: eng
+    value: CIPM
+  approvals:
+  - type: affirmative
+    degree: unanimous
+    date:
+      date: 2022-06-23
+      type: adoption
+    message:
+    - spelling: eng
+      value: Decision taken by unanimity.
+  actions:
+  - type: decides
+    date_effective:
+      date: 2022-06-23
+      type: adoption
+    message:
+    - spelling: eng
+      value: decided to re-nominate Dr Martin Milton as BIPM Director and to renew
+        his appointment for a further term from 1 January 2023.

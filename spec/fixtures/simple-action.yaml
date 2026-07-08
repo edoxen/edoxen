@@ -1,27 +1,27 @@
 ---
-# Minimal DecisionCollection that contains a single Action for
-# spec/edoxen/action_spec.rb. In real data, Actions live inside a
-# Localization (Action is always a child of Localization).
 metadata:
-  title: Simple action fixture
+  title:
+  - spelling: eng
+    value: Simple action fixture
   date: 2024-01-15
   source: Edoxen test fixture
 decisions:
-  - identifier:
-    - prefix: TEST
-      number: "0001"
-    kind: resolution
-    status: decided
-    dates:
-      - date: 2024-01-15
-        type: adoption
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Test resolution with one action
-        actions:
-          - type: resolves
-            date_effective:
-              date: 2024-01-15
-              type: adoption
-            message: resolves to implement the new standard
+- identifier:
+  - prefix: TEST
+    number: '0001'
+  kind: resolution
+  status: decided
+  dates:
+  - date: 2024-01-15
+    type: adoption
+  title:
+  - spelling: eng
+    value: Test resolution with one action
+  actions:
+  - type: resolves
+    date_effective:
+      date: 2024-01-15
+      type: adoption
+    message:
+    - spelling: eng
+      value: resolves to implement the new standard

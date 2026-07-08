@@ -9,7 +9,7 @@ RSpec.describe Edoxen::MeetingCollection do
     c = described_class.from_yaml(File.read(fixture))
     expect(c.meetings.size).to eq(2)
     expect(c.meetings).to all(be_a(Edoxen::Meeting))
-    expect(c.metadata.title).to eq("Sample meeting collection")
+    expect(c.metadata.title.first.value).to eq("Sample meeting collection")
   end
 
   it "round-trips without data loss" do

@@ -62,15 +62,17 @@ RSpec.describe Edoxen::Cli do
       File.write(bad, <<~YAML)
         ---
         metadata:
-          title: T
+          title:
+            - spelling: eng
+              value: T
         decisions:
           - identifier:
               - prefix: X
                 number: "1"
-            localizations:
-              - language_code: not-three-letter
-                script: Latn
-                title: T
+            title:
+              - spelling: eng
+                value: T
+            kind: not-a-valid-kind
       YAML
       stdout, _stderr, status = run_cli("validate", bad)
       expect(status.exitstatus).not_to eq(0)

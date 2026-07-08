@@ -8,17 +8,17 @@ RSpec.describe Edoxen::DecisionMetadata do
   describe "canonical fields" do
     it "carries title, date, source, source_urls, city, country_code" do
       payload = {
-        "title" => "Decisions of the 38th plenary meeting of ISO/TC 154",
+        "title" => [{ "spelling" => "eng", "value" => "Decisions of the 38th plenary meeting of ISO/TC 154" }],
         "date" => "2019-10-17",
         "source" => "ISO/TC 154 Secretariat",
         "source_urls" => [
-          { "ref" => "https://example.com/file.pdf", "format" => "pdf", "language_code" => "eng" }
+          { "ref" => "https://example.com/file.pdf", "format" => "pdf", "spelling" => "eng" }
         ],
         "city" => "LUX",
         "country_code" => "LU"
       }
       m = described_class.from_yaml(YAML.dump(payload))
-      expect(m.title).to eq("Decisions of the 38th plenary meeting of ISO/TC 154")
+      expect(m.title.first.value).to eq("Decisions of the 38th plenary meeting of ISO/TC 154")
       expect(m.date).to eq(Date.new(2019, 10, 17))
       expect(m.source).to eq("ISO/TC 154 Secretariat")
       expect(m.source_urls).to all(be_a(Edoxen::SourceUrl))
@@ -26,19 +26,18 @@ RSpec.describe Edoxen::DecisionMetadata do
       expect(m.country_code).to eq("LU")
     end
 
-    it "supports title_localized[] for multilingual collections" do
+    it "carries multilingual title[] via per-field Localized (v3.0)" do
       payload = {
-        "title" => "Default",
-        "title_localized" => [
-          { "language_code" => "eng", "script" => "Latn", "title" => "English title" },
-          { "language_code" => "fra", "script" => "Latn", "title" => "Titre français" }
+        "title" => [
+          { "spelling" => "eng", "value" => "English title" },
+          { "spelling" => "fra", "value" => "Titre français" }
         ]
       }
       m = described_class.from_yaml(YAML.dump(payload))
-      expect(m.title_localized.size).to eq(2)
-      expect(m.title_localized).to all(be_a(Edoxen::Localization))
-      expect(m.title_localized.map(&:language_code)).to eq(%w[eng fra])
-      expect(m.title_localized.map(&:title)).to eq(["English title", "Titre français"])
+      expect(m.title.size).to eq(2)
+      expect(m.title).to all(be_a(Edoxen::LocalizedString))
+      expect(m.title.map(&:spelling)).to eq(%w[eng fra])
+      expect(m.title.map(&:value)).to eq(["English title", "Titre français"])
     end
 
     it "carries meeting_urn back-reference" do

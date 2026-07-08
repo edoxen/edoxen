@@ -8,7 +8,7 @@ RSpec.describe Edoxen::AgendaItem do
   describe "LUTAML AgendaItemKind coverage" do
     Edoxen::Enums::AGENDA_ITEM_KIND.each do |k|
       it "round-trips kind=#{k}" do
-        payload = { "label" => "1", "kind" => k, "title" => "Item" }
+        payload = { "label" => "1", "kind" => k, "title" => [{ "spelling" => "eng", "value" => "Item" }] }
         ai = described_class.from_yaml(YAML.dump(payload))
         expect(ai.kind).to eq(k)
       end
@@ -27,7 +27,7 @@ RSpec.describe Edoxen::AgendaItem do
 
   it "carries references as Reference objects" do
     payload = {
-      "label" => "5.2", "title" => "Standards",
+      "label" => "5.2", "title" => [{ "spelling" => "eng", "value" => "Standards" }],
       "references" => [{ "ref" => "ISO 9735-11", "kind" => "standard" }]
     }
     ai = described_class.from_yaml(YAML.dump(payload))

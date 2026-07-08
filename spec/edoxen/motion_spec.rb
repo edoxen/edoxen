@@ -18,7 +18,7 @@ RSpec.describe Edoxen::Motion do
     payload = {
       "identifier" => "motion-1",
       "urn" => "urn:x:motion:1",
-      "text" => "I move that we adjourn",
+      "text" => [{ "spelling" => "eng", "value" => "I move that we adjourn" }],
       "mover" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
       "seconders" => [{ "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Sara" } }] }, { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Bob" } }] }],
       "status" => "seconded",
@@ -27,7 +27,7 @@ RSpec.describe Edoxen::Motion do
     m = described_class.from_yaml(YAML.dump(payload))
     expect(m.identifier).to eq("motion-1")
     expect(m.urn).to eq("urn:x:motion:1")
-    expect(m.text).to eq("I move that we adjourn")
+    expect(m.text.first.value).to eq("I move that we adjourn")
     expect(m.mover).to be_a(Edoxen::Person)
     expect(m.seconders).to all(be_a(Edoxen::Person))
     expect(m.seconders.size).to eq(2)

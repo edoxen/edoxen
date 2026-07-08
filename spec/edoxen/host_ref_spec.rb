@@ -24,7 +24,7 @@ RSpec.describe Edoxen::HostRef do
     }
     h = described_class.from_yaml(YAML.dump(payload))
     expect(h.contact).to be_a(Edoxen::Contact)
-    expect(h.contact.name.display).to eq("Jane")
+    expect(h.contact.name.first.value.display).to eq("Jane")
     expect(h.contact.contact_methods.first.value).to eq("jane@acme.org")
   end
 end

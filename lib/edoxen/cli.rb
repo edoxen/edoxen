@@ -150,6 +150,27 @@ module Edoxen
       run_normalize(PROFILES.fetch(:meetings), pattern)
     end
 
+    # --- Cross-document link checking ----------------------------------
+
+    desc "check-links DIRECTORY",
+         "Scan a directory of Meeting/DecisionCollection YAML and report " \
+         "any cross-document URN that does not resolve."
+
+    def check_links(directory)
+      unless File.directory?(directory)
+        say "Error: #{directory} is not a directory", :red
+        exit 1
+      end
+
+      say "🔗 Checking cross-document URN links in #{directory}...", :blue
+      errors = Edoxen::LinkChecker.check(directory)
+      return say("✅ No broken or duplicate links found", :green) if errors.empty?
+
+      say "❌ Found #{errors.size} link error(s):", :red
+      errors.each { |e| say "  #{e.message}", :red }
+      exit 1
+    end
+
     # --- Reference-data lookups -----------------------------------------
 
     desc "unlocode CODE", "Resolve a UN/LOCODE via the canonical registry."

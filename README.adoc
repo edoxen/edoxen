@@ -315,6 +315,29 @@ $ edoxen normalize-meetings "spec/fixtures/meetings/*.yaml" --output clean/
 The schema's root is `oneOf` — both single-Meeting and MeetingCollection
 shapes are accepted.
 
+=== `check-links DIRECTORY` — cross-document URN audit
+
+Walks `DIRECTORY` recursively, classifies every `*.yaml` / `*.yml` as a
+Meeting, MeetingCollection, or DecisionCollection, and reports:
+
+  * every `metadata.meeting_urn` that does not resolve to an indexed
+    Meeting;
+  * every Meeting `urn` claimed by more than one file.
+
+Error messages include file:line and the in-document pointer.
+
+[source,sh]
+----
+$ edoxen check-links ./spec/fixtures
+🔗 Checking cross-document URN links in ./spec/fixtures...
+✅ No broken or duplicate links found
+
+$ edoxen check-links ./_data
+❌ Found 2 link error(s):
+  ./_data/decisions.yaml:4: metadata.meeting_urn references urn:oiml:ciml:meeting:ciml-99 (no matching Meeting)
+  ./_data/dupe.yaml:7: urn references urn:oiml:ciml:meeting:ciml-55 (duplicate Meeting URN (first seen at ./_data/meeting-55.yaml:4))
+----
+
 === `unlocode CODE` / `iata CODE` — registry lookup
 
 [source,sh]
@@ -414,9 +437,9 @@ HK LegCo profile example] for a real-world reference.
   reporting (longest-prefix match — no path-shape hardcoding), and
   date coercion so `json_schemer` can validate `format: date` against
   YAML-loaded `Date` instances.
-* `lib/edoxen/cli.rb` exposes six Thor commands (`validate`,
-  `normalize`, `validate-meetings`, `normalize-meetings`, `unlocode`,
-  `iata`) that delegate their shared scaffolding to the deep
+* `lib/edoxen/cli.rb` exposes seven Thor commands (`validate`,
+  `normalize`, `validate-meetings`, `normalize-meetings`, `check-links`,
+  `unlocode`, `iata`) that delegate their shared scaffolding to the deep
   `Edoxen::Cli::Batch` module.
 * `lib/edoxen/venue_validator.rb` validates polymorphic `Venue`
   instances using the `unlocodes` and `iata` gems; optionally

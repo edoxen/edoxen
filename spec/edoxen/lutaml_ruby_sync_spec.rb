@@ -2,14 +2,16 @@
 
 require "spec_helper"
 require "pathname"
+require "set"
 
 # LutaML ↔ Ruby sync.
 #
 # Walks every `class` declaration in `edoxen-model/models/*.lutaml` and
 # asserts the matching `Edoxen::*` Ruby class declares the same attribute
-# names (camelCase lutaml ↔ snake_case Ruby) and the same collection
-# flags. Closes the root-cause gap left by the 1.0 drift audit
-# (`edoxen-model/TODO.refactor/20-post-v2-gem-drift.md`).
+# names (camelCase lutaml ↔ snake_case Ruby), the same collection flags,
+# and (outside an explicit allowlist) the same types. Closes the
+# root-cause gap left by the 1.0 drift audit
+# (`edoxen-model/TODO.refactor/50-post-v2-gem-drift-closed.md`).
 #
 # Skips:
 #   - Files with the `// Superseded by` marker (Location, ScheduleItem,
@@ -23,6 +25,49 @@ require "pathname"
 # in the example-group scope where we declare sub-describes).
 MODELS_DIR = Pathname.new(__dir__).parent.parent.parent.join("edoxen-model", "models")
 LUTAML_FILES = Dir.glob(MODELS_DIR.join("*.lutaml"))
+
+# LutaML primitive type name → lutaml-model Ruby primitive class.
+# Class-reference types (e.g. `DecisionDate`) are passed through as
+# `Edoxen::<Name>` directly.
+LUTAML_PRIMITIVE_RUBY = {
+  "String" => Lutaml::Model::Type::String,
+  "Integer" => Lutaml::Model::Type::Integer,
+  "Float" => Lutaml::Model::Type::Float,
+  "Boolean" => Lutaml::Model::Type::Boolean,
+  "Date" => Lutaml::Model::Type::Date,
+  "DateTime" => Lutaml::Model::Type::DateTime,
+  "Time" => Lutaml::Model::Type::Time
+}.freeze
+
+# Known upstream LutaML drift: the gem follows the canonical schema
+# (which is the strict source of the wire shape), and the LutaML files
+# sometimes express a primitive type where the schema models a richer
+# structured type. Each entry pins the drift so it does not silently
+# regress further, and links the upstream fix that would remove it.
+#
+# Format: "#{Class}.#{attr_name}" => ["LutaML type", "reason"].
+LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST = {
+  "Action.dateEffective" => ["DateTime",
+                             "schema models DecisionDate ({date,type}); " \
+                             "upstream fix: update action.lutaml to " \
+                             "`dateEffective: DecisionDate`"],
+  "Consideration.dateEffective" => ["Date",
+                                    "schema models DecisionDate ({date,type}); " \
+                                    "upstream fix: update consideration.lutaml to " \
+                                    "`dateEffective: DecisionDate`"],
+  "Approval.date" => ["Date",
+                      "schema models DecisionDate ({date,type}); " \
+                      "upstream fix: update approval.lutaml to " \
+                      "`date: DecisionDate`"],
+  "DecisionMetadata.date" => ["DateTime",
+                              "schema declares format: date; " \
+                              "upstream fix: update decision_metadata.lutaml to " \
+                              "`date: Date`"],
+  "MeetingIdentifier.date" => ["DateTime",
+                               "schema declares format: date; " \
+                               "upstream fix: update meeting_identifier.lutaml to " \
+                               "`date: Date`"]
+}.freeze
 
 # Pre-compute (basename, source, lutaml_classes, superseded?) for every
 # file. Filtering happens at iteration time so the per-class describe
@@ -47,10 +92,34 @@ LUTAML_BY_NAME = PARSED_FILES.flat_map { |f| f[:classes] }
 
 SUPERSEDED_FILES = PARSED_FILES.select { |f| f[:superseded] }.map { |f| f[:basename] }
 
+# All enum names declared in the LutaML files. The gem models enum-typed
+# attributes as `:string, values: Enums::X` (a constrained primitive),
+# not as class-typed attributes — so when the LutaML type is an enum
+# name, the type-equality check would always drift. The enum-value sync
+# spec already enforces that the canonical set matches; here we just
+# skip the type axis.
+LUTAML_ENUM_NAMES = PARSED_FILES.flat_map { |f| f[:enums].map(&:name) }.uniq.to_set.freeze
+
+# Resolve a LutaML type name to the expected Ruby type object:
+#   - Primitive ("String", "Integer", ...) → lutaml-model Type class.
+#   - Enum name → `:enum` sentinel (skip — covered by enum sync).
+#   - Anything else → the matching `Edoxen::<Name>` class constant.
+# Returns `nil` if the resolution fails (the spec example will then
+# report the missing class).
+def expected_ruby_type_for(lutaml_type_name)
+  return :enum if LUTAML_ENUM_NAMES.include?(lutaml_type_name)
+  return LUTAML_PRIMITIVE_RUBY[lutaml_type_name] if LUTAML_PRIMITIVE_RUBY.key?(lutaml_type_name)
+
+  Edoxen.const_get(lutaml_type_name)
+rescue NameError
+  nil
+end
+
 RSpec.describe "LutaML <-> Ruby sync" do
   pending "edoxen-model repo not found at #{MODELS_DIR}; skipping LutaML sync" if LUTAML_FILES.empty?
 
   it "found at least one lutaml file (sanity check)" do
+    skip "edoxen-model repo not found at #{MODELS_DIR}; CI must checkout edoxen-model as a sibling" if LUTAML_FILES.empty?
     expect(LUTAML_FILES).not_to be_empty, "expected models/*.lutaml to be non-empty"
   end
 
@@ -131,6 +200,49 @@ RSpec.describe "LutaML <-> Ruby sync" do
                                              "Attribute #{lutaml_class.name}.#{attr.name} (Ruby :#{attr.snake_name}) " \
                                              "cardinality mismatch: LutaML collection=#{attr.collection}, " \
                                              "Ruby collection=#{ruby_attr.collection?} (file: #{parsed[:basename]})"
+          end
+        end
+
+        it "has matching attribute types (with explicit allowlist for upstream drift)" do
+          # Same inheritance walk as the name-sync example — subclass
+          # attrs inherit from the parent on the LutaML side.
+          lutaml_full_attrs = lutaml_class.attrs.dup
+          cursor = lutaml_class
+          while cursor.parent && LUTAML_BY_NAME[cursor.parent]
+            cursor = LUTAML_BY_NAME[cursor.parent]
+            lutaml_full_attrs.concat(cursor.attrs)
+          end
+
+          lutaml_full_attrs.each do |attr|
+            ruby_attr = ruby_class.attributes[attr.snake_name.to_sym]
+            next unless ruby_attr
+
+            key = "#{lutaml_class.name}.#{attr.name}"
+            if LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST.key?(key)
+              expected_lutaml, reason = LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST[key]
+              expect(attr.type).to eq(expected_lutaml),
+                                   "Allowlist entry #{key} expected LutaML type #{expected_lutaml} " \
+                                   "but found #{attr.type.inspect}. (#{reason})"
+              next
+            end
+
+            expected_ruby_type = expected_ruby_type_for(attr.type)
+            # Enum-typed attributes are modelled as :string, values: X on
+            # the Ruby side; the value-list equality is enforced by the
+            # enum sync examples further down. Skip the type axis here.
+            next if expected_ruby_type == :enum
+
+            actual = ruby_attr.type
+
+            # lutaml-model returns either a Type::<Primitive> class or
+            # the referenced model class itself. Compare by identity.
+            expect(actual).to eq(expected_ruby_type),
+                              "Attribute #{lutaml_class.name}.#{attr.name} type mismatch: " \
+                              "LutaML #{attr.type.inspect} ↔ Ruby #{actual.inspect} " \
+                              "(file: #{parsed[:basename]}). " \
+                              "If this is an intentional schema-vs-LutaML drift, " \
+                              "add it to LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST with the " \
+                              "upstream fix note."
           end
         end
       end

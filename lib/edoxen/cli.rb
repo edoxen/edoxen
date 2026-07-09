@@ -33,7 +33,7 @@ module Edoxen
         "decisions", "edoxen.yaml",
         lambda do |content|
           data = YAML.safe_load(content, permitted_classes: [Date, Time])
-          case decision_kind(data)
+          case Batch.decision_kind(data)
           when :contacts then ContactCollection.from_yaml(content)
           when :venues   then VenueCollection.from_yaml(content)
           else                DecisionCollection.from_yaml(content)
@@ -44,7 +44,7 @@ module Edoxen
         "meetings", "meeting.yaml",
         lambda do |content|
           data = YAML.safe_load(content, permitted_classes: [Date, Time])
-          case meetings_kind(data)
+          case Batch.meetings_kind(data)
           when :collection then MeetingCollection.from_yaml(content)
           when :series     then MeetingSeries.from_yaml(content)
           else                  Meeting.from_yaml(content)
@@ -53,47 +53,12 @@ module Edoxen
       )
     }.freeze
 
-    # Discriminate the three top-level shapes the canonical
-    # `schema/edoxen.yaml` accepts via `oneOf`:
-    #
-    #   * :contacts   — `{ contacts: [...] }` (ContactCollection registry).
-    #   * :venues     — `{ venues: [...] }`   (VenueCollection registry).
-    #   * :decisions  — anything else (DecisionCollection, the default).
-    #
-    # Sniffing by structure (not by parsing) lets the loader pick the
-    # correct class without a try/parse loop.
-    def self.decision_kind(data)
-      return :decisions unless data.is_a?(Hash)
-
-      return :contacts if data["contacts"].is_a?(Array)
-      return :venues if data["venues"].is_a?(Array)
-
-      :decisions
-    end
-
-    # Discriminate the three top-level shapes the canonical
-    # `schema/meeting.yaml` accepts via `oneOf`:
-    #
-    #   * :collection — `{ meetings: [...] }`
-    #   * :series     — `{ identifier: [...], meeting_refs: [...] }`
-    #                   (or any hash with `identifier` + `recurrence`)
-    #   * :meeting    — anything else (single Meeting).
-    #
-    # Sniffing by structure (not by parsing) lets the loader pick the
-    # correct class without a try/parse loop.
-    def self.meetings_kind(data)
-      return :meeting unless data.is_a?(Hash)
-
-      return :collection if data["meetings"].is_a?(Array)
-      return :series if data["identifier"].is_a?(Array) &&
-                        (data.key?("meeting_refs") || data.key?("recurrence"))
-
-      :meeting
-    end
-
     # Deep module behind the per-command interface. Owns the
     # expand/sort/empty/header/loop/tally/summary/exit scaffold so
     # `validate` and `normalize` collapse to one-line delegations.
+    # Also owns the per-profile shape sniffers that pick the correct
+    # model class for each YAML file (one of N shapes accepted by the
+    # canonical `oneOf` roots).
     module Batch
       # Per-file outcome. `ok` carries an optional message appended to
       # the success indicator (e.g. "NORMALIZED → /out/path"). `bad`
@@ -109,6 +74,38 @@ module Edoxen
       end
 
       module_function
+
+      # Discriminate the three top-level shapes the canonical
+      # `schema/edoxen.yaml` accepts via `oneOf`:
+      #
+      #   * :contacts   — `{ contacts: [...] }` (ContactCollection registry).
+      #   * :venues     — `{ venues: [...] }`   (VenueCollection registry).
+      #   * :decisions  — anything else (DecisionCollection, the default).
+      def decision_kind(data)
+        return :decisions unless data.is_a?(Hash)
+
+        return :contacts if data["contacts"].is_a?(Array)
+        return :venues if data["venues"].is_a?(Array)
+
+        :decisions
+      end
+
+      # Discriminate the three top-level shapes the canonical
+      # `schema/meeting.yaml` accepts via `oneOf`:
+      #
+      #   * :collection — `{ meetings: [...] }`
+      #   * :series     — `{ identifier: [...], meeting_refs: [...] }`
+      #                   (or any hash with `identifier` + `recurrence`)
+      #   * :meeting    — anything else (single Meeting).
+      def meetings_kind(data)
+        return :meeting unless data.is_a?(Hash)
+
+        return :collection if data["meetings"].is_a?(Array)
+        return :series if data["identifier"].is_a?(Array) &&
+                          (data.key?("meeting_refs") || data.key?("recurrence"))
+
+        :meeting
+      end
 
       def run(cli, pattern, header:, summary_extra: [])
         files = expand(pattern)

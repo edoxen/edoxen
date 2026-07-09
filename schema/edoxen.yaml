@@ -3,7 +3,13 @@
 "$id": https://github.com/edoxen/edoxen/schema/edoxen.yaml
 title: Edoxen Decision Collection Schema
 description: |
-  Schema for validating Edoxen DecisionCollection YAML files.
+  Schema for validating Edoxen decision-side YAML files.
+
+  Accepts three top-level document kinds via `oneOf`:
+
+    * `DecisionCollection` — the formal outcomes adopted by a Meeting.
+    * `ContactCollection` — a scoped-URN registry of Contacts.
+    * `VenueCollection`  — a scoped-URN registry of Venues.
 
   Mirrors the canonical LutaML information model in
   https://github.com/edoxen/edoxen-model/tree/main/models .
@@ -18,17 +24,26 @@ description: |
   message degrades to "value ... is not one of: (see schema)". This
   is documented in `Edoxen::SchemaValidator#format_message`.
 type: object
-additionalProperties: false
-properties:
-  metadata:
-    "$ref": "#/$defs/DecisionMetadata"
-  decisions:
-    type: array
-    items:
-      "$ref": "#/$defs/Decision"
-required:
-- decisions
+oneOf:
+- "$ref": "#/$defs/DecisionCollection"
+- "$ref": "#/$defs/ContactCollection"
+- "$ref": "#/$defs/VenueCollection"
 "$defs":
+  DecisionCollection:
+    type: object
+    description: |
+      Top-level container for a published decision collection: metadata
+      plus the list of decisions.
+    additionalProperties: false
+    properties:
+      metadata:
+        "$ref": "#/$defs/DecisionMetadata"
+      decisions:
+        type: array
+        items:
+          "$ref": "#/$defs/Decision"
+    required:
+    - decisions
   StructuredIdentifier:
     type: object
     description: An identifier (prefix + number). A Decision carries 1..* of these.

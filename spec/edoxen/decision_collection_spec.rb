@@ -5,6 +5,8 @@ require "spec_helper"
 RSpec.describe Edoxen::DecisionCollection do
   describe "real-world fixtures" do
     Dir.glob(File.expand_path("../fixtures/*.yaml", __dir__)).each do |fixture|
+      next if %w[contacts.yaml venues.yaml].include?(File.basename(fixture))
+
       it "loads #{File.basename(fixture)}" do
         collection = described_class.from_yaml(File.read(fixture))
         expect(collection).to be_a(described_class)

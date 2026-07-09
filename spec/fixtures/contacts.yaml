@@ -1,0 +1,26 @@
+---
+# Minimal ContactCollection fixture — scoped-URN contact registry.
+scope: isotc154
+title:
+  - spelling: eng
+    value: ISO/TC 154 Contacts
+contacts:
+  - urn: urn:edoxen:contact:isotc154:jianfang-zhang
+    kind: person
+    name:
+      - spelling: eng
+        value:
+          formatted: Jianfang Zhang
+    contact_methods:
+      - kind: email
+        value: jzhang@example.org
+        primary: true
+    identifiers:
+      - kind: orcid
+        value: "0000-0001-0002-0003"
+  - urn: urn:edoxen:contact:isotc154:secretariat
+    kind: organisation
+    name:
+      - spelling: eng
+        value:
+          formatted: ISO/TC 154 Secretariat

@@ -31,7 +31,14 @@ module Edoxen
     PROFILES = {
       decisions: Profile.new(
         "decisions", "edoxen.yaml",
-        ->(content) { DecisionCollection.from_yaml(content) }
+        lambda do |content|
+          data = YAML.safe_load(content, permitted_classes: [Date, Time])
+          case decision_kind(data)
+          when :contacts then ContactCollection.from_yaml(content)
+          when :venues   then VenueCollection.from_yaml(content)
+          else                DecisionCollection.from_yaml(content)
+          end
+        end
       ),
       meetings: Profile.new(
         "meetings", "meeting.yaml",
@@ -45,6 +52,24 @@ module Edoxen
         end
       )
     }.freeze
+
+    # Discriminate the three top-level shapes the canonical
+    # `schema/edoxen.yaml` accepts via `oneOf`:
+    #
+    #   * :contacts   — `{ contacts: [...] }` (ContactCollection registry).
+    #   * :venues     — `{ venues: [...] }`   (VenueCollection registry).
+    #   * :decisions  — anything else (DecisionCollection, the default).
+    #
+    # Sniffing by structure (not by parsing) lets the loader pick the
+    # correct class without a try/parse loop.
+    def self.decision_kind(data)
+      return :decisions unless data.is_a?(Hash)
+
+      return :contacts if data["contacts"].is_a?(Array)
+      return :venues if data["venues"].is_a?(Array)
+
+      :decisions
+    end
 
     # Discriminate the three top-level shapes the canonical
     # `schema/meeting.yaml` accepts via `oneOf`:

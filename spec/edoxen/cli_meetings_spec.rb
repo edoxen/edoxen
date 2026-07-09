@@ -59,6 +59,55 @@ RSpec.describe "edoxen CLI meeting subcommands" do
       expect(status.exitstatus).not_to eq(0)
       expect(stdout).to include("INVALID")
     end
+
+    it "validates a top-level MeetingSeries fixture" do
+      stdout, _stderr, status = run_cli(
+        "validate-meetings", "#{meetings_dir}/ciml-series.yaml"
+      )
+      expect(status.exitstatus).to eq(0)
+      expect(stdout).to include("VALID")
+    end
+  end
+
+  describe "meetings loader shape detection" do
+    it "loads a MeetingCollection via the :meetings key" do
+      content = YAML.dump(
+        "metadata" => { "title" => [{ "spelling" => "eng", "value" => "All" }] },
+        "meetings" => [
+          { "identifier" => [{ "prefix" => "X", "number" => "1" }],
+            "type" => "plenary" }
+        ]
+      )
+      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:collection)
+    end
+
+    it "loads a MeetingSeries via meeting_refs" do
+      content = YAML.dump(
+        "identifier" => [{ "prefix" => "CIML", "number" => "series" }],
+        "meeting_refs" => ["urn:x:m:1"]
+      )
+      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:series)
+    end
+
+    it "loads a MeetingSeries via recurrence (no meeting_refs)" do
+      content = YAML.dump(
+        "identifier" => [{ "prefix" => "CIML", "number" => "series" }],
+        "recurrence" => { "freq" => "yearly" }
+      )
+      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:series)
+    end
+
+    it "falls back to :meeting for a single Meeting shape" do
+      content = YAML.dump(
+        "identifier" => [{ "prefix" => "X", "number" => "1" }],
+        "type" => "plenary"
+      )
+      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:meeting)
+    end
   end
 
   describe "normalize-meetings subcommand" do

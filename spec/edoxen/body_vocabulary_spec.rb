@@ -25,7 +25,7 @@ RSpec.describe "TODO 46 — short canonical enums + body_vocabulary" do
       )
     end
 
-    # Architectural invariant (TODO.refactor/1.0-design): canonical enums cap
+    # Architectural invariant (1.0 design review): canonical enums cap
     # at 5. Bodies extend via `body_type: String` + per-dataset
     # `body_vocabulary[]`, NOT by growing the canonical enum. A future
     # PR that adds a sixth value silently breaks the design — this

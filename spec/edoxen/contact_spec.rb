@@ -42,7 +42,7 @@ RSpec.describe Edoxen::Contact do
     it "carries the same attributes as Contact via inheritance" do
       person = Edoxen::Person.new(
         name: [Edoxen::LocalizedName.new(spelling: "eng",
-                                          value: Edoxen::Name.new(formatted: "Jane Doe"))],
+                                         value: Edoxen::Name.new(formatted: "Jane Doe"))],
         contact_methods: [Edoxen::ContactMethod.new(kind: "email", value: "jane@x.org")]
       )
       expect(person.name.first.value.formatted).to eq("Jane Doe")

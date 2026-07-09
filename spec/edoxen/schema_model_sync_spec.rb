@@ -51,25 +51,24 @@ SCHEMA_MODEL_BINDINGS = {
   Edoxen::VenueCollection => "VenueCollection"
 }.freeze
 
+# ExtensionAttribute uses camelCase wire names (intValue, floatValue,
+# ...) via lutaml-model's `map "intValue", to: :integer_value`. The
+# Ruby attribute names are snake_case; the schema property names are
+# the wire names. Skip the strict name-equality check for this one
+# class — its attribute-to-property mapping is intentionally lossy
+# on the name axis.
+WIRE_NAME_RENAMES = {
+  "Edoxen::ExtensionAttribute" => {
+    "integer_value" => "intValue",
+    "float_value" => "floatValue",
+    "boolean_value" => "booleanValue",
+    "date_value" => "dateValue",
+    "date_time_value" => "dateTimeValue"
+  }
+}.freeze
+
 RSpec.describe "Schema <-> Ruby model shape sync" do
   let(:defs) { YAML.safe_load_file("schema/edoxen.yaml").fetch("$defs") }
-
-  # ExtensionAttribute uses camelCase wire names (intValue, floatValue,
-  # ...) via lutaml-model's `map "intValue", to: :integer_value`. The
-  # Ruby attribute names are snake_case; the schema property names are
-  # the wire names. Skip the strict name-equality check for this one
-  # class — its attribute-to-property mapping is intentionally lossy
-  # on the name axis.
-  WIRE_NAME_RENAMES = {
-    "Edoxen::ExtensionAttribute" => {
-      "integer_value" => "intValue",
-      "float_value" => "floatValue",
-      "boolean_value" => "booleanValue",
-      "date_value" => "dateValue",
-      "date_time_value" => "dateTimeValue",
-    },
-  }.freeze
-
   SCHEMA_MODEL_BINDINGS.each do |ruby_class, schema_name|
     describe "#{ruby_class.name} <-> $defs/#{schema_name}" do
       let(:schema_def) { defs.fetch(schema_name) }

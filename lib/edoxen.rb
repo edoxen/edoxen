@@ -88,7 +88,6 @@ module Edoxen
   autoload :VenueValidator, "edoxen/venue_validator"
   autoload :ContactCollection, "edoxen/contact_collection"
   autoload :VenueCollection, "edoxen/venue_collection"
-  autoload :Urn, "edoxen/urn"
 
   # --- Services ---------------------------------------------------------
   autoload :SchemaValidator, "edoxen/schema_validator"

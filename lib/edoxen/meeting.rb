@@ -59,12 +59,6 @@ module Edoxen
     attribute :relations, MeetingRelation, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    def title_in(spelling, fallback: true)
-      entry = title&.find { |l| l.spelling == spelling.to_s }
-      entry ||= title&.first if fallback
-      entry&.value
-    end
-
     def find_agenda_item(label)
       agenda&.find_item(label)
     end

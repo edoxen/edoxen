@@ -5,7 +5,7 @@ module Edoxen
   # MeetingExtension. Polymorphic on value type so consumers don't
   # have to re-parse strings back into Int/Float/Bool/Date.
   #
-  # Wire form (1.0+, per TODO.refactor/1.0-design):
+  # Wire form (1.0+, per 1.0 design review):
   #
   #   - key: "quorum"
   #     type: "integer"

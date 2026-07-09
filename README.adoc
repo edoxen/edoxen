@@ -54,17 +54,19 @@ collection.decisions.each do |decision|
   id = decision.identifier.first
   puts "#{id.prefix}/#{id.number}"
 
-  loc = decision.primary_localization
-  puts "  [#{loc.language_code}/#{loc.script}] #{loc.title}"
+  # Per-field Localized (ISO 24229): every translatable field is an
+  # array of { spelling, value } entries. Pick the one you want.
+  title = decision.title.find { |l| l.spelling == "eng" }&.value
+  puts "  [eng] #{title}"
 
-  loc.actions.each do |action|
-    puts "    - #{action.type}: #{action.message}"
+  fra = decision.title.find { |l| l.spelling == "fra" }&.value
+  puts "  [fra] #{fra}" if fra
+
+  decision.actions.each do |action|
+    msg = action.message.find { |l| l.spelling == "eng" }&.value
+    puts "    - #{action.type}: #{msg}"
   end
 end
-
-# Or look up a specific language explicitly:
-fra = decision.in_language("fra")
-puts "  FR: #{fra.title}" if fra
 
 # Round-trip back to YAML
 puts collection.to_yaml
@@ -121,7 +123,7 @@ runtime sync specs.
 ----
 DecisionCollection                        MeetingCollection
 ├── metadata: DecisionMetadata            ├── metadata: MeetingCollectionMetadata
-│   ├── title / title_localized[]         └── meetings: Meeting[]
+│   ├── title: LocalizedString[]          └── meetings: Meeting[]
 │   ├── date, source                          ├── identifier, urn, ordinal
 │   ├── source_urls[]                         ├── series_ref (→ MeetingSeries)
 │   ├── city (UN/LOCODE), country_code        ├── type, status, visibility
@@ -136,26 +138,31 @@ DecisionCollection                        MeetingCollection
     ├── brought_by_motions[]                   ├── hosts: HostRef[] (typed)
     ├── about_topics[]                         ├── source_urls[], landing_url, registration_url
     ├── made_in_component                      ├── agenda: Agenda (items, status)
-    └── localizations: Localization[1..*]      ├── components: MeetingComponent[]
-         ├── language_code, script             │    (track, session, debate, breakout, keynote,
-         ├── title, subject, message           │     opening, closing, break, reception, ...)
-         ├── considerations: Consideration[]   ├── deadlines: Deadline[]
-         ├── approvals: Approval[]             ├── attendance: Attendance[]
-         └── actions: Action[]                 │    (status, role, response, proxy_for)
-                                              ├── minutes: Minutes[]
-Motion                                        ├── motions: Motion[]
-├── identifier, urn                           │    (status: introduced → seconded → debating
-├── text, mover, seconders[]                  │     → question_put → voting → carried/negatived)
-├── status (MotionStatus)                     ├── votings: Voting[]
-├── introduced_at                             │    (status: called → in_progress → decided;
-├── proposed_decision, resulting_decision     │     voting_method, counts, casting_vote,
-└── votings[]                                 │     vote_records[])
-                                              ├── decisions: Decision[]  (inline)
-Voting                                        ├── localizations: MeetingLocalization[]
-├── status (VotingStatus)                     ├── relations: MeetingRelation[]
-├── voting_method (VotingMethod)              └── extensions: MeetingExtension[]
-├── result (VotingOutcome)
-├── counts: VotingCounts {ayes, noes,
+    ├── title: LocalizedString[]               ├── components: MeetingComponent[]
+    ├── subject: LocalizedString[]             │    (track, session, debate, breakout, keynote,
+    ├── message: LocalizedString[]             │     opening, closing, break, reception, ...)
+    ├── considering: LocalizedString[]         ├── deadlines: Deadline[]
+    ├── considerations: Consideration[]        ├── attendance: Attendance[]
+    │   └── message: LocalizedString[]         │    (status, role, response, proxy_for)
+    ├── approvals: Approval[]                  ├── minutes: Minutes[]
+    │   └── message: LocalizedString[]         ├── motions: Motion[]
+    └── actions: Action[]                      │    (status: introduced → seconded → debating
+         └── message: LocalizedString[]        │     → question_put → voting → carried/negatived)
+                                              ├── votings: Voting[]
+Motion                                        │    (status: called → in_progress → decided;
+├── identifier, urn                           │     voting_method, counts, casting_vote,
+├── text: LocalizedString[]                   │     vote_records[])
+├── mover, seconders[]                        ├── decisions: Decision[]  (inline)
+├── status (MotionStatus)                     ├── relations: MeetingRelation[]
+├── introduced_at                             └── extensions: MeetingExtension[]
+├── proposed_decision, resulting_decision
+└── votings[]
+                                              MeetingSeries (top-level standalone)
+Voting                                        ├── identifier, urn
+├── status (VotingStatus)                     ├── name: LocalizedString[]
+├── voting_method (VotingMethod)              ├── recurrence
+├── result (VotingOutcome)                    ├── meeting_refs[]
+├── counts: VotingCounts {ayes, noes,         └── extensions: MeetingExtension[]
 │                        abstentions, absent}
 ├── casting_vote: VoteRecord
 └── vote_records: VoteRecord[]
@@ -176,13 +183,41 @@ Adopters extend the generic core without modifying it.
 
 `ExtensionAttribute` is polymorphic on value type — consumers read the
 typed payload via `#typed_value` without re-parsing strings back into
-Int/Float/Bool/Date. The v2.0 bare `value: String` wire shape still
+Int/Float/Bool/Date. The pre-1.0 bare `value: String` wire shape still
 parses (routed into the string variant).
+
+=== Per-field multilingual (ISO 24229)
+
+Every translatable field is `Localized<String|Name>[0..*]` — an array
+with one entry per ISO 24229 *spelling* code. There is no separate
+`Localization[]` collection; each field carries its own language tags
+inline.
+
+* `LocalizedString` — `{ spelling, value: String, extensions }`.
+* `LocalizedName` — `{ spelling, value: Name, extensions }`.
+* `spelling` accepts ISO 24229 *spelling-system codes*
+  (`{lang}-{script}[-{country}][-{extension}]`, e.g. `zho-Hans`,
+  `ind-Latn-pre1972`) AND *conversion-system codes*
+  (`{authority}:{source-spelling}:{target-spelling}:{identifying}`,
+  e.g. `acadsin:zho-Hani:Latn:2002`, `UN:ara-Arab:Latn:2017`).
+
+Always verbose — single-language data uses the same
+`[{ spelling, value }]` shape as multi-language data. This lets a
+single field capture both native-script content and its romanized /
+transliterated forms.
+
+Look up an entry by spelling with plain Ruby:
+
+[source,ruby]
+----
+decision.title.find { |l| l.spelling == "eng" }&.value
+decision.title.find { |l| l.spelling == "acadsin:zho-Hani:Latn:2002" }&.value
+----
 
 === Polymorphic Venue
 
 A `Venue` is one flat class on the wire; the `kind` field discriminates
-physical vs virtual and validators enforce that fields match `kind`.
+physical vs virtual.
 
 * Physical: UN/LOCODE + IATA + address + geo-coordinates.
 * Virtual: URI + iCalendar-style features + access details.
@@ -190,51 +225,25 @@ physical vs virtual and validators enforce that fields match `kind`.
 A meeting can have multiple venues of either kind (hybrid meetings,
 multi-room conferences bridged by video, etc.). UN/LOCODE and IATA codes
 are validated against the canonical `unlocodes` and `iata` gems by
-`Edoxen::VenueValidator`.
+`Edoxen::VenueValidator` (pure validation via `valid?`; call
+`populate_from_registry!` separately if you want city/country_code
+back-filled from the UN/LOCODE entry).
 
-=== Lookup accessors
-
-Direct iteration over `localizations[]` is discouraged — the
-language-preference policy lives behind two accessors:
-
-* `Decision#in_language(code, fallback: false)` — exact match by
-  ISO 639-3 code, or `nil` (or the first declared localization when
-  `fallback: true`).
-* `Decision#primary_localization` — English when available, else
-  the first declared localization.
-
-The same pair exists on `Meeting` (`MeetingLocalization`).
+=== Meeting helpers
 
 [source,ruby]
 ----
-decision.in_language("fra")           # => Localization or nil
-decision.in_language("deu", fallback: true)
-decision.primary_localization         # English-or-first
-
 meeting.chair                          # => Person (via officers + role)
-meeting.secretary                      # => Person
 meeting.officers_with_role(:treasurer) # => [Officer]
-meeting.hybrid?                        # true if both physical + virtual venues
-meeting.physical_only? / meeting.virtual_only?
-
-validator = Edoxen::VenueValidator.new(venue)
-validator.valid?                       # checks UN/LOCODE + IATA against the gems
-validator.validate(auto_populate: true) # also fills city/country_code from UN/LOCODE
 ----
 
-== Multilingual by default
+`OfficersHost` is mixed into `Meeting` and `MeetingComponent`; both
+expose `chair` (the first officer with `role: "chair"`) and
+`officers_with_role(role)`.
 
-Per-language content lives inside `localizations[]` siblings — one
-entry per language. Admin fields (`identifier`, `doi`, `urn`, `dates`,
-`meeting`) are declared once on the parent; translatable content
-(`title`, `subject`, `considerations`, `actions`, `approvals`) lives
-inside each `Localization`.
+== Multilingual example
 
-This pattern — borrowed from the
-https://github.com/glossarist/concept-model[glossarist] project — lets
-translators work on each language in isolation while comparing them
-side-by-side in the same file. Drift shows up on git diff, not on a
-translator's spreadsheet.
+A bilingual CIML decision in EN + FR, modelled with per-field Localized:
 
 [source,yaml]
 ----
@@ -249,29 +258,28 @@ decisions:
     dates:
       - date: 2025-10-13
         type: adoption
-    localizations:
-      - language_code: eng
-        script: Latn
-        title: Decision on the renewal of the contract of Mr Anthony Donnellan
-        subject: CIML
-        actions:
-          - type: decides
-            date_effective:
-              date: 2025-10-13
-              type: adoption
-            message: |
+    title:
+      - spelling: eng
+        value: Decision on the renewal of the contract of Mr Anthony Donnellan
+      - spelling: fra
+        value: Décision sur le renouvellement du contrat de M. Anthony Donnellan
+    subject:
+      - spelling: eng
+        value: CIML
+      - spelling: fra
+        value: CIML
+    actions:
+      - type: decides
+        date_effective:
+          date: 2025-10-13
+          type: adoption
+        message:
+          - spelling: eng
+            value: |
               The Committee decides to renew the contract of
               Mr Anthony Donnellan as BIML Director.
-      - language_code: fra
-        script: Latn
-        title: Décision sur le renouvellement du contrat de M. Anthony Donnellan
-        subject: CIML
-        actions:
-          - type: decides
-            date_effective:
-              date: 2025-10-13
-              type: adoption
-            message: |
+          - spelling: fra
+            value: |
               Le Comité décide de renouveler le contrat de
               M. Anthony Donnellan en tant que Directeur du BIML.
 ----
@@ -304,7 +312,8 @@ Either `--output DIR` or `--inplace` is required (mutually exclusive).
 
 === `validate-meetings` / `normalize-meetings`
 
-Same shape, for Meeting/Agenda YAML against `schema/meeting.yaml`.
+Same shape, for Meeting / MeetingCollection / MeetingSeries YAML against
+`schema/meeting.yaml`.
 
 [source,sh]
 ----
@@ -312,8 +321,8 @@ $ edoxen validate-meetings "spec/fixtures/meetings/*.yaml"
 $ edoxen normalize-meetings "spec/fixtures/meetings/*.yaml" --output clean/
 ----
 
-The schema's root is `oneOf` — both single-Meeting and MeetingCollection
-shapes are accepted.
+The schema's root is `oneOf` — single `Meeting`, `MeetingCollection`,
+and `MeetingSeries` are all accepted.
 
 === `check-links DIRECTORY` — cross-document URN audit
 
@@ -367,7 +376,7 @@ it. `MeetingExtension` carries three identity fields plus a typed
   elsewhere.
 * `attributes[]` — typed key/value pairs (`ExtensionAttribute`).
 
-`ExtensionAttribute` is polymorphic on value type (v2.1+). Set `type`
+`ExtensionAttribute` is polymorphic on value type. Set `type`
 to one of `string | integer | float | boolean | date | datetime` and
 populate the matching value field:
 
@@ -407,7 +416,7 @@ attr.integer_value   # => 7
 attr.typed_value     # => 7
 ----
 
-The v2.0 bare `value: String` wire shape still parses (routed into
+The pre-1.0 bare `value: String` wire shape still parses (routed into
 the string variant; `type` defaults to `string`).
 
 Consumers ignore profile extensions they don't understand. See
@@ -431,7 +440,7 @@ HK LegCo profile example] for a real-world reference.
 * `lib/edoxen/error.rb` defines the unified `Edoxen::ValidationError`
   — produced by both `SchemaValidator` (with `source: :schema` or
   `:syntax`) and by model parse rescues in the CLI (with `source:
-  :model`).
+  `:model`).
 * `lib/edoxen/schema_validator.rb` is intentionally small: two
   validate methods, a `LineMap` module for line-accurate error
   reporting (longest-prefix match — no path-shape hardcoding), and
@@ -442,24 +451,32 @@ HK LegCo profile example] for a real-world reference.
   `unlocode`, `iata`) that delegate their shared scaffolding to the deep
   `Edoxen::Cli::Batch` module.
 * `lib/edoxen/venue_validator.rb` validates polymorphic `Venue`
-  instances using the `unlocodes` and `iata` gems; optionally
-  auto-populates `city` and `country_code` from the UN/LOCODE registry.
+  instances against the `unlocodes` and `iata` gems. `valid?` is pure;
+  `populate_from_registry!` is a separate, explicitly-mutating method
+  for callers that want UN/LOCODE → city/country_code back-fill.
 
 === Schema ↔ Ruby invariants
 
-Two pairs of runtime specs guard each side of the schema ↔ Ruby
-boundary:
+Four pairs of runtime specs guard the schema ↔ Ruby boundary:
 
 * Decision side: `schema_enum_sync_spec.rb` +
   `schema_model_sync_spec.rb` against `schema/edoxen.yaml`.
 * Meeting side: `schema_meeting_enum_sync_spec.rb` +
   `schema_meeting_model_sync_spec.rb` against `schema/meeting.yaml`.
+* Canonical sync: `schema_model_canonical_sync_spec.rb` asserts the
+  gem schemas byte-match `../edoxen-model/schema/{decision-collection,
+  meeting}.yaml`.
+* Lutaml sync: `lutaml_ruby_sync_spec.rb` walks every `*.lutaml`
+  class and enum and asserts attribute names + collection flags match
+  the Ruby side.
 
 Drift fails CI immediately, not at fixture-validation time.
 
-== Migrating from v0.x (Resolution → Decision)
+== Migrating from pre-1.0 (Resolution → Decision)
 
-v2.0 is a breaking release. The migration is mechanical:
+Edoxen Model 1.0 is the first public release; the intermediate `v0.x` /
+`v2.x` history never shipped publicly. The migration from a pre-1.0
+shape is mechanical:
 
 [cols="1,3"]
 |===
@@ -477,14 +494,23 @@ v2.0 is a breaking release. The migration is mechanical:
 | `Meeting.virtual: Boolean`
 | `Meeting.venues: Venue[]` (polymorphic)
 
-| `Meeting.chair` / `Meeting.secretary`
-| `Meeting.officers: Officer[]` (role discriminates)
+| `Meeting.chair` / `Meeting.secretary` (direct)
+| `Meeting.officers: Officer[]` (role discriminates); `Meeting#chair`
+  accessor via `OfficersHost`
 
 | `Meeting.schedule[]` (ScheduleItem)
 | `Meeting.components: MeetingComponent[]` (flat)
 
 | `Resolution` alone
 | `Decision` + `Motion` + `Voting` (procedural core)
+
+| `localizations: Localization[1..*]` per entity
+| Per-field `Localized<String|Name>[0..*]` (ISO 24229); each
+  translatable field carries its own spelling tag inline.
+
+| `decision.in_language(code)` / `decision.primary_localization`
+| `decision.title.find { |l| l.spelling == code }` — direct array
+  lookup, no wrapper.
 
 | (none)
 | `Topic` + `TopicDocument` + `TopicAsset`
@@ -495,10 +521,10 @@ v2.0 is a breaking release. The migration is mechanical:
 | (none)
 | `MeetingExtension` (profile mechanism, ISO 8601-2 §15)
 
-|===
+| (none)
+| `ContactCollection`, `VenueCollection` (scoped-URN registries)
 
-See the https://github.com/edoxen/edoxen.github.io/blob/main/docs/migration-v2.md[migration
-guide] for full details.
+|===
 
 == Contributing
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Edoxen
-  # EntityRef — a typed cross-reference between entities (1.0, TODO.refactor/1.0-design).
+  # EntityRef — a typed cross-reference between entities (1.0, 1.0 design review).
   #
   # Single identity: exactly one of `urn`, `identifier`, or `local_ref`
   # must be set. Optional metadata: `kind`, `role`, `note`.
@@ -24,7 +24,7 @@ module Edoxen
     attribute :note, :string
 
     # True when exactly one identity field is set. The wire contract
-    # (TODO.refactor/1.0-design + JSON-Schema) is XOR: setting 0 or ≥2 identity
+    # (1.0 design review + JSON-Schema) is XOR: setting 0 or ≥2 identity
     # fields is a data error.
     def valid?
       identities_set.size == 1

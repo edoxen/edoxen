@@ -119,7 +119,9 @@ RSpec.describe "LutaML <-> Ruby sync" do
   pending "edoxen-model repo not found at #{MODELS_DIR}; skipping LutaML sync" if LUTAML_FILES.empty?
 
   it "found at least one lutaml file (sanity check)" do
-    skip "edoxen-model repo not found at #{MODELS_DIR}; CI must checkout edoxen-model as a sibling" if LUTAML_FILES.empty?
+    if LUTAML_FILES.empty?
+      skip "edoxen-model repo not found at #{MODELS_DIR}; CI must checkout edoxen-model as a sibling"
+    end
     expect(LUTAML_FILES).not_to be_empty, "expected models/*.lutaml to be non-empty"
   end
 

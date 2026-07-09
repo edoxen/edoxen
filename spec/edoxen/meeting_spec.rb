@@ -39,7 +39,10 @@ RSpec.describe Edoxen::Meeting do
                                                    "name" => [{ "spelling" => "eng", "value" => "OIML HQ" }],
                                                    "lat" => 48.87, "lon" => 2.34 }],
                                     "officers" => [{ "role" => "chair",
-                                                     "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Roman Schwartz" } }] } }],
+                                                     "person" => {
+                                                       "name" => [{ "spelling" => "eng",
+                                                                    "value" => { "formatted" => "Roman Schwartz" } }]
+                                                     } }],
                                     "agenda" => {
                                       "status" => "final",
                                       "items" => [{ "label" => "1", "kind" => "opening" }]
@@ -63,6 +66,10 @@ RSpec.describe Edoxen::Meeting do
   describe "real-world fixtures round-trip" do
     Dir.glob(File.expand_path("../fixtures/meetings/*.yaml", __dir__)).each do |f|
       next if File.basename(f) == "multi-collection.yaml"
+      # ciml-series.yaml is a top-level MeetingSeries, not a Meeting —
+      # the canonical meeting.yaml oneOf accepts both, but this spec
+      # exercises the Meeting class specifically.
+      next if File.basename(f) == "ciml-series.yaml"
 
       it "round-trips #{File.basename(f)} as a Meeting" do
         m = described_class.from_yaml(File.read(f))

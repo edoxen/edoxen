@@ -21,7 +21,7 @@ module Edoxen
     attribute :decisions, :string, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    # --- 1.0 derivation accessor (TODO.refactor/1.0-design) --------------------
+    # --- 1.0 derivation accessor (1.0 design review) --------------------
     # Returns the Decisions in `collection` whose `about_topics` includes
     # this Topic's URN.
     #

@@ -28,7 +28,7 @@ RSpec.describe Edoxen::MeetingExtension do
     expect(ext.attributes.map(&:key)).to eq(%w[wg_name draft_name])
   end
 
-  # 1.0 tighten (TODO.refactor/1.0-design): the recursive `extensions[]` slot
+  # 1.0 tighten (1.0 design review): the recursive `extensions[]` slot
   # was removed. Profiles needing nesting use dotted keys in
   # `attributes[]` instead.
   it "no longer exposes the recursive `extensions[]` slot" do

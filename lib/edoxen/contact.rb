@@ -31,24 +31,5 @@ module Edoxen
     def reference?
       !ref.nil? && !ref.to_s.empty?
     end
-
-    # Convenience: returns the LocalizedName value for a given spelling,
-    # or the first one if no match. Returns a Name object (or nil).
-    def name_in(spelling, fallback: true)
-      entry = name&.find { |n| n.spelling == spelling.to_s }
-      entry ||= name&.first if fallback
-      entry&.value
-    end
-
-    # Convenience: returns the LocalizedString value for a given field
-    # and spelling. Used internally by per-field helpers.
-    def localized_value(field, spelling, fallback: true)
-      list = public_send(field)
-      return nil if list.nil? || list.empty?
-
-      entry = list.find { |l| l.spelling == spelling.to_s }
-      entry ||= list.first if fallback
-      entry&.value
-    end
   end
 end

@@ -93,9 +93,9 @@ RSpec.describe Edoxen::Cli do
         "contacts" => [{ "urn" => "urn:edoxen:contact:test:a",
                          "kind" => "person",
                          "name" => [{ "spelling" => "eng",
-                                       "value" => { "formatted" => "A" } }] }]
+                                      "value" => { "formatted" => "A" } }] }]
       )
-      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.decision_kind(YAML.safe_load(content))
       expect(loaded).to eq(:contacts)
     end
 
@@ -105,7 +105,7 @@ RSpec.describe Edoxen::Cli do
         "venues" => [{ "urn" => "urn:edoxen:venue:test:a",
                        "kind" => "physical" }]
       )
-      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.decision_kind(YAML.safe_load(content))
       expect(loaded).to eq(:venues)
     end
 
@@ -114,7 +114,7 @@ RSpec.describe Edoxen::Cli do
         "metadata" => { "title" => [{ "spelling" => "eng", "value" => "X" }] },
         "decisions" => []
       )
-      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.decision_kind(YAML.safe_load(content))
       expect(loaded).to eq(:decisions)
     end
   end

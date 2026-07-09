@@ -78,7 +78,7 @@ RSpec.describe "edoxen CLI meeting subcommands" do
             "type" => "plenary" }
         ]
       )
-      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.meetings_kind(YAML.safe_load(content))
       expect(loaded).to eq(:collection)
     end
 
@@ -87,7 +87,7 @@ RSpec.describe "edoxen CLI meeting subcommands" do
         "identifier" => [{ "prefix" => "CIML", "number" => "series" }],
         "meeting_refs" => ["urn:x:m:1"]
       )
-      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.meetings_kind(YAML.safe_load(content))
       expect(loaded).to eq(:series)
     end
 
@@ -96,7 +96,7 @@ RSpec.describe "edoxen CLI meeting subcommands" do
         "identifier" => [{ "prefix" => "CIML", "number" => "series" }],
         "recurrence" => { "freq" => "yearly" }
       )
-      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.meetings_kind(YAML.safe_load(content))
       expect(loaded).to eq(:series)
     end
 
@@ -105,7 +105,7 @@ RSpec.describe "edoxen CLI meeting subcommands" do
         "identifier" => [{ "prefix" => "X", "number" => "1" }],
         "type" => "plenary"
       )
-      loaded = Edoxen::Cli.meetings_kind(YAML.safe_load(content))
+      loaded = Edoxen::Cli::Batch.meetings_kind(YAML.safe_load(content))
       expect(loaded).to eq(:meeting)
     end
   end

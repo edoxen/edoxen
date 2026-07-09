@@ -21,7 +21,7 @@ module Edoxen
     attribute :introduced_at, :date_time
     attribute :proposed_decision, :string
     attribute :resulting_decision, :string
-    # Pilot EntityRef field (1.0, TODO.refactor/1.0-design). Parallel to
+    # Pilot EntityRef field (1.0, 1.0 design review). Parallel to
     # `resulting_decision` (String). Prefer the typed form in new code;
     # the bare String form is removed in 1.0.
     attribute :resulting_decision_ref, EntityRef
@@ -36,7 +36,7 @@ module Edoxen
       status && !Enums::MOTION_TERMINAL.include?(status)
     end
 
-    # --- 1.0 derivation accessor (TODO.refactor/1.0-design) --------------------
+    # --- 1.0 derivation accessor (1.0 design review) --------------------
     # Storage side: Voting.on_motion (SSOT for the Motion→Voting
     # relationship). This computed method returns the Voting instances
     # in `meeting` whose `on_motion` points at this Motion's URN.

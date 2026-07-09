@@ -70,12 +70,6 @@ module Edoxen
       Edoxen::ReferenceData.find_iata(iata_code)
     end
 
-    def name_in(spelling, fallback: true)
-      entry = name&.find { |n| n.spelling == spelling.to_s }
-      entry ||= name&.first if fallback
-      entry&.value
-    end
-
     def features_list
       return "" if features.nil? || features.empty?
 

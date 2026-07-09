@@ -122,7 +122,7 @@ module Edoxen
       opening closing break reception registration networking other
     ].freeze
 
-    # ComponentKindCanonical — the short abstract set (1.0, TODO.refactor/1.0-design).
+    # ComponentKindCanonical — the short abstract set (1.0, 1.0 design review).
     # `other` is a temporary escape while the vocabulary stabilises.
     #
     # Cap: 5 canonical values.

@@ -5,7 +5,8 @@ require "spec_helper"
 RSpec.describe Edoxen::Decision do
   it_behaves_like "extension host",
                   factory: { "identifier" => [{ "prefix" => "X", "number" => "1" }],
-                             "localizations" => [{ "language_code" => "eng", "title" => [{ "spelling" => "eng", "value" => "T" }] }] }
+                             "localizations" => [{ "language_code" => "eng",
+                                                   "title" => [{ "spelling" => "eng", "value" => "T" }] }] }
 
   describe "language-agnostic admin fields (LUTAML canonical)" do
     it "carries identifier as a collection of StructuredIdentifier" do

@@ -37,14 +37,34 @@ module Edoxen
         "meetings", "meeting.yaml",
         lambda do |content|
           data = YAML.safe_load(content, permitted_classes: [Date, Time])
-          if data.is_a?(Hash) && data.key?("meetings")
-            MeetingCollection.from_yaml(content)
-          else
-            Meeting.from_yaml(content)
+          case meetings_kind(data)
+          when :collection then MeetingCollection.from_yaml(content)
+          when :series     then MeetingSeries.from_yaml(content)
+          else                  Meeting.from_yaml(content)
           end
         end
       )
     }.freeze
+
+    # Discriminate the three top-level shapes the canonical
+    # `schema/meeting.yaml` accepts via `oneOf`:
+    #
+    #   * :collection — `{ meetings: [...] }`
+    #   * :series     — `{ identifier: [...], meeting_refs: [...] }`
+    #                   (or any hash with `identifier` + `recurrence`)
+    #   * :meeting    — anything else (single Meeting).
+    #
+    # Sniffing by structure (not by parsing) lets the loader pick the
+    # correct class without a try/parse loop.
+    def self.meetings_kind(data)
+      return :meeting unless data.is_a?(Hash)
+
+      return :collection if data["meetings"].is_a?(Array)
+      return :series if data["identifier"].is_a?(Array) &&
+                        (data.key?("meeting_refs") || data.key?("recurrence"))
+
+      :meeting
+    end
 
     # Deep module behind the per-command interface. Owns the
     # expand/sort/empty/header/loop/tally/summary/exit scaffold so

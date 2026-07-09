@@ -70,4 +70,37 @@ RSpec.describe "Schema <-> Ruby enum sync" do
       expect(SCHEMA_ENUM_BINDINGS).to have_key(enum_name)
     end
   end
+
+  describe "intentionally permissive enums (schema open, Ruby closed)" do
+    # `ActionType` and `ConsiderationType` are deliberately permissive
+    # on the schema side (`type: string`, no `enum:` array) so adopters
+    # can use body-specific verbs ("scopes", "directs", "establishes")
+    # outside the canonical advisory set. The Ruby model closes them
+    # with `values: Enums::ACTION_TYPE` / `CONSIDERATION_TYPE` so
+    # canonical-set consumers see drift immediately at construction
+    # time. This spec pins both halves of the asymmetry so neither
+    # side silently regresses.
+
+    %w[ActionType ConsiderationType].each do |enum_name|
+      it "$defs/#{enum_name} is type:string with NO enum: array" do
+        entry = defs.fetch(enum_name)
+        expect(entry["type"]).to eq("string")
+        expect(entry).not_to have_key("enum"),
+                             "$defs/#{enum_name} gained an `enum:` array — " \
+                             "this closes the permissive contract that lets " \
+                             "adopters use body-specific verbs. If the closure " \
+                             "is intentional, update this spec and the README."
+      end
+    end
+
+    it "Edoxen::Action#type carries values: Enums::ACTION_TYPE" do
+      attr = Edoxen::Action.attributes[:type]
+      expect(attr.options[:values]).to eq(Edoxen::Enums::ACTION_TYPE)
+    end
+
+    it "Edoxen::Consideration#type carries values: Enums::CONSIDERATION_TYPE" do
+      attr = Edoxen::Consideration.attributes[:type]
+      expect(attr.options[:values]).to eq(Edoxen::Enums::CONSIDERATION_TYPE)
+    end
+  end
 end

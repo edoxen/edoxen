@@ -9,7 +9,7 @@ module Edoxen
   # The SchemaValidator is intentionally small and only owns one concern:
   # JSON-Schema validation with line-accurate error reporting. It does not
   # touch the Ruby model — CLI layers SchemaValidator and
-  # `ResolutionCollection.from_yaml` to catch both schema-level violations
+  # `DecisionCollection.from_yaml` to catch both schema-level violations
   # (additionalProperties, required, enum) and structural issues
   # (numeric/date coercion, missing nested classes) the schema can't express.
   #

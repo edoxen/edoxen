@@ -43,10 +43,6 @@ module Edoxen
       UAIEV USMIA USNYC USORL VNSGN ZACPT
     ].freeze
 
-    # @deprecated Use {UNLOCODES}. Retained for one release to ease
-    # migration; will be removed in the next minor.
-    CITY_CODES = UNLOCODES
-
     # Memoise the registries so we don't re-parse the bundled datasets on
     # every lookup. Each gem's Registry is immutable after construction.
     @unlocodes_registry = nil

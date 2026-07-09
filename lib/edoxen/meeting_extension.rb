@@ -6,7 +6,7 @@ module Edoxen
   # Adopters register their own profile namespace (e.g. "legco",
   # "us-congress", "ietf") and define `kind` values within it.
   #
-  # Field semantics (tightened 1.0, per TODO.refactor/1.0-design):
+  # Field semantics (tightened 1.0, per 1.0 design review):
   #
   #   profile    — the profile namespace (lowercase, hyphen-separated).
   #   kind       — discriminator within the profile.

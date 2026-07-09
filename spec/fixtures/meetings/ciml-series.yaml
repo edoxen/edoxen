@@ -1,0 +1,16 @@
+---
+# MeetingSeries fixture — top-level series document (canonical 1.0).
+identifier:
+  - prefix: CIML
+    number: series
+urn: urn:oiml:ciml:meeting-series:ciml
+body_type: CIML Meeting Series
+name:
+  - spelling: eng
+    value: CIML Meeting Series
+recurrence:
+  freq: yearly
+  interval: 1
+meeting_refs:
+  - urn:oiml:ciml:meeting:ciml-55
+  - urn:oiml:ciml:meeting:ciml-56

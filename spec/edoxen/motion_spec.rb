@@ -20,7 +20,8 @@ RSpec.describe Edoxen::Motion do
       "urn" => "urn:x:motion:1",
       "text" => [{ "spelling" => "eng", "value" => "I move that we adjourn" }],
       "mover" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
-      "seconders" => [{ "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Sara" } }] }, { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Bob" } }] }],
+      "seconders" => [{ "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Sara" } }] },
+                      { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Bob" } }] }],
       "status" => "seconded",
       "introduced_at" => "2026-03-15T10:30:00Z"
     }

@@ -1,5 +1,5 @@
 ---
-# Minimal Meeting fixture — v3.0 per-field Localized shape.
+# Minimal Meeting fixture — Edoxen Model 1.0 per-field Localized shape.
 identifier:
   - prefix: TEST
     number: "1"

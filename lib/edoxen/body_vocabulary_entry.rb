@@ -2,7 +2,7 @@
 
 module Edoxen
   # BodyVocabularyEntry — one entry in a per-dataset body_vocabulary
-  # list (1.0, TODO.refactor/1.0-design).
+  # list (1.0, 1.0 design review).
   #
   # Maps a free-form `body_type` (e.g. "CIML Meeting", "Plenary") to a
   # short canonical value (e.g. "plenary"). Bodies declare their

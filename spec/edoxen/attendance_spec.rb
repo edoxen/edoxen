@@ -4,7 +4,8 @@ require "spec_helper"
 
 RSpec.describe Edoxen::Attendance do
   it_behaves_like "extension host",
-                  factory: { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] }, "status" => "present" }
+                  factory: { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] },
+                             "status" => "present" }
 
   describe "LUTAML ParticipationStatus coverage" do
     Edoxen::Enums::PARTICIPATION_STATUS.each do |status|
@@ -35,7 +36,8 @@ RSpec.describe Edoxen::Attendance do
 
   it "round-trips through YAML" do
     payload = {
-      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }], "affiliation" => [{ "spelling" => "eng", "value" => "ISO" }] },
+      "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }],
+                    "affiliation" => [{ "spelling" => "eng", "value" => "ISO" }] },
       "status" => "present",
       "notes" => "Arrived late"
     }

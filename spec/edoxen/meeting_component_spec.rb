@@ -13,7 +13,8 @@ RSpec.describe Edoxen::MeetingComponent do
       "starts_at" => "2026-03-15T09:00:00Z",
       "ends_at" => "2026-03-15T12:00:00Z",
       "venue_refs" => ["urn:x:venue:1"],
-      "officers" => [{ "role" => "chair", "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] } }],
+      "officers" => [{ "role" => "chair",
+                       "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "Jane" } }] } }],
       "agenda_ref" => "urn:x:agenda:1",
       "minutes_ref" => "urn:x:minutes:1",
       "attendance_refs" => ["urn:x:attendance:1"]

@@ -34,13 +34,7 @@ module Edoxen
     attribute :actions, Action, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
-    def title_in(spelling, fallback: true)
-      entry = title&.find { |l| l.spelling == spelling.to_s }
-      entry ||= title&.first if fallback
-      entry&.value
-    end
-
-    # --- 1.0 derivation accessors (TODO.refactor/1.0-design) -------------------
+    # --- 1.0 derivation accessors (1.0 design review) -------------------
 
     def brought_by_motions_in(meeting:)
       return [] unless meeting && urn

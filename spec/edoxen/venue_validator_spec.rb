@@ -20,14 +20,42 @@ RSpec.describe Edoxen::VenueValidator do
       expect(validator.errors).to include("Unknown UN/LOCODE: ZZZZZ")
     end
 
-    it "auto-populates city and country_code when asked" do
+    it "auto-populates city and country_code via populate_from_registry!" do
       entry = Struct.new(:code, :name, :country).new("FRPAR", "Paris", "FR")
       allow(Edoxen::ReferenceData).to receive(:find_unlocode).with("FRPAR").and_return(entry)
       venue = Edoxen::PhysicalVenue.new(unlocode: "FRPAR")
       validator = described_class.new(venue)
-      validator.validate(auto_populate: true)
+      validator.populate_from_registry!
       expect(venue.city).to eq("Paris")
       expect(venue.country_code).to eq("FR")
+    end
+
+    it "does not mutate the venue when only calling valid?" do
+      entry = Struct.new(:code, :name, :country).new("FRPAR", "Paris", "FR")
+      allow(Edoxen::ReferenceData).to receive(:find_unlocode).with("FRPAR").and_return(entry)
+      venue = Edoxen::PhysicalVenue.new(unlocode: "FRPAR")
+      described_class.new(venue).valid?
+      expect(venue.city).to be_nil
+      expect(venue.country_code).to be_nil
+    end
+
+    it "raises on populate_from_registry! when unlocode is unknown" do
+      allow(Edoxen::ReferenceData).to receive(:find_unlocode).with("ZZZZZ").and_return(nil)
+      venue = Edoxen::PhysicalVenue.new(unlocode: "ZZZZZ")
+      expect { described_class.new(venue).populate_from_registry! }
+        .to raise_error(KeyError, %r{Unknown UN/LOCODE: ZZZZZ})
+    end
+
+    it "raises on populate_from_registry! when unlocode is missing" do
+      venue = Edoxen::PhysicalVenue.new
+      expect { described_class.new(venue).populate_from_registry! }
+        .to raise_error(KeyError, /requires unlocode/)
+    end
+
+    it "raises on populate_from_registry! for a virtual venue" do
+      venue = Edoxen::VirtualVenue.new(uri: "https://zoom.us/j/1")
+      expect { described_class.new(venue).populate_from_registry! }
+        .to raise_error(KeyError, /requires kind: physical/)
     end
 
     it "validates IATA code" do

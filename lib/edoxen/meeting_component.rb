@@ -33,11 +33,5 @@ module Edoxen
 
       ends_at.to_time - starts_at.to_time
     end
-
-    def title_in(spelling, fallback: true)
-      entry = title&.find { |l| l.spelling == spelling.to_s }
-      entry ||= title&.first if fallback
-      entry&.value
-    end
   end
 end

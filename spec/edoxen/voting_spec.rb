@@ -30,7 +30,8 @@ RSpec.describe Edoxen::Voting do
         "vote" => "affirmative"
       },
       "vote_records" => [
-        { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "A" } }] }, "vote" => "affirmative" },
+        { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "A" } }] },
+          "vote" => "affirmative" },
         { "person" => { "name" => [{ "spelling" => "eng", "value" => { "formatted" => "B" } }] }, "vote" => "negative" }
       ]
     }

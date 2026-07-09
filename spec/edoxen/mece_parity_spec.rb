@@ -2,17 +2,17 @@
 
 require "spec_helper"
 
-# MECE parity spec for the 1.0 (TODO.refactor/1.0-design) bidirectional
+# MECE parity spec for the 1.0 (1.0 design review) bidirectional
 # relationships. Through v2.x, each pair is stored on one side and
 # derived on the other. This spec guards the 1.0 removal of the
 # stored side: if the derived lookup ever disagrees with the stored
 # side (given the SSOT direction documented in Decision/Motion/Topic),
 # this spec catches it.
 #
-# Per TODO.refactor/1.0-design: the derived side wins for queries. The stored
+# Per 1.0 design review: the derived side wins for queries. The stored
 # side is the SSOT for writes (in v2.x).
 
-RSpec.describe "MECE parity (1.0 TODO.refactor/1.0-design)" do
+RSpec.describe "MECE parity (1.0 1.0 design review)" do
   describe "Motion → Decision (storage SSOT: Motion.resulting_decision[_ref])" do
     let(:meeting) do
       Edoxen::Meeting.new(

@@ -29,3 +29,12 @@ Metrics/ModuleLength:
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*.rb"
+
+# `Edoxen::Cli` is a thin Thor subclass: six `desc` blocks delegating
+# to `Edoxen::Cli::Batch` (the deep module that owns expand/run/summary
+# and the per-profile shape sniffers). Per-command bodies are 1–3 lines;
+# the line count is the natural cost of the command surface, not a sign
+# of god-class drift.
+Metrics/ClassLength:
+  Exclude:
+    - "lib/edoxen/cli.rb"

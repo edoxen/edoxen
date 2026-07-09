@@ -122,6 +122,8 @@ RSpec.describe Edoxen::Decision do
 
   describe "real-world fixtures round-trip" do
     Dir.glob(File.expand_path("../fixtures/*.yaml", __dir__)).each do |fixture|
+      next if %w[contacts.yaml venues.yaml].include?(File.basename(fixture))
+
       it "round-trips #{File.basename(fixture)}" do
         collection = Edoxen::DecisionCollection.from_yaml(File.read(fixture))
         reloaded = Edoxen::DecisionCollection.from_yaml(collection.to_yaml)

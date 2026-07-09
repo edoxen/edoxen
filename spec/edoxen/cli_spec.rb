@@ -51,6 +51,18 @@ RSpec.describe Edoxen::Cli do
       expect(stdout).to include("✅ VALID")
     end
 
+    it "validates a ContactCollection fixture via the decision-side oneOf" do
+      stdout, _stderr, status = run_cli("validate", "#{fixtures_dir}/contacts.yaml")
+      expect(status.exitstatus).to eq(0)
+      expect(stdout).to include("VALID")
+    end
+
+    it "validates a VenueCollection fixture via the decision-side oneOf" do
+      stdout, _stderr, status = run_cli("validate", "#{fixtures_dir}/venues.yaml")
+      expect(status.exitstatus).to eq(0)
+      expect(stdout).to include("VALID")
+    end
+
     it "exits non-zero on a glob pattern that matches no file" do
       stdout, stderr, status = run_cli("validate", "no-such-file-*.yaml")
       expect(status.exitstatus).not_to eq(0)
@@ -61,21 +73,49 @@ RSpec.describe Edoxen::Cli do
       bad = File.join(tmp_dir, "bad.yaml")
       File.write(bad, <<~YAML)
         ---
-        metadata:
-          title: T
         decisions:
           - identifier:
               - prefix: X
                 number: "1"
-            localizations:
-              - language_code: not-three-letter
-                script: Latn
-                title: T
+            kind: not-a-valid-decision-kind
       YAML
       stdout, _stderr, status = run_cli("validate", bad)
       expect(status.exitstatus).not_to eq(0)
       expect(stdout).to include("INVALID")
       expect(stdout).to match(/pattern|not one of/i)
+    end
+  end
+
+  describe "decision loader shape detection" do
+    it "loads a ContactCollection via the :contacts key" do
+      content = YAML.dump(
+        "scope" => "test",
+        "contacts" => [{ "urn" => "urn:edoxen:contact:test:a",
+                         "kind" => "person",
+                         "name" => [{ "spelling" => "eng",
+                                       "value" => { "formatted" => "A" } }] }]
+      )
+      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:contacts)
+    end
+
+    it "loads a VenueCollection via the :venues key" do
+      content = YAML.dump(
+        "scope" => "test",
+        "venues" => [{ "urn" => "urn:edoxen:venue:test:a",
+                       "kind" => "physical" }]
+      )
+      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:venues)
+    end
+
+    it "falls back to :decisions for a DecisionCollection shape" do
+      content = YAML.dump(
+        "metadata" => { "title" => [{ "spelling" => "eng", "value" => "X" }] },
+        "decisions" => []
+      )
+      loaded = Edoxen::Cli.decision_kind(YAML.safe_load(content))
+      expect(loaded).to eq(:decisions)
     end
   end
 

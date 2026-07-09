@@ -1,0 +1,24 @@
+---
+# Minimal VenueCollection fixture — scoped-URN venue registry.
+scope: ciml
+title:
+  - spelling: eng
+    value: CIML Venues
+venues:
+  - urn: urn:edoxen:venue:ciml:salle-turgot
+    kind: physical
+    name:
+      - spelling: eng
+        value: BIML HQ, Salle Turgot
+    unlocode: FRPAR
+    country_code: FR
+  - urn: urn:edoxen:venue:ciml:zoom-main
+    kind: virtual
+    name:
+      - spelling: eng
+        value: Main Video Conference
+    uri: https://oiml.zoom.us/j/12345
+    features:
+      - audio
+      - video
+      - screen

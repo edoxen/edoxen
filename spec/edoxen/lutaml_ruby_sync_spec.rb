@@ -9,9 +9,8 @@ require "set"
 # Walks every `class` declaration in `edoxen-model/models/*.lutaml` and
 # asserts the matching `Edoxen::*` Ruby class declares the same attribute
 # names (camelCase lutaml ↔ snake_case Ruby), the same collection flags,
-# and (outside an explicit allowlist) the same types. Closes the
-# root-cause gap left by the 1.0 drift audit
-# (`edoxen-model/TODO.refactor/50-post-v2-gem-drift-closed.md`).
+# and the same types. Closes the root-cause gap left by the 1.0 drift
+# audit (`edoxen-model/TODO.refactor/50-post-v2-gem-drift-closed.md`).
 #
 # Skips:
 #   - Files with the `// Superseded by` marker (Location, ScheduleItem,
@@ -37,36 +36,6 @@ LUTAML_PRIMITIVE_RUBY = {
   "Date" => Lutaml::Model::Type::Date,
   "DateTime" => Lutaml::Model::Type::DateTime,
   "Time" => Lutaml::Model::Type::Time
-}.freeze
-
-# Known upstream LutaML drift: the gem follows the canonical schema
-# (which is the strict source of the wire shape), and the LutaML files
-# sometimes express a primitive type where the schema models a richer
-# structured type. Each entry pins the drift so it does not silently
-# regress further, and links the upstream fix that would remove it.
-#
-# Format: "#{Class}.#{attr_name}" => ["LutaML type", "reason"].
-LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST = {
-  "Action.dateEffective" => ["DateTime",
-                             "schema models DecisionDate ({date,type}); " \
-                             "upstream fix: update action.lutaml to " \
-                             "`dateEffective: DecisionDate`"],
-  "Consideration.dateEffective" => ["Date",
-                                    "schema models DecisionDate ({date,type}); " \
-                                    "upstream fix: update consideration.lutaml to " \
-                                    "`dateEffective: DecisionDate`"],
-  "Approval.date" => ["Date",
-                      "schema models DecisionDate ({date,type}); " \
-                      "upstream fix: update approval.lutaml to " \
-                      "`date: DecisionDate`"],
-  "DecisionMetadata.date" => ["DateTime",
-                              "schema declares format: date; " \
-                              "upstream fix: update decision_metadata.lutaml to " \
-                              "`date: Date`"],
-  "MeetingIdentifier.date" => ["DateTime",
-                               "schema declares format: date; " \
-                               "upstream fix: update meeting_identifier.lutaml to " \
-                               "`date: Date`"]
 }.freeze
 
 # Pre-compute (basename, source, lutaml_classes, superseded?) for every
@@ -205,7 +174,7 @@ RSpec.describe "LutaML <-> Ruby sync" do
           end
         end
 
-        it "has matching attribute types (with explicit allowlist for upstream drift)" do
+        it "has matching attribute types" do
           # Same inheritance walk as the name-sync example — subclass
           # attrs inherit from the parent on the LutaML side.
           lutaml_full_attrs = lutaml_class.attrs.dup
@@ -218,15 +187,6 @@ RSpec.describe "LutaML <-> Ruby sync" do
           lutaml_full_attrs.each do |attr|
             ruby_attr = ruby_class.attributes[attr.snake_name.to_sym]
             next unless ruby_attr
-
-            key = "#{lutaml_class.name}.#{attr.name}"
-            if LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST.key?(key)
-              expected_lutaml, reason = LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST[key]
-              expect(attr.type).to eq(expected_lutaml),
-                                   "Allowlist entry #{key} expected LutaML type #{expected_lutaml} " \
-                                   "but found #{attr.type.inspect}. (#{reason})"
-              next
-            end
 
             expected_ruby_type = expected_ruby_type_for(attr.type)
             # Enum-typed attributes are modelled as :string, values: X on
@@ -241,10 +201,7 @@ RSpec.describe "LutaML <-> Ruby sync" do
             expect(actual).to eq(expected_ruby_type),
                               "Attribute #{lutaml_class.name}.#{attr.name} type mismatch: " \
                               "LutaML #{attr.type.inspect} ↔ Ruby #{actual.inspect} " \
-                              "(file: #{parsed[:basename]}). " \
-                              "If this is an intentional schema-vs-LutaML drift, " \
-                              "add it to LUTAML_RUBY_TYPE_DRIFT_ALLOWLIST with the " \
-                              "upstream fix note."
+                              "(file: #{parsed[:basename]})."
           end
         end
       end

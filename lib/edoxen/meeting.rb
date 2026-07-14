@@ -23,7 +23,8 @@ module Edoxen
     attribute :body_type, :string
 
     attribute :title, LocalizedString, collection: true
-    attribute :date_range, DateRange
+    attribute :scheduled_date_range, DateRange
+    attribute :occurred_date_range, DateTimeRange
     attribute :recurrence, Recurrence
 
     attribute :venues, Venue, collection: true
@@ -50,6 +51,7 @@ module Edoxen
 
     attribute :attendance, Attendance, collection: true
     attribute :minutes, Minutes, collection: true
+    attribute :declarations, Declaration, collection: true
 
     # Outcomes (canonical location on Meeting)
     attribute :decisions, Decision, collection: true

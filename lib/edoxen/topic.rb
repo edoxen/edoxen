@@ -19,6 +19,8 @@ module Edoxen
     attribute :references, Reference, collection: true
     attribute :motions, :string, collection: true
     attribute :decisions, :string, collection: true
+    attribute :statements, Statement, collection: true
+    attribute :declarations, Declaration, collection: true
     attribute :extensions, MeetingExtension, collection: true
 
     # --- 1.0 derivation accessor (1.0 design review) --------------------

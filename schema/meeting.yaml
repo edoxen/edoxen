@@ -1,6 +1,6 @@
 ---
 "$schema": http://json-schema.org/draft-07/schema#
-"$id": https://github.com/edoxen/edoxen/schema/meeting.yaml
+"$id": https://github.com/edoxen/edoxen-model/schema/meeting.yaml
 title: Edoxen Meeting Schema
 description: |
   Schema for validating Edoxen Meeting/Agenda YAML files.
@@ -386,6 +386,16 @@ oneOf:
         type: array
         items:
           "$ref": "#/$defs/Reference"
+      statements:
+        type: array
+        items:
+          "$ref": "#/$defs/Statement"
+      topic_ref:
+        type: string
+        description: |
+          URN back-reference to the Topic this section records.
+          Optional; formalises the convention that
+          `MinutesSection#number` matches `AgendaItem#label`.
   Minutes:
     type: object
     description: |
@@ -585,6 +595,14 @@ oneOf:
         type: array
         items:
           type: string
+      statements:
+        type: array
+        items:
+          "$ref": "#/$defs/Statement"
+      declarations:
+        type: array
+        items:
+          "$ref": "#/$defs/Declaration"
       extensions:
         type: array
         items:
@@ -960,8 +978,10 @@ oneOf:
         type: array
         items:
           "$ref": "#/$defs/LocalizedString"
-      date_range:
+      scheduled_date_range:
         "$ref": "#/$defs/DateRange"
+      occurred_date_range:
+        "$ref": "#/$defs/DateTimeRange"
       recurrence:
         "$ref": "#/$defs/Recurrence"
       venues:
@@ -1026,6 +1046,10 @@ oneOf:
         type: array
         items:
           "$ref": "#/$defs/Minutes"
+      declarations:
+        type: array
+        items:
+          "$ref": "#/$defs/Declaration"
       decisions:
         type: array
         items:
@@ -1308,3 +1332,84 @@ oneOf:
     - weekly
     - monthly
     - yearly
+  DateTimeRange:
+    type: object
+    description: |
+      Start + end pair with sub-day precision. Parallel to DateRange;
+      use when day granularity is insufficient (e.g. a meeting that
+      ran 09:00–11:30).
+    additionalProperties: false
+    properties:
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+  StatementKind:
+    type: string
+    description: |
+      Discriminator for the three BS 0:2006 statement types. Adding a
+      new kind is a one-line enum extension; the Statement model
+      itself never needs to change (OCP).
+    enum:
+    - statement
+    - comment
+    - standpoint
+  DeclarationKind:
+    type: string
+    description: |
+      Discriminator for the two BS 0:2006 declaration types
+      (conflict of interest, IPR).
+    enum:
+    - conflict_of_interest
+    - ipr
+  Statement:
+    type: object
+    description: |
+      One remark made by one or more meeting members on a topic or a
+      minutes section. Per-field Localized description; party is a
+      list of Person references. The `kind` discriminator separates
+      the three BS 0:2006 statement types.
+    additionalProperties: false
+    properties:
+      kind:
+        "$ref": "#/$defs/StatementKind"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      party:
+        type: array
+        items:
+          "$ref": "#/$defs/Person"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  Declaration:
+    type: object
+    description: |
+      A formal declaration (conflict of interest or IPR) made by one
+      or more meeting members. IPR-specific fields (`ipr_subject_ref`,
+      `ipr_target_ref`) are populated only when `kind == "ipr"`.
+    additionalProperties: false
+    properties:
+      kind:
+        "$ref": "#/$defs/DeclarationKind"
+      description:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      party:
+        type: array
+        items:
+          "$ref": "#/$defs/Person"
+      ipr_subject_ref:
+        "$ref": "#/$defs/EntityRef"
+      ipr_target_ref:
+        "$ref": "#/$defs/EntityRef"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"

@@ -127,7 +127,7 @@ DecisionCollection                        MeetingCollection
 │   ├── date, source                          ├── identifier, urn, ordinal
 │   ├── source_urls[]                         ├── series_ref (→ MeetingSeries)
 │   ├── city (UN/LOCODE), country_code        ├── type, status, visibility
-│   └── meeting_urn (back-ref to Meeting)     ├── date_range, recurrence
+│   └── meeting_urn (back-ref to Meeting)     ├── scheduled_date_range, occurred_date_range, recurrence
 └── decisions: Decision[]                     ├── venues: Venue[]  (polymorphic)
     ├── identifier: StructuredIdentifier[1..*]|    ├── kind: physical | virtual
     ├── kind (DecisionKind)                    |    ├── name, label, capacity
@@ -153,9 +153,9 @@ Motion                                        │    (status: called → in_prog
 ├── identifier, urn                           │     voting_method, counts, casting_vote,
 ├── text: LocalizedString[]                   │     vote_records[])
 ├── mover, seconders[]                        ├── decisions: Decision[]  (inline)
-├── status (MotionStatus)                     ├── relations: MeetingRelation[]
-├── introduced_at                             └── extensions: MeetingExtension[]
-├── proposed_decision, resulting_decision
+├── status (MotionStatus)                     ├── declarations: Declaration[]   (BS 0:2006 §7.6)
+├── introduced_at                             ├── relations: MeetingRelation[]
+├── proposed_decision, resulting_decision     └── extensions: MeetingExtension[]
 └── votings[]
                                               MeetingSeries (top-level standalone)
 Voting                                        ├── identifier, urn
@@ -176,6 +176,24 @@ MeetingExtension (profile mechanism)
      ├── type (string | integer | float | boolean | date | datetime)
      └── value / integer_value / float_value / boolean_value /
          date_value / date_time_value (one of, per `type`)
+
+Statement (BS 0:2006 §7.6)
+├── kind (StatementKind: statement | comment | standpoint)
+├── description: LocalizedString[]
+├── party: Person[]
+└── extensions: MeetingExtension[]
+
+Declaration (BS 0:2006 §7.6)
+├── kind (DeclarationKind: conflict_of_interest | ipr)
+├── description: LocalizedString[]
+├── party: Person[]
+├── ipr_subject_ref: EntityRef       (only when kind == "ipr")
+├── ipr_target_ref: EntityRef        (only when kind == "ipr")
+└── extensions: MeetingExtension[]
+
+DateTimeRange
+├── start: DateTime
+└── end: DateTime
 ----
 
 Every core entity has an `extensions: MeetingExtension[0..*]` slot.
@@ -523,6 +541,16 @@ shape is mechanical:
 
 | (none)
 | `ContactCollection`, `VenueCollection` (scoped-URN registries)
+
+| `Meeting.date_range` (single range)
+| `Meeting.scheduled_date_range` + `Meeting.occurred_date_range`
+  (split scheduled vs actual; occurred uses DateTimeRange for
+  sub-day precision)
+
+| (none)
+| `Statement`, `Declaration`, `DateTimeRange` — BS 0:2006 §7.6
+  meeting-minutes concepts integrated into core. Statements and
+  declarations attach to `Meeting`, `Topic`, and `MinutesSection`.
 
 |===
 

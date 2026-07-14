@@ -32,7 +32,9 @@ SCHEMA_ENUM_BINDINGS = {
   "HostType" => :HOST_TYPE,
   "VoteType" => :VOTE_TYPE,
   "ContactMethodKind" => :CONTACT_METHOD_KIND,
-  "ContactIdentifierKind" => :CONTACT_IDENTIFIER_KIND
+  "ContactIdentifierKind" => :CONTACT_IDENTIFIER_KIND,
+  "StatementKind" => :STATEMENT_KIND,
+  "DeclarationKind" => :DECLARATION_KIND
 }.freeze
 
 # Schema <-> Ruby enum sync. The schema in `schema/edoxen.yaml` MUST agree,

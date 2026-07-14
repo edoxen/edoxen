@@ -11,7 +11,7 @@ meetings:
   urn: urn:oiml:ciml:meeting:ciml-55
   ordinal: 55
   type: plenary
-  date_range:
+  scheduled_date_range:
     start: 2020-10-19
     end: 2020-10-23
   title:
@@ -23,7 +23,7 @@ meetings:
   urn: urn:oiml:ciml:meeting:ciml-56
   ordinal: 56
   type: plenary
-  date_range:
+  scheduled_date_range:
     start: 2021-10-18
     end: 2021-10-22
   title:

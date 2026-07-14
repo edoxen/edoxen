@@ -34,7 +34,7 @@ RSpec.describe Edoxen::Meeting do
                                     "identifier" => [{ "prefix" => "CIML", "number" => "56" }],
                                     "urn" => "urn:oiml:ciml:meeting:ciml-56",
                                     "ordinal" => 56, "type" => "plenary",
-                                    "date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
+                                    "scheduled_date_range" => { "start" => "2021-10-18", "end" => "2021-10-22" },
                                     "venues" => [{ "kind" => "physical",
                                                    "name" => [{ "spelling" => "eng", "value" => "OIML HQ" }],
                                                    "lat" => 48.87, "lon" => 2.34 }],
@@ -52,8 +52,8 @@ RSpec.describe Edoxen::Meeting do
                                     "title" => [{ "spelling" => "eng", "value" => "56th" }]
                                   ))
     expect(m.identifier.first).to be_a(Edoxen::StructuredIdentifier)
-    expect(m.date_range).to be_a(Edoxen::DateRange)
-    expect(m.date_range.start).to eq(Date.new(2021, 10, 18))
+    expect(m.scheduled_date_range).to be_a(Edoxen::DateRange)
+    expect(m.scheduled_date_range.start).to eq(Date.new(2021, 10, 18))
     expect(m.venues.first).to be_a(Edoxen::Venue)
     expect(m.officers.first).to be_a(Edoxen::Officer)
     expect(m.chair.name.first.value.display).to eq("Roman Schwartz")
@@ -70,6 +70,11 @@ RSpec.describe Edoxen::Meeting do
       # the canonical meeting.yaml oneOf accepts both, but this spec
       # exercises the Meeting class specifically.
       next if File.basename(f) == "ciml-series.yaml"
+      # bs0-sample.yaml carries full BS 0:2006 declarations, statements,
+      # and occurred_date_range; it round-trips via the schema/CLI, but
+      # this simple loop only checks identifier/type/title. Skip it
+      # here — the dedicated BS 0 fixture tests cover the round-trip.
+      next if File.basename(f) == "bs0-sample.yaml"
 
       it "round-trips #{File.basename(f)} as a Meeting" do
         m = described_class.from_yaml(File.read(f))

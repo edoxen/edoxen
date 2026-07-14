@@ -22,7 +22,10 @@ MEETING_SCHEMA_MODEL_BINDINGS = {
   Edoxen::MeetingRelation => "MeetingRelation",
   Edoxen::Meeting => "Meeting",
   Edoxen::MeetingCollectionMetadata => "MeetingCollectionMetadata",
-  Edoxen::MeetingCollection => "MeetingCollection"
+  Edoxen::MeetingCollection => "MeetingCollection",
+  Edoxen::Statement => "Statement",
+  Edoxen::Declaration => "Declaration",
+  Edoxen::DateTimeRange => "DateTimeRange"
 }.freeze
 
 RSpec.describe "Schema <-> Ruby meeting model shape sync" do

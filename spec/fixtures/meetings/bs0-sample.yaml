@@ -1,0 +1,114 @@
+---
+# BS 0:2006 §7.6 sample — bilingual meeting minutes with statements,
+# declarations (CoI + IPR), and scheduled-vs-occurred date ranges.
+# Exercises every new 1.0 concept introduced by TODO.bs0-minutes.
+identifier:
+  - prefix: BSI
+    number: "TC/1/2026/03"
+urn: urn:edoxen:meeting:bsi:tc1-2026-03
+type: committee
+status: completed
+body_type: BSI Technical Committee
+title:
+  - spelling: eng
+    value: BSI TC/1 — March 2026 sitting
+  - spelling: fra
+    value: BSI TC/1 — séance de mars 2026
+scheduled_date_range:
+  start: 2026-03-12
+  end: 2026-03-12
+occurred_date_range:
+  start: 2026-03-12T09:00:00+00:00
+  end: 2026-03-12T11:45:00+00:00
+venues:
+  - kind: physical
+    name:
+      - spelling: eng
+        value: BSI Headquarters, Committee Room 4
+    unlocode: GBLON
+    country_code: GB
+officers:
+  - role: chair
+    person:
+      name:
+        - spelling: eng
+          value:
+            formatted: Dr A. Chair
+attendance:
+  - person:
+      name:
+        - spelling: eng
+          value:
+            formatted: Ms Jane Doe
+    status: present
+    role: required
+    response: confirmed
+  - person:
+      name:
+        - spelling: eng
+          value:
+            formatted: Mr John Smith
+    status: present
+    role: required
+    response: confirmed
+declarations:
+  - kind: conflict_of_interest
+    description:
+      - spelling: eng
+        value: Mr Smith declares a conflict of interest on agenda item 5.2.
+      - spelling: fra
+        value: M. Smith déclare un conflit d'intérêts sur le point 5.2.
+    party:
+      - name:
+          - spelling: eng
+            value:
+              formatted: Mr John Smith
+  - kind: ipr
+    description:
+      - spelling: eng
+        value: Ms Doe declares a patent on the technology described in clause 7.
+    party:
+      - name:
+          - spelling: eng
+            value:
+              formatted: Ms Jane Doe
+    ipr_subject_ref:
+      urn: urn:edoxen:ipr-subject:iso-patent-policy:2024
+    ipr_target_ref:
+      identifier:
+        prefix: ISO
+        number: "8601-1:2019"
+minutes:
+  - identifier:
+      - prefix: BSI
+        number: "TC/1/2026/03/min"
+    spelling: eng
+    sections:
+      - number: "5.2"
+        title:
+          - spelling: eng
+            value: Patent clause discussion
+        narrative:
+          - spelling: eng
+            value: |
+              The committee discussed the patent clause in detail.
+        statements:
+          - kind: standpoint
+            description:
+              - spelling: eng
+                value: Ms Doe supports the clause as drafted.
+            party:
+              - name:
+                  - spelling: eng
+                    value:
+                      formatted: Ms Jane Doe
+          - kind: comment
+            description:
+              - spelling: eng
+                value: Mr Smith requested his dissent be recorded.
+            party:
+              - name:
+                  - spelling: eng
+                    value:
+                      formatted: Mr John Smith
+        topic_ref: urn:edoxen:topic:bsi:tc1-patent-clause

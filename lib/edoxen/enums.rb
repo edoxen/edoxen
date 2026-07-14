@@ -171,5 +171,18 @@ module Edoxen
     CONTACT_IDENTIFIER_KIND = %w[
       orcid isni wikidata ror ringgold github other
     ].freeze
+
+    # --- BS 0:2006 meeting-minutes concepts --------------------------------
+
+    # StatementKind — discriminates the three BS 0:2006 statement
+    # types. Adding a new kind is a one-line enum extension; the
+    # Statement model itself never needs to change (OCP).
+    STATEMENT_KIND = %w[statement comment standpoint].freeze
+
+    # DeclarationKind — discriminates the two BS 0:2006 declaration
+    # types (conflict of interest, IPR). Adding a new kind is a
+    # one-line enum extension; the Declaration model itself never
+    # needs to change (OCP).
+    DECLARATION_KIND = %w[conflict_of_interest ipr].freeze
   end
 end

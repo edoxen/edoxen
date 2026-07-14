@@ -9,7 +9,7 @@ type: plenary
 status: completed
 visibility: public
 
-date_range:
+scheduled_date_range:
   start: 2023-10-24
   end: 2023-10-27
 

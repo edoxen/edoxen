@@ -7,7 +7,7 @@ type: plenary
 status: completed
 visibility: public
 
-date_range:
+scheduled_date_range:
   start: 2024-01-15
   end: 2024-01-16
 

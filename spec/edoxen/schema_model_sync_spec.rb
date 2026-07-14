@@ -48,7 +48,10 @@ SCHEMA_MODEL_BINDINGS = {
   Edoxen::Name => "Name",
   Edoxen::Contact => "Contact",
   Edoxen::ContactCollection => "ContactCollection",
-  Edoxen::VenueCollection => "VenueCollection"
+  Edoxen::VenueCollection => "VenueCollection",
+  Edoxen::Statement => "Statement",
+  Edoxen::Declaration => "Declaration",
+  Edoxen::DateTimeRange => "DateTimeRange"
 }.freeze
 
 # ExtensionAttribute uses camelCase wire names (intValue, floatValue,

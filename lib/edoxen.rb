@@ -66,6 +66,11 @@ module Edoxen
   autoload :MeetingCollectionMetadata, "edoxen/meeting_collection_metadata"
   autoload :MeetingCollection, "edoxen/meeting_collection"
 
+  # --- BS 0:2006 meeting-minutes concepts --------------------------------
+  autoload :Statement, "edoxen/statement"
+  autoload :Declaration, "edoxen/declaration"
+  autoload :DateTimeRange, "edoxen/date_time_range"
+
   # --- v2 broadened-scope entities --------------------------------------
   autoload :ExtensionAttribute, "edoxen/extension_attribute"
   autoload :MeetingExtension, "edoxen/meeting_extension"

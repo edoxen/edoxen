@@ -105,6 +105,24 @@ canonical_type). `EntityRef` — typed cross-reference between entities.
 * `Edoxen::SchemaValidator`, `Edoxen::LinkChecker`, `Edoxen::Cli` all
   exercised.
 
+### BS 0:2006 meeting-minutes integration
+
+* `Statement` — one remark by one or more members on a topic or a
+  minutes section. `kind: StatementKind` discriminates
+  `statement` / `comment` / `standpoint` (BS 0:2006 §7.6).
+* `Declaration` — formal declaration (conflict of interest, IPR).
+  `kind: DeclarationKind` discriminates. IPR declarations carry
+  typed `EntityRef` slots for `ipr_subject_ref` and `ipr_target_ref`.
+* `DateTimeRange` — sub-day precision parallel to `DateRange`.
+* `Meeting#scheduled_date_range` (renamed from `date_range`) +
+  `Meeting#occurred_date_range: DateTimeRange` +
+  `Meeting#declarations: Declaration[0..*]`.
+* `Topic#statements[]` (standing) + `Topic#declarations[]` (standing).
+* `MinutesSection#statements[]` (per-meeting) +
+  `MinutesSection#topic_ref` (URN back-link to Topic).
+* Every new translatable field is per-field Localized (ISO 24229) —
+  no scalar `String` text fields anywhere in the new surface.
+
 ### References
 
 * [Edoxen Model 1.0](https://github.com/edoxen/edoxen-model) —

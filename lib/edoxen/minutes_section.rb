@@ -20,5 +20,7 @@ module Edoxen
     attribute :page_start, :integer
     attribute :page_end, :integer
     attribute :references, Reference, collection: true
+    attribute :statements, Statement, collection: true
+    attribute :topic_ref, :string
   end
 end

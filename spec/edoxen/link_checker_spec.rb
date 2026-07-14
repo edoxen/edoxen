@@ -78,7 +78,7 @@ RSpec.describe Edoxen::LinkChecker do
           number: '56'
         urn: urn:oiml:ciml:meeting:ciml-56
         type: plenary
-        date_range:
+        scheduled_date_range:
           start: 2025-10-13
           end: 2025-10-15
       YAML
@@ -163,7 +163,7 @@ RSpec.describe Edoxen::LinkChecker do
           number: '57'
         urn: urn:oiml:ciml:meeting:ciml-57
         type: plenary
-        date_range:
+        scheduled_date_range:
           start: 2025-10-13
       YAML
       write(dir, "decisions.yaml", <<~YAML)

@@ -1,63 +1,60 @@
 ---
-# Minimal Meeting fixture — Edoxen Model 1.0 per-field Localized shape.
 identifier:
-  - prefix: TEST
-    number: "1"
+- prefix: TEST
+  number: '1'
 type: plenary
 status: completed
 visibility: public
-
 scheduled_date_range:
   start: 2024-01-15
   end: 2024-01-16
-
-committee: Test Committee
+committee:
+  code: Test Committee
+  name:
+  - spelling: eng
+    value: Test Committee
 city: FRPAR
 country_code: FR
-
 title:
-  - spelling: eng
-    value: Test Meeting
+- spelling: eng
+  value: Test Meeting
 general_area:
-  - spelling: eng
-    value: Test City
-
+- spelling: eng
+  value: Test City
 venues:
-  - kind: physical
-    name:
-      - spelling: eng
-        value: Test Venue
-    address:
-      - spelling: eng
-        value: 1 Test Street, Paris
-    country_code: FR
-    unlocode: FRPAR
-
+- kind: physical
+  name:
+  - spelling: eng
+    value: Test Venue
+  address:
+  - spelling: eng
+    value: 1 Test Street, Paris
+  country_code: FR
+  unlocode: FRPAR
 officers:
-  - role: chair
-    person:
-      name:
-        - spelling: eng
-          value: { formatted: Test Chair }
-
+- role: chair
+  person:
+    name:
+    - spelling: eng
+      value:
+        formatted: Test Chair
 agenda:
   status: final
   items:
-    - label: "1"
-      kind: opening
-      title:
-        - spelling: eng
-          value: Opening
-      outcome: adopted
-    - label: "2"
-      kind: numbered
-      title:
-        - spelling: eng
-          value: Approval of agenda
-      outcome: resolved
-
+  - label: '1'
+    kind: opening
+    title:
+    - spelling: eng
+      value: Opening
+    outcome: adopted
+  - label: '2'
+    kind: numbered
+    title:
+    - spelling: eng
+      value: Approval of agenda
+    outcome: resolved
 deadlines:
-  - date: 2024-01-10
-    description:
-      - spelling: eng
-        value: Registration
+- date: 2024-01-10
+  description:
+  - spelling: eng
+    value: Registration

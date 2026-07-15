@@ -33,8 +33,8 @@ module Edoxen
     attribute :city, :string
     attribute :country_code, :string
 
-    attribute :committee, :string
-    attribute :committee_group, :string
+    attribute :committee, Body
+    attribute :committee_group, Body
 
     attribute :officers, Officer, collection: true
     attribute :hosts, HostRef, collection: true
@@ -44,6 +44,8 @@ module Edoxen
     attribute :registration_url, :string
     attribute :note, LocalizedString, collection: true
     attribute :contact, Contact
+    attribute :contacts, Contact, collection: true
+    attribute :bodies, Body, collection: true
 
     attribute :agenda, Agenda
     attribute :components, MeetingComponent, collection: true

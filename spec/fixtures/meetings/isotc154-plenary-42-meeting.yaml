@@ -1,66 +1,71 @@
 ---
-# ISO/TC 154 42nd plenary meeting week — Edoxen Model 1.0 per-field Localized.
 identifier:
-  - prefix: ISO/TC 154
-    number: "42"
+- prefix: ISO/TC 154
+  number: '42'
 urn: urn:edoxen:meeting:isotc154:plenary-42
 ordinal: 42
 type: plenary
 status: completed
 visibility: public
-
 scheduled_date_range:
   start: 2023-10-24
   end: 2023-10-27
-
-committee: ISO/TC 154
-committee_group: Plenary
+committee:
+  code: ISO/TC 154
+  name:
+  - spelling: eng
+    value: ISO/TC 154
+committee_group:
+  code: Plenary
+  name:
+  - spelling: eng
+    value: Plenary
 city: HKHKG
 country_code: HK
-
 title:
-  - spelling: eng
-    value: 42nd plenary meeting week
+- spelling: eng
+  value: 42nd plenary meeting week
 general_area:
-  - spelling: eng
-    value: Hong Kong, China
-
+- spelling: eng
+  value: Hong Kong, China
 venues:
-  - kind: physical
-    name:
-      - spelling: eng
-        value: Fairmont House (HKMA)
-    address:
-      - spelling: eng
-        value: |
-          14/F, Fairmont House, 8 Cotton Tree Drive
-          Central, Hong Kong, China
-    country_code: HK
-    unlocode: HKHKG
-
+- kind: physical
+  name:
+  - spelling: eng
+    value: Fairmont House (HKMA)
+  address:
+  - spelling: eng
+    value: |
+      14/F, Fairmont House, 8 Cotton Tree Drive
+      Central, Hong Kong, China
+  country_code: HK
+  unlocode: HKHKG
 officers:
-  - role: chair
-    person:
-      name:
-        - spelling: eng
-          value: { formatted: Jianfang Zhang }
-      affiliation:
-        - spelling: eng
-          value: SAC (CNIS)
-  - role: secretary
-    person:
-      name:
-        - spelling: eng
-          value: { formatted: Jianfang Zhang }
-      affiliation:
-        - spelling: eng
-          value: SAC (CNIS)
-      contact_methods:
-        - { kind: email, value: zhangjf@cnis.gov.cn }
-        - { kind: phone, value: "+86-10-58811613" }
-
+- role: chair
+  person:
+    name:
+    - spelling: eng
+      value:
+        formatted: Jianfang Zhang
+    affiliation:
+    - spelling: eng
+      value: SAC (CNIS)
+- role: secretary
+  person:
+    name:
+    - spelling: eng
+      value:
+        formatted: Jianfang Zhang
+    affiliation:
+    - spelling: eng
+      value: SAC (CNIS)
+    contact_methods:
+    - kind: email
+      value: zhangjf@cnis.gov.cn
+    - kind: phone
+      value: "+86-10-58811613"
 hosts:
-  - ref: calconnect
-    type: liaison
-  - ref: itchksar
-    type: national_body
+- ref: calconnect
+  type: liaison
+- ref: itchksar
+  type: national_body

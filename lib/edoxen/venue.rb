@@ -13,6 +13,7 @@ module Edoxen
   #   - Added: `urn` for registry storage; `ref` for reference-by-URN.
   class Venue < Lutaml::Model::Serializable
     attribute :ref, :string
+    attribute :local_ref, :string
     attribute :urn, :string
     attribute :kind, :string, values: Enums::VENUE_KIND
     attribute :name, LocalizedString, collection: true
@@ -47,7 +48,8 @@ module Edoxen
     attribute :extensions, MeetingExtension, collection: true
 
     def reference?
-      !ref.nil? && !ref.to_s.empty?
+      (!ref.nil? && !ref.to_s.empty?) ||
+        (!local_ref.nil? && !local_ref.to_s.empty?)
     end
 
     def physical?

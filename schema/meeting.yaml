@@ -215,7 +215,8 @@ oneOf:
     properties:
       ref:
         type: string
-        description: URN reference; if set, ignore other fields
+      local_ref:
+        type: string
       urn:
         type: string
         pattern: "^urn:edoxen:contact:[^:]+:[^:]+$"
@@ -260,6 +261,8 @@ oneOf:
     additionalProperties: false
     properties:
       ref:
+        type: string
+      local_ref:
         type: string
       urn:
         type: string
@@ -619,7 +622,8 @@ oneOf:
     properties:
       ref:
         type: string
-        description: URN reference; if set, ignore other fields
+      local_ref:
+        type: string
       urn:
         type: string
         pattern: "^urn:edoxen:venue:[^:]+:[^:]+$"
@@ -1003,9 +1007,9 @@ oneOf:
         type: string
         pattern: "^[A-Z]{2}$"
       committee:
-        type: string
+        "$ref": "#/$defs/Body"
       committee_group:
-        type: string
+        "$ref": "#/$defs/Body"
       officers:
         type: array
         items:
@@ -1028,6 +1032,14 @@ oneOf:
           "$ref": "#/$defs/LocalizedString"
       contact:
         "$ref": "#/$defs/Contact"
+      contacts:
+        type: array
+        items:
+          "$ref": "#/$defs/Contact"
+      bodies:
+        type: array
+        items:
+          "$ref": "#/$defs/Body"
       agenda:
         "$ref": "#/$defs/Agenda"
       components:
@@ -1409,6 +1421,52 @@ oneOf:
         "$ref": "#/$defs/EntityRef"
       ipr_target_ref:
         "$ref": "#/$defs/EntityRef"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  Body:
+    type: object
+    description: |
+      A committee, subcommittee, working group, or other organised body.
+      Three-tier entity resolution (ref / local_ref / inline).
+    additionalProperties: false
+    properties:
+      ref:
+        type: string
+      local_ref:
+        type: string
+      code:
+        type: string
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      kind:
+        type: string
+      parent_ref:
+        "$ref": "#/$defs/EntityRef"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  BodyRegister:
+    type: object
+    description: |
+      Authoritative register of Bodies (committees, subcommittees,
+      working groups).
+    additionalProperties: false
+    properties:
+      scope:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      bodies:
+        type: array
+        items:
+          "$ref": "#/$defs/Body"
       extensions:
         type: array
         items:

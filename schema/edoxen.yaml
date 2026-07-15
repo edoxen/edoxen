@@ -8,8 +8,8 @@ description: |
   Accepts three top-level document kinds via `oneOf`:
 
     * `DecisionCollection` — the formal outcomes adopted by a Meeting.
-    * `ContactCollection` — a scoped-URN registry of Contacts.
-    * `VenueCollection`  — a scoped-URN registry of Venues.
+    * `ContactRegister` — a scoped-URN registry of Contacts.
+    * `VenueRegister`  — a scoped-URN registry of Venues.
 
   Mirrors the canonical LutaML information model in
   https://github.com/edoxen/edoxen-model/tree/main/models .
@@ -26,8 +26,9 @@ description: |
 type: object
 oneOf:
 - "$ref": "#/$defs/DecisionCollection"
-- "$ref": "#/$defs/ContactCollection"
-- "$ref": "#/$defs/VenueCollection"
+- "$ref": "#/$defs/ContactRegister"
+- "$ref": "#/$defs/VenueRegister"
+- "$ref": "#/$defs/BodyRegister"
 "$defs":
   DecisionCollection:
     type: object
@@ -569,7 +570,8 @@ oneOf:
     properties:
       ref:
         type: string
-        description: URN reference; if set, ignore other fields
+      local_ref:
+        type: string
       urn:
         type: string
         pattern: "^urn:edoxen:venue:[^:]+:[^:]+$"
@@ -877,7 +879,8 @@ oneOf:
     properties:
       ref:
         type: string
-        description: URN reference; if set, ignore other fields
+      local_ref:
+        type: string
       urn:
         type: string
         pattern: "^urn:edoxen:contact:[^:]+:[^:]+$"
@@ -922,6 +925,8 @@ oneOf:
     additionalProperties: false
     properties:
       ref:
+        type: string
+      local_ref:
         type: string
       urn:
         type: string
@@ -1123,7 +1128,7 @@ oneOf:
         type: string
       contact:
         "$ref": "#/$defs/Contact"
-  ContactCollection:
+  ContactRegister:
     type: object
     description: |
       Registry of Contacts indexed by scoped URN. Members carry
@@ -1145,9 +1150,9 @@ oneOf:
         type: array
         items:
           "$ref": "#/$defs/MeetingExtension"
-  VenueCollection:
+  VenueRegister:
     type: object
-    description: 'Registry of Venues indexed by scoped URN. Mirrors ContactCollection.
+    description: 'Registry of Venues indexed by scoped URN. Mirrors ContactRegister.
 
       '
     additionalProperties: false
@@ -1514,6 +1519,52 @@ oneOf:
         "$ref": "#/$defs/EntityRef"
       ipr_target_ref:
         "$ref": "#/$defs/EntityRef"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  Body:
+    type: object
+    description: |
+      A committee, subcommittee, working group, or other organised body.
+      Three-tier entity resolution (ref / local_ref / inline).
+    additionalProperties: false
+    properties:
+      ref:
+        type: string
+      local_ref:
+        type: string
+      code:
+        type: string
+      name:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      kind:
+        type: string
+      parent_ref:
+        "$ref": "#/$defs/EntityRef"
+      extensions:
+        type: array
+        items:
+          "$ref": "#/$defs/MeetingExtension"
+  BodyRegister:
+    type: object
+    description: |
+      Authoritative register of Bodies (committees, subcommittees,
+      working groups).
+    additionalProperties: false
+    properties:
+      scope:
+        type: string
+      title:
+        type: array
+        items:
+          "$ref": "#/$defs/LocalizedString"
+      bodies:
+        type: array
+        items:
+          "$ref": "#/$defs/Body"
       extensions:
         type: array
         items:

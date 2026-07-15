@@ -34,8 +34,8 @@ module Edoxen
         lambda do |content|
           data = YAML.safe_load(content, permitted_classes: [Date, Time])
           case Batch.decision_kind(data)
-          when :contacts then ContactCollection.from_yaml(content)
-          when :venues   then VenueCollection.from_yaml(content)
+          when :contacts then ContactRegister.from_yaml(content)
+          when :venues   then VenueRegister.from_yaml(content)
           else                DecisionCollection.from_yaml(content)
           end
         end
@@ -78,8 +78,8 @@ module Edoxen
       # Discriminate the three top-level shapes the canonical
       # `schema/edoxen.yaml` accepts via `oneOf`:
       #
-      #   * :contacts   — `{ contacts: [...] }` (ContactCollection registry).
-      #   * :venues     — `{ venues: [...] }`   (VenueCollection registry).
+      #   * :contacts   — `{ contacts: [...] }` (ContactRegister registry).
+      #   * :venues     — `{ venues: [...] }`   (VenueRegister registry).
       #   * :decisions  — anything else (DecisionCollection, the default).
       def decision_kind(data)
         return :decisions unless data.is_a?(Hash)

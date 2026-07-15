@@ -91,11 +91,14 @@ module Edoxen
   autoload :MeetingComponent, "edoxen/meeting_component"
   autoload :Officer, "edoxen/officer"
   autoload :VenueValidator, "edoxen/venue_validator"
-  autoload :ContactCollection, "edoxen/contact_collection"
-  autoload :VenueCollection, "edoxen/venue_collection"
+  autoload :ContactRegister, "edoxen/contact_register"
+  autoload :VenueRegister, "edoxen/venue_register"
+  autoload :Body, "edoxen/body"
+  autoload :BodyRegister, "edoxen/body_register"
 
   # --- Services ---------------------------------------------------------
   autoload :SchemaValidator, "edoxen/schema_validator"
   autoload :LinkChecker, "edoxen/link_checker"
+  autoload :EntityResolver, "edoxen/entity_resolver"
   autoload :Cli, "edoxen/cli"
 end

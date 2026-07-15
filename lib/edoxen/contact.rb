@@ -17,6 +17,7 @@ module Edoxen
   # accepts a Contact.
   class Contact < Lutaml::Model::Serializable
     attribute :ref, :string
+    attribute :local_ref, :string
     attribute :urn, :string
     attribute :name, LocalizedName, collection: true
     attribute :kind, :string
@@ -29,7 +30,8 @@ module Edoxen
     attribute :extensions, MeetingExtension, collection: true
 
     def reference?
-      !ref.nil? && !ref.to_s.empty?
+      (!ref.nil? && !ref.to_s.empty?) ||
+        (!local_ref.nil? && !local_ref.to_s.empty?)
     end
   end
 end

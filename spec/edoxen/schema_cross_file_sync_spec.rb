@@ -28,7 +28,7 @@ SHARED_NAMES = %w[
   VenueKind VirtualFeature Visibility ComponentKind OfficerRole RecurrenceFreq
   ContactMethodKind ContactIdentifierKind
   LocalizedString LocalizedName
-  Statement StatementKind Declaration DeclarationKind DateTimeRange
+  Statement StatementKind Declaration DeclarationKind DateTimeRange Body BodyRegister
 ].freeze
 
 RSpec.describe "Cross-schema shared $defs sync (edoxen.yaml ↔ meeting.yaml)" do

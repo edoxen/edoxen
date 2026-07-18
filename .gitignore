@@ -13,3 +13,4 @@ Gemfile.lock
 
 # Local TODO / planning notes — never commit
 TODO.*/
+*.gem

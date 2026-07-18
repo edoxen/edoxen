@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.3] — 2026-07-18
+
+### Fixed
+
+* `Meeting#decisions` is `StructuredIdentifier[]` (reference by
+  prefix+number), aligning the Ruby model with the JSON schema and
+  every consumer dataset; the attribute had drifted to `Decision`
+  during the BS 0 minutes work (mirrors edoxen-model#26).
+* `Edoxen::EntityResolver` document-scoped tier no longer raises
+  `NoMethodError` for `Body` — bodies have no `urn`, they are keyed
+  by `code` (same semantics as `BodyRegister#find_by_urn`).
+
+## [0.8.2] — 2026-07-17
+
+### Added
+
+* **Three-tier entity resolution** for Contact, Venue, and Body:
+  inline (full data, no reference), document-scoped (`local_ref` →
+  matching member in the container's scoped collection, e.g.
+  `Meeting#contacts[]`, `Meeting#bodies[]`), and global register
+  (`ref` → member of a top-level register document).
+* `Contact#local_ref` alongside `ref`; `Contact#reference?` true when
+  either is set.
+* New `Body` entity (`code`, localized `name`, `kind`, `parent_ref`,
+  `ref`, `local_ref`) and `BodyRegister` top-level document.
+  `Meeting#committee` and `Meeting#committee_group` changed from
+  `String` to `Body`.
+* `Edoxen::EntityResolver` — pure resolution service walking
+  inline → scoped → register.
+* `AgendaItem#urn` + `Edoxen::UrnFor` — hierarchical agenda-item
+  URNs (`{meetingUrn}:agenda:{label}`), computable when absent in
+  source data.
+
+### Changed
+
+* `ContactCollection` renamed to `ContactRegister`;
+  `VenueCollection` renamed to `VenueRegister` (a register is
+  authoritative and persistent, a collection is just a grouping).
+
 ## [0.8.1] — 2026-07-14
 
 First implementation release of **Edoxen Model 1.0**. The Ruby gem

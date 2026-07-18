@@ -79,6 +79,14 @@ RSpec.describe Edoxen::EntityResolver do
       resolver.resolve(ref)
       expect(ref.local_ref).to eq(original_local_ref)
     end
+
+    it "resolves a Body local_ref against scoped bodies by code (Body has no urn)" do
+      ciml = Edoxen::Body.new(code: "ciml",
+                              name: [Edoxen::LocalizedString.new(spelling: "eng", value: "CIML")])
+      body_resolver = described_class.new(scoped: { Edoxen::Body => [ciml] })
+      result = body_resolver.resolve(Edoxen::Body.new(local_ref: "ciml"))
+      expect(result).to eq(ciml)
+    end
   end
 
   describe "#resolve_all" do

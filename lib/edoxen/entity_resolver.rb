@@ -8,7 +8,7 @@ module Edoxen
   #      it as-is (it carries full data).
   #   2. Document-scoped: if +local_ref+ is set, look up in the
   #      document-scoped collection (e.g. Meeting#contacts) by matching
-  #      +urn+ against +local_ref+.
+  #      +urn+ against +local_ref+ (+code+ for Body, which has no +urn+).
   #   3. Global register: if +ref+ is set, look up in the global
   #      register (e.g. ContactRegister) by matching +urn+ against +ref+.
   #
@@ -62,7 +62,9 @@ module Edoxen
     end
 
     def member_key(member)
-      member.urn
+      # Body has no +urn+ — its local key is +code+ (same lookup
+      # semantics as BodyRegister#find_by_urn).
+      member.respond_to?(:urn) ? member.urn : member.code
     end
   end
 end

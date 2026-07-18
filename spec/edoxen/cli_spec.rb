@@ -51,13 +51,13 @@ RSpec.describe Edoxen::Cli do
       expect(stdout).to include("✅ VALID")
     end
 
-    it "validates a ContactCollection fixture via the decision-side oneOf" do
+    it "validates a ContactRegister fixture via the decision-side oneOf" do
       stdout, _stderr, status = run_cli("validate", "#{fixtures_dir}/contacts.yaml")
       expect(status.exitstatus).to eq(0)
       expect(stdout).to include("VALID")
     end
 
-    it "validates a VenueCollection fixture via the decision-side oneOf" do
+    it "validates a VenueRegister fixture via the decision-side oneOf" do
       stdout, _stderr, status = run_cli("validate", "#{fixtures_dir}/venues.yaml")
       expect(status.exitstatus).to eq(0)
       expect(stdout).to include("VALID")
@@ -87,7 +87,7 @@ RSpec.describe Edoxen::Cli do
   end
 
   describe "decision loader shape detection" do
-    it "loads a ContactCollection via the :contacts key" do
+    it "loads a ContactRegister via the :contacts key" do
       content = YAML.dump(
         "scope" => "test",
         "contacts" => [{ "urn" => "urn:edoxen:contact:test:a",
@@ -99,7 +99,7 @@ RSpec.describe Edoxen::Cli do
       expect(loaded).to eq(:contacts)
     end
 
-    it "loads a VenueCollection via the :venues key" do
+    it "loads a VenueRegister via the :venues key" do
       content = YAML.dump(
         "scope" => "test",
         "venues" => [{ "urn" => "urn:edoxen:venue:test:a",

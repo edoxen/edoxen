@@ -38,6 +38,7 @@ module Edoxen
   autoload :Consideration, "edoxen/consideration"
   autoload :SourceUrl, "edoxen/source_url"
   autoload :Url, "edoxen/url"
+  autoload :UrnFor, "edoxen/urn_for"
   autoload :DecisionRelation, "edoxen/decision_relation"
   autoload :Decision, "edoxen/decision"
   autoload :DecisionMetadata, "edoxen/decision_metadata"

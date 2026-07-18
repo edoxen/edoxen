@@ -56,7 +56,7 @@ module Edoxen
     attribute :declarations, Declaration, collection: true
 
     # Outcomes (canonical location on Meeting)
-    attribute :decisions, Decision, collection: true
+    attribute :decisions, StructuredIdentifier, collection: true
     attribute :motions, Motion, collection: true
     attribute :votings, Voting, collection: true
 

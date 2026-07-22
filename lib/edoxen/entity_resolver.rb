@@ -8,7 +8,7 @@ module Edoxen
   #      it as-is (it carries full data).
   #   2. Document-scoped: if +local_ref+ is set, look up in the
   #      document-scoped collection (e.g. Meeting#contacts) by matching
-  #      +urn+ against +local_ref+ (+code+ for Body, which has no +urn+).
+  #      the member's +local_lookup_key+ against +local_ref+.
   #   3. Global register: if +ref+ is set, look up in the global
   #      register (e.g. ContactRegister) by matching +urn+ against +ref+.
   #
@@ -39,7 +39,7 @@ module Edoxen
       collection = find_scoped_collection(entity.class)
       return nil unless collection
 
-      collection.find { |member| member_key(member) == entity.local_ref }
+      collection.find { |member| member.local_lookup_key == entity.local_ref }
     end
 
     def resolve_global(entity)
@@ -59,12 +59,6 @@ module Edoxen
     def find_global_register(klass)
       @global_registers[klass] ||
         @global_registers[klass.superclass]
-    end
-
-    def member_key(member)
-      # Body has no +urn+ — its local key is +code+ (same lookup
-      # semantics as BodyRegister#find_by_urn).
-      member.respond_to?(:urn) ? member.urn : member.code
     end
   end
 end

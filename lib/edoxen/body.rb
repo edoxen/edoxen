@@ -22,5 +22,12 @@ module Edoxen
       (!ref.nil? && !ref.to_s.empty?) ||
         (!local_ref.nil? && !local_ref.to_s.empty?)
     end
+
+    # Key used to resolve a +local_ref+ against a document-scoped
+    # collection (e.g. Meeting#bodies[]). Bodies have no urn — they
+    # are keyed by code (same semantics as BodyRegister#find_by_urn).
+    def local_lookup_key
+      code
+    end
   end
 end

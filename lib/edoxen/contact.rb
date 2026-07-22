@@ -33,5 +33,11 @@ module Edoxen
       (!ref.nil? && !ref.to_s.empty?) ||
         (!local_ref.nil? && !local_ref.to_s.empty?)
     end
+
+    # Key used to resolve a +local_ref+ against a document-scoped
+    # collection (e.g. Meeting#contacts[]). Contacts are keyed by urn.
+    def local_lookup_key
+      urn
+    end
   end
 end

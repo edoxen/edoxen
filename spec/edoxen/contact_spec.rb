@@ -49,4 +49,15 @@ RSpec.describe Edoxen::Contact do
       expect(person.contact_methods.first.value).to eq("jane@x.org")
     end
   end
+
+  describe "#local_lookup_key" do
+    it "returns the urn (Contacts are keyed by urn in scoped collections)" do
+      contact = described_class.new(urn: "urn:edoxen:contact:test:j-doe")
+      expect(contact.local_lookup_key).to eq("urn:edoxen:contact:test:j-doe")
+    end
+
+    it "is nil when no urn is set" do
+      expect(described_class.new.local_lookup_key).to be_nil
+    end
+  end
 end

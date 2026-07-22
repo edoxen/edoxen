@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+* `Edoxen::EntityResolver` no longer duck-types its scoped-collection
+  members with `respond_to?(:urn)`. Each resolvable entity
+  (`Contact`, `Venue`, `Body`) now exposes `#local_lookup_key`, which
+  returns the canonical local identifier for that type (`urn` for
+  Contact/Venue, `code` for Body). The resolver calls the polymorphic
+  method directly — adding a new resolvable entity type means adding
+  the method on the class, not branching in the resolver.
+
 ## [0.8.3] — 2026-07-18
 
 ### Fixed

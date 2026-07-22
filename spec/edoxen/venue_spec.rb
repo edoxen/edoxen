@@ -81,6 +81,17 @@ RSpec.describe Edoxen::Venue do
       expect(described_class.new.iata_entry).to be_nil
     end
   end
+
+  describe "#local_lookup_key" do
+    it "returns the urn (Venues are keyed by urn in scoped collections)" do
+      v = described_class.new(urn: "urn:edoxen:venue:test:grand-hall")
+      expect(v.local_lookup_key).to eq("urn:edoxen:venue:test:grand-hall")
+    end
+
+    it "is nil when no urn is set" do
+      expect(described_class.new.local_lookup_key).to be_nil
+    end
+  end
 end
 
 RSpec.describe Edoxen::PhysicalVenue do
